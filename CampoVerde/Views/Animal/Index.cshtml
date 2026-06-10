@@ -1,0 +1,47 @@
+@using CampoVerde.Models
+@model IEnumerable<CampoVerde.Models.Animal>
+
+@{
+    ViewData["Title"] = "Animales";
+}
+
+<h2>Animales</h2>
+
+<p>
+    <a asp-action="Create" asp-controller="Animal" class="btn btn-success">Nuevo animal</a>
+</p>
+
+@if (!Model?.Any() ?? true)
+{
+    <p class="text-muted">No hay animales registrados.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Nombre</th>
+                <th>Fecha nacimiento</th>
+                <th>Raza</th>
+                <th>Estado</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.codigo</td>
+                <td>@item.nombre</td>
+                <td>@(item.fechaNacimiento.HasValue ? item.fechaNacimiento.Value.ToString("yyyy-MM-dd") : "-")</td>
+                <td>@item.raza</td>
+                <td>@item.Estado</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.idAnimal" class="btn btn-sm btn-primary">Detalles</a>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

@@ -1,0 +1,74 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CampoVerde</title>
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CampoVerde.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+
+                <div class="d-flex align-items-center ms-3">
+
+                    <img src="~/img/vaca.jpg" alt="Logo" class="me-3" style="width: 55px; height: 55px;">
+
+                    <a class="navbar-brand text-success d-flex flex-column align-items-center lh-1"
+                       asp-area="" asp-controller="Home" asp-action="Index"
+                       style="text-decoration: none; font-size: 25px; font-weight: bold;">
+                        <span>Campo</span>
+                        <span style="color: #2e7d32;">Verde</span>
+                    </a>
+                </div>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1  ms-5 ">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Animal">Mis Animales</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Clima">Clima</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Inventario">Inventario</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Codigo">Codigo</a>
+                        </li>
+                        <li class="nav-item ">
+                            <a class="nav-link text-dark btn btn-success mi-boton" asp-area="" asp-controller="Home" asp-action="Privacy">Reportes</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+   
+
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
