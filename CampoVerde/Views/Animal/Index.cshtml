@@ -1,47 +1,150 @@
 @using CampoVerde.Models
 @model IEnumerable<CampoVerde.Models.Animal>
+  
 
 @{
-    ViewData["Title"] = "Animales";
+    ViewData["Title"] = "Control Vacuno";
 }
 
-<h2>Animales</h2>
-
-<p>
-    <a asp-action="Create" asp-controller="Animal" class="btn btn-success">Nuevo animal</a>
-</p>
-
-@if (!Model?.Any() ?? true)
-{
-    <p class="text-muted">No hay animales registrados.</p>
+@functions {
+    string GetEstadoBadge(EstadoAnimal estado) => estado switch
+    {
+        EstadoAnimal.ACTIVO => "bg-success text-white",
+        EstadoAnimal.ENFERMO => "bg-danger text-white",
+        EstadoAnimal.OBSERVACION => "bg-warning text-dark",
+        _ => "bg-secondary text-white"
+    };
 }
-else
-{
-    <table class="table table-striped">
+
+<style>
+    body {
+        background-color: #eaf2e9;
+    }
+
+    .header-section {
+        margin-bottom: 2.5rem;
+    }
+
+    .table-container {
+        background: #fdfdf5;
+        border: 1px solid #d4e0d4;
+        border-radius: 25px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.05);
+    }
+
+    .table thead th {
+        color: #3d663d;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        border-bottom: 2px solid #d4e0d4;
+    }
+
+    .table tbody tr {
+        transition: 0.3s;
+        border-bottom: 1px solid #eef2ed;
+    }
+
+        .table tbody tr:hover {
+            background: #f5f9f5;
+        }
+
+    .btn-campo {
+        background-color: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: 600;
+        transition: 0.3s;
+    }
+
+        .btn-campo:hover {
+            background-color: #3d663d;
+            color: white;
+        }
+
+    .btn-action {
+        width: 38px;
+        height: 38px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="header-section d-flex justify-content-between align-items-center">
+        <div>
+            <h2 class="fw-bold" style="color: #1a3c1a;">Control de Ganado Vacuno</h2>
+            <p style="color: #3d663d;">Administración de inventario, lotes y pesaje</p>
+        </div>
+        <a asp-action="Create" class="btn btn-campo">
+            <i class="fa-solid fa-plus me-2"></i> Registrar Res
+        </a>
+    </div>
+
+    @if (!Model?.Any() ?? true)
+    {
+        <div class="text-center py-5" style="color: #3d663d;">
+            <i class="fa-solid fa-cow fs-1 mb-3"></i>
+            <p>No hay reses registradas en el sistema.</p>
+        </div>
+    }
+    else
+    {
+       <div class="table-container shadow-sm">
+    <table class="table align-middle">
         <thead>
             <tr>
-                <th>Código</th>
+                <th>--</th>
+                <th class="ps-3">Código</th>
                 <th>Nombre</th>
-                <th>Fecha nacimiento</th>
                 <th>Raza</th>
+                <th>Nacimiento</th>
+                <th>Lote</th>
+                <th>Peso</th>
                 <th>Estado</th>
-                <th></th>
+                <th class="text-end pe-3">Acciones</th>
             </tr>
         </thead>
         <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.codigo</td>
-                <td>@item.nombre</td>
-                <td>@(item.fechaNacimiento.HasValue ? item.fechaNacimiento.Value.ToString("yyyy-MM-dd") : "-")</td>
-                <td>@item.raza</td>
-                <td>@item.Estado</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.idAnimal" class="btn btn-sm btn-primary">Detalles</a>
-                </td>
-            </tr>
-        }
+            @foreach (var item in Model)
+            {
+                <tr>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.imagen))
+                                {
+                                    <img src="@item.imagen"
+                                         alt="@item.nombre"
+                                         style="width: 45px; height: 45px; object-fit: cover; border-radius: 10px;" />
+                                }
+                            </td>
+                    <td class="ps-3">
+                        <strong style="color: #1a3c1a;">@item.codigo</strong>
+                    </td>
+                    <td style="color: #2d4d2d;">@item.nombre</td>
+                    <td style="color: #2d4d2d;">@item.raza</td>
+                    <td style="color: #2d4d2d;">@(item.fechaNacimiento?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                    <td><span class="badge rounded-pill" style="background: #eaf2e9; color: #1a3c1a; border: 1px solid #d4e0d4;">@item.lote</span></td>
+                    <td><strong style="color: #1a3c1a;">@item.pesoActual.ToString("F1") kg</strong></td>
+                    <td>
+                        <span class="badge rounded-pill @GetEstadoBadge(item.Estado)">
+                            @item.Estado.ToString()
+                        </span>
+                    </td>
+                    <td class="text-end pe-3">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a asp-action="Details" asp-route-id="@item.idAnimal" class="btn btn-outline-success btn-action" title="Ver"><i class="fa-solid fa-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@item.idAnimal" class="btn btn-outline-primary btn-action" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.idAnimal" class="btn btn-outline-danger btn-action" title="Eliminar"><i class="fa-solid fa-trash"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            }
         </tbody>
     </table>
-}
+</div>
+    }
+</div>

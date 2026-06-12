@@ -1,13 +1,44 @@
+using CampoVerde.Data;
 using CampoVerde.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace CampoVerde.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            return View();
+        }
+
+        // Dashboard funcional con corrección de fechas
+        public async Task<IActionResult> Dashboard()
+        {
+            // Obtenemos la fecha actual en formato UTC para evitar conflictos de zona horaria con PostgreSQL
+            var hoy = DateTime.UtcNow;
+
+            ViewBag.TotalAnimales = await _context.Animales.CountAsync();
+
+            ViewBag.TareasPendientes = await _context.Tareas
+                .CountAsync();
+
+            
+            ViewBag.VacunasVencidas = await _context.Vacunas
+                .CountAsync(v => v.fechaProximaAplicacion < hoy);
+
+            ViewBag.IngresosMes = await _context.Ingresos
+                .Where(i => i.Fecha.Month == hoy.Month && i.Fecha.Year == hoy.Year)
+                .SumAsync(i => (decimal?)i.Monto) ?? 0; // Manejo de nulos por si no hay ingresos
+
             return View();
         }
 

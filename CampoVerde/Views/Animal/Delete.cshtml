@@ -1,0 +1,95 @@
+﻿@model CampoVerde.Models.Animal
+
+@{
+    ViewData["Title"] = "Eliminar Registro";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+    }
+
+    .card-delete {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 40px;
+        border-left: 8px solid #dc3545; 
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    }
+
+    .header-delete {
+        color: #8b1c1c;
+        font-weight: 700;
+    }
+
+    dt {
+        color: #4a5d4a;
+        margin-bottom: 5px;
+    }
+
+    dd {
+        color: #2d3a2d;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+
+    .btn-danger-custom {
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        border: none;
+        transition: all 0.3s;
+    }
+
+        .btn-danger-custom:hover {
+            background-color: #b02a37;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="mb-4 text-center">
+                <h2 class="header-delete fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> Confirmar Eliminación</h2>
+                <p class="text-secondary">¿Está seguro de que desea eliminar este registro? Esta acción no se puede deshacer.</p>
+            </div>
+
+            <div class="card card-delete border-0 shadow-sm p-4">
+                <h5 class="mb-4 fw-bold" style="color: #1a3c1a;">Datos del ejemplar</h5>
+
+                <dl class="row">
+                    <dt class="col-sm-5">Código (Arete)</dt>
+                    <dd class="col-sm-7">@Model.codigo</dd>
+
+                    <dt class="col-sm-5">Nombre</dt>
+                    <dd class="col-sm-7">@Model.nombre</dd>
+
+                    <dt class="col-sm-5">Raza</dt>
+                    <dd class="col-sm-7">@Model.raza</dd>
+
+                    <dt class="col-sm-5">Lote / Potrero</dt>
+                    <dd class="col-sm-7">@Model.lote</dd>
+
+                    <dt class="col-sm-5">Estado</dt>
+                    <dd class="col-sm-7">
+                        <span class="badge rounded-pill bg-light border text-dark">@Model.Estado</span>
+                    </dd>
+                </dl>
+
+                <hr class="my-4" style="border-color: #c8d9c8;">
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="idAnimal" />
+                    <div class="d-flex justify-content-center gap-3">
+                        <button type="submit" class="btn btn-danger-custom">
+                            <i class="fa-solid fa-trash me-2"></i> Eliminar permanentemente
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

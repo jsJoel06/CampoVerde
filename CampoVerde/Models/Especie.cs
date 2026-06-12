@@ -2,11 +2,11 @@ namespace CampoVerde.Models
 {
     public enum Especie
     {
-        VACUNO,
-        OVINO,
-        PORCINO,
-        CAPRINO,
-        EQUINO,
-        AVE
+        Vaca,
+        Cerdo,
+        Caballo,
+        Oveja,
+        Cabra,
+        Ave
     }
 }

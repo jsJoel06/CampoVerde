@@ -1,0 +1,101 @@
+@model CampoVerde.Models.Vacuna
+
+@{
+    ViewData["Title"] = "Editar Registro";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 40px;
+        font-weight: bold;
+        border: none;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card-ganaderia">
+                <h2><i class="bi bi-pencil-square"></i> Editar Vacuna</h2>
+
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="idVacuna" />
+
+                    <div class="mb-3">
+                        <label asp-for="idAnimal" class="form-label">ID del Animal</label>
+                        <input asp-for="idAnimal" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="nombreVacuna" class="form-label">Nombre de la Vacuna</label>
+                        <input asp-for="nombreVacuna" class="form-control" />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="fechaAplicacion" class="form-label">Fecha de Aplicación</label>
+                            <input asp-for="fechaAplicacion" type="date" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="frecuenciaMeses" class="form-label">Frecuencia (Meses)</label>
+                            <input asp-for="frecuenciaMeses" type="number" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="observaciones" class="form-label">Observaciones</label>
+                        <textarea asp-for="observaciones" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary rounded-pill px-4">Volver</a>
+                        <button type="submit" class="btn btn-guardar">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

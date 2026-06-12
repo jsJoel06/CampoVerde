@@ -1,0 +1,121 @@
+@model IEnumerable<CampoVerde.Models.Vacuna>
+
+@{
+    ViewData["Title"] = "Control de Vacunas";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+    }
+
+    /* Contenedor principal estilo tarjeta */
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 30px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+    }
+
+    .table thead {
+        background-color: #2d5a27 !important;
+        color: white;
+    }
+
+    .badge-vencido {
+        background-color: #a94442;
+        color: white;
+    }
+
+    .badge-ok {
+        background-color: #4a7c44;
+        color: white;
+    }
+
+    /* Botón estilo campo */
+    .btn-campo-verde {
+        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+        color: white;
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: bold;
+        transition: all 0.3s;
+    }
+
+        .btn-campo-verde:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(61, 102, 61, 0.3);
+            color: white;
+        }
+</style>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-shield-check"></i> Control de Vacunas</h2>
+        <a asp-action="Create" class="btn btn-campo-verde">
+            <i class="bi bi-plus-lg"></i> Registrar Nueva
+        </a>
+    </div>
+
+    <div class="card-ganaderia">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="ps-4">Animal</th>
+                        <th>Vacuna</th>
+                        <th>Frecuencia</th>
+                        <th>Próxima Dosis</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var fechaHoy = DateTime.Today;
+                        // Validación de seguridad para evitar errores si la fecha es DateTime.MinValue
+                        var fechaProxima = item.fechaProximaAplicacion != DateTime.MinValue
+                                            ? item.fechaProximaAplicacion.ToShortDateString()
+                                            : "No programada";
+
+                        var estaVencida = item.fechaProximaAplicacion < fechaHoy && item.fechaProximaAplicacion != DateTime.MinValue;
+                        var claseFila = estaVencida ? "table-danger" : "";
+                        var colorBadge = estaVencida ? "badge-vencido" : "badge-ok";
+
+                        <tr class="@claseFila">
+                            <td class="ps-4">
+                                <span class="badge rounded-pill bg-secondary">#@item.idAnimal</span>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@item.nombreVacuna</div>
+                                <small class="text-muted">@item.observaciones</small>
+                            </td>
+                            <td><span class="text-secondary">@item.frecuenciaMeses meses</span></td>
+                            <td>
+                                <span class="badge @colorBadge rounded-pill px-3 py-2">
+                                    <i class="bi bi-calendar-event"></i> @fechaProxima
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a asp-action="Details" asp-route-id="@item.idVacuna" class="btn btn-outline-success btn-action" title="Ver"><i class="fa-solid fa-eye"></i></a>
+                                    <a asp-controller="Vacuna" asp-action="Edit" asp-route-id="@item.idVacuna" class="btn btn-sm btn-outline-warning rounded-start">
+                                        Editar
+                                    </a>
+                                    <a asp-controller="Vacuna" asp-action="Delete" asp-route-id="@item.idVacuna" class="btn btn-sm btn-outline-danger rounded-end">Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

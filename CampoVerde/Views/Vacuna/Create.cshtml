@@ -1,0 +1,129 @@
+@model CampoVerde.Models.Vacuna
+
+@{
+    ViewData["Title"] = "Registrar Vacuna";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px 18px;
+        color: #2d3a2d;
+    }
+
+        .form-control:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
+        }
+
+    .btn-crear {
+        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        font-weight: bold;
+        border: none;
+        transition: all 0.4s ease;
+    }
+
+        .btn-crear:hover {
+            background: #2d4d2d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(61, 102, 61, 0.3);
+            color: #ffffff;
+        }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        border: none;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card-ganaderia">
+                <h2><i class="bi bi-shield-plus"></i> Registrar Nueva Vacuna</h2>
+
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="idAnimal" class="form-label">ID del Animal</label>
+                        <input asp-for="idAnimal" class="form-control" placeholder="Ingrese el ID del animal" />
+                        <span asp-validation-for="idAnimal" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="nombreVacuna" class="form-label">Nombre de la Vacuna</label>
+                        <input asp-for="nombreVacuna" class="form-control" placeholder="Ej: Aftosa" />
+                        <span asp-validation-for="nombreVacuna" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <!-- En tu Create.cshtml -->
+                        <div class="mb-3">
+                            <label asp-for="fechaAplicacion" class="form-label fw-bold">Fecha de Aplicación</label>
+                            <!-- Es vital el type="date" para que el navegador envíe el formato correcto -->
+                            <input asp-for="fechaAplicacion" type="date" class="form-control" />
+                            <span asp-validation-for="fechaAplicacion" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="frecuenciaMeses" class="form-label">Frecuencia (Meses)</label>
+                            <input asp-for="frecuenciaMeses" type="number" class="form-control" placeholder="Ej: 6" />
+                            <span asp-validation-for="frecuenciaMeses" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label asp-for="observaciones" class="form-label">Observaciones</label>
+                        <textarea asp-for="observaciones" class="form-control" rows="3" placeholder="Notas sobre el estado del animal..."></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <a asp-action="Index" class="btn btn-cancelar">Volver al listado</a>
+                        <button type="submit" class="btn btn-crear">
+                            <i class="bi bi-check2-circle"></i> Guardar Vacuna
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

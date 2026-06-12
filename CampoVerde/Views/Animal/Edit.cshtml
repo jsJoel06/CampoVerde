@@ -1,0 +1,76 @@
+﻿@model CampoVerde.Models.Animal
+
+@{
+    ViewData["Title"] = "Editar Animal";
+}
+
+<div class="container py-5">
+    <div class="header-section mb-4">
+        <h2 class="fw-bold" style="color: #1a3c1a;">Editar información</h2>
+        <p class="text-muted">Modifique los datos del ejemplar @Model.codigo</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="idAnimal" />
+                    <input type="hidden" asp-for="imagen" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Nombre / Identificador</label>
+                            <input asp-for="nombre" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Código (Arete)</label>
+                            <input asp-for="codigo" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Raza</label>
+                            <input asp-for="raza" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Estado Actual</label>
+                            <select asp-for="Estado" class="form-select">
+                                @foreach (var e in Enum.GetValues(typeof(EstadoAnimal)))
+                                {
+                                    <option value="@e">@e</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Lote / Potrero</label>
+                            <input asp-for="lote" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Peso Actual (kg)</label>
+                            <input asp-for="pesoActual" type="number" step="0.1" class="form-control" />
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Fecha de Nacimiento</label>
+                            <input asp-for="fechaNacimiento" type="date" class="form-control" />
+                        </div>
+
+                        <div class="col-12 mt-3">
+                            <label class="form-label fw-semibold">Cambiar Fotografía</label>
+                            <input type="file" name="imagenArchivo" class="form-control" accept="image/*" />
+                            @if (!string.IsNullOrEmpty(Model.imagen))
+                            {
+                                <div class="mt-2">
+                                    <small class="text-muted">Imagen actual:</small><br />
+                                    <img src="@Model.imagen" style="width: 80px; border-radius: 10px;" />
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-dark px-4" style="background-color: #1a3c1a;">Guardar cambios</button>
+                        <a asp-action="Index" class="btn btn-light border px-4">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

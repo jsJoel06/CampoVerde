@@ -4,26 +4,59 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - CampoVerde</title>
-    <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CampoVerde.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+            body {
+                background-color: #f8f9fa;
+                font-family: 'Segoe UI', sans-serif;
+            }
+
+            .navbar {
+                background: #fff;
+                border-bottom: 2px solid #e9ecef;
+            }
+
+            .nav-link {
+                color: #495057 !important;
+                font-weight: 500;
+                padding: 0.5rem 1rem !important;
+            }
+
+                .nav-link:hover {
+                    color: #2e7d32 !important;
+                }
+
+            .brand-text {
+                font-size: 20px;
+                font-weight: bold;
+                line-height: 1;
+            }
+
+                .brand-text span {
+                    color: #2e7d32;
+                }
+
+            .dropdown-menu {
+                border-radius: 15px;
+                border: none;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+            .dropdown-item:hover {
+                background-color: #f1f8e9;
+                color: #2e7d32;
+            }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm navbar-light mb-4">
             <div class="container-fluid">
-
                 <div class="d-flex align-items-center ms-3">
-
-                    <img src="~/img/vaca.jpg" alt="Logo" class="me-3" style="width: 55px; height: 55px;">
-
-                    <a class="navbar-brand text-success d-flex flex-column align-items-center lh-1"
-                       asp-area="" asp-controller="Home" asp-action="Index"
-                       style="text-decoration: none; font-size: 25px; font-weight: bold;">
-                        <span>Campo</span>
-                        <span style="color: #2e7d32;">Verde</span>
+                    <img src="~/img/vaca.jpg" alt="Logo" class="me-3" style="width: 45px; height: 45px;">
+                    <a class="navbar-brand text-dark d-flex flex-column" asp-controller="Home" asp-action="Index" style="text-decoration: none;">
+                        <div class="brand-text">Campo<span>Verde</span></div>
                     </a>
                 </div>
 
@@ -31,25 +64,39 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1  ms-5 ">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Home" asp-action="Index">Inicio</a>
+                <div class="navbar-collapse collapse">
+                    <ul class="navbar-nav ms-5">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Animal" asp-action="Index">Mis Animales</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Vacuna" asp-action="Index">Vacunas</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Animal" asp-action="Inventario">Inventario</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Privacy">Reportes</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
+                    </ul>
+
+                    <!-- Sección Derecha: Notificaciones y Perfil -->
+                    <ul class="navbar-nav ms-auto align-items-center">
+                        <li class="nav-item dropdown me-3">
+                            <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-bell"></i>
+                                <!-- El número debe ser inyectado por tu lógica de backend -->
+                                <span class="badge bg-danger rounded-pill" style="font-size: 0.6rem; vertical-align: top;">!</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><h6 class="dropdown-header">Notificaciones</h6></li>
+                                <li><a class="dropdown-item" asp-controller="Vacuna" asp-action="ProximasVacunas">Ver alertas de vacunas</a></li>
+                            </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Animal">Mis Animales</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Clima">Clima</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Inventario">Inventario</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark me-4 btn btn-success mi-boton" asp-area="" asp-controller="Codigo">Codigo</a>
-                        </li>
-                        <li class="nav-item ">
-                            <a class="nav-link text-dark btn btn-success mi-boton" asp-area="" asp-controller="Home" asp-action="Privacy">Reportes</a>
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="fa-solid fa-user-circle fa-lg"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#"><i class="fa-solid fa-user me-2"></i> Mi Perfil</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#"><i class="fa-solid fa-right-from-bracket me-2"></i> Salir</a></li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
@@ -57,18 +104,14 @@
         </nav>
     </header>
 
-   
-
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

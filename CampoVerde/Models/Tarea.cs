@@ -39,5 +39,7 @@ namespace CampoVerde.Models
         // Relación de navegación (Opcional, pero muy útil para EF Core)
         [ForeignKey("IdAnimal")]
         public virtual Animal Animal { get; set; }
+
+        public EstadoTarea estado { get; set; } = EstadoTarea.Pendiente;
     }
 }

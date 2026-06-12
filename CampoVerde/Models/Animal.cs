@@ -14,9 +14,10 @@ namespace CampoVerde.Models
         public string raza { get; set; }
 
 
-        public Especie especie { get; set; } = Especie.VACUNO;
+        public double pesoActual { get; set; }
+        public string lote { get; set; }
 
-        
+
         public string? imagen { get; set; }
 
         public EstadoAnimal Estado { get; set; } = EstadoAnimal.ACTIVO;

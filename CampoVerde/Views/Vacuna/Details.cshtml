@@ -1,0 +1,46 @@
+@model CampoVerde.Models.Vacuna
+
+@{
+    ViewData["Title"] = "Detalles - Campo Verde";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-success shadow">
+                <!-- Encabezado con estilo verde institucional -->
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="bi bi-shield-check"></i> Ficha de Vacunación</h4>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4 text-secondary">Nombre de la Vacuna</dt>
+                        <dd class="col-sm-8 fw-bold text-dark">@Html.DisplayFor(model => model.nombreVacuna)</dd>
+
+                        <dt class="col-sm-4 text-secondary">ID Animal</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.idAnimal)</dd>
+
+                        <dt class="col-sm-4 text-secondary">Frecuencia</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.frecuenciaMeses) meses</dd>
+
+                        <dt class="col-sm-4 text-secondary">Observaciones</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.observaciones)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer d-flex justify-content-between bg-white">
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i> Regresar
+                    </a>
+                    <div>
+                        <a asp-action="Edit" asp-route-id="@Model?.idVacuna" class="btn btn-success">
+                            <i class="bi bi-pencil-square"></i> Editar
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Model?.idVacuna" class="btn btn-outline-danger ms-2">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

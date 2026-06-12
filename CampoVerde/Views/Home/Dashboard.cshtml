@@ -1,0 +1,238 @@
+﻿@{
+    ViewData["Title"] = "Dashboard - Campo Verde";
+}
+
+<link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+    body {
+        background: #f4f7fc;
+    }
+
+    .dashboard-title {
+        font-weight: 800;
+        color: #1b4332;
+    }
+
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        position: relative;
+        transition: .3s;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon {
+            font-size: 3rem;
+            opacity: .15;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+
+    .gradient-green {
+        background: linear-gradient(135deg,#2d6a4f,#40916c);
+        color: white;
+    }
+
+    .gradient-blue {
+        background: linear-gradient(135deg,#4361ee,#4895ef);
+        color: white;
+    }
+
+    .gradient-red {
+        background: linear-gradient(135deg,#d90429,#ef233c);
+        color: white;
+    }
+
+    .gradient-yellow {
+        background: linear-gradient(135deg,#ffb703,#ffd60a);
+        color: #222;
+    }
+
+    .chart-card {
+        border-radius: 25px;
+        border: none;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    }
+</style>
+
+<div class="container-fluid py-4">
+
+    <h2 class="dashboard-title mb-4">
+        <i class="fas fa-chart-line me-2"></i>
+        Panel Estratégico Campo Verde
+    </h2>
+
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="card stat-card gradient-green p-4">
+                <i class="fas fa-cow icon"></i>
+                <h6>Total Animales</h6>
+                <h2 class="fw-bold">@ViewBag.TotalAnimales</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card gradient-blue p-4">
+                <i class="fas fa-list-check icon"></i>
+                <h6>Tareas Pendientes</h6>
+                <h2 class="fw-bold">@ViewBag.TareasPendientes</h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card gradient-yellow p-4">
+                <i class="fas fa-dollar-sign icon"></i>
+                <h6>Ingresos del Mes</h6>
+                <h2 class="fw-bold">
+                    $@ViewBag.IngresosMes.ToString("N0")
+                </h2>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card stat-card gradient-red p-4">
+                <i class="fas fa-syringe icon"></i>
+                <h6>Vacunas Vencidas</h6>
+                <h2 class="fw-bold">@ViewBag.VacunasVencidas</h2>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-5">
+
+        <div class="col-lg-8">
+            <div class="card chart-card p-4">
+                <h5 class="mb-3">Resumen General</h5>
+                <canvas id="dashboardChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card chart-card p-4">
+                <h5 class="mb-3">Distribución</h5>
+                <canvas id="pieChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+
+        const valores = [
+        @ViewBag.TotalAnimales,
+        @ViewBag.TareasPendientes,
+        @ViewBag.VacunasVencidas,
+        @ViewBag.IngresosMes
+        ];
+
+        // Gráfico principal premium
+        new Chart(document.getElementById('dashboardChart'), {
+
+        data: {
+
+        labels: [
+        'Animales',
+        'Tareas',
+        'Vacunas',
+        'Ingresos'
+        ],
+
+        datasets: [
+        {
+        type: 'bar',
+        label: 'Indicadores',
+        data: valores,
+        borderRadius: 12,
+        backgroundColor: [
+        '#40916c',
+        '#4895ef',
+        '#ef233c',
+        '#ffb703'
+        ]
+        },
+        {
+        type: 'line',
+        label: 'Tendencia',
+        data: valores,
+        borderColor: '#1b4332',
+        backgroundColor: '#1b4332',
+        tension: 0.4,
+        fill: false
+        }]
+        },
+
+        options: {
+
+        responsive: true,
+
+        plugins: {
+        legend: {
+        position: 'top'
+        }
+        },
+
+        scales: {
+        y: {
+        beginAtZero: true,
+        grid: {
+        color: '#e9ecef'
+        }
+        }
+        }
+        }
+        });
+
+        // Doughnut moderno
+        new Chart(document.getElementById('pieChart'), {
+
+        type: 'doughnut',
+
+        data: {
+        labels: [
+        'Animales',
+        'Tareas',
+        'Vacunas',
+        'Ingresos'
+        ],
+
+        datasets: [{
+        data: valores,
+        backgroundColor: [
+        '#40916c',
+        '#4895ef',
+        '#ef233c',
+        '#ffb703'
+        ],
+        borderWidth: 0
+        }]
+        },
+
+        options: {
+        cutout: '70%',
+        plugins: {
+        legend: {
+        position: 'bottom'
+        }
+        }
+        }
+        });
+
+    </script>
+
+}
