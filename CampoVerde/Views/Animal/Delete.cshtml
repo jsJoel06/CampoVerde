@@ -4,6 +4,47 @@
     ViewData["Title"] = "Eliminar Registro";
 }
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<div class="container py-5">
+    <div class="mb-4">
+        <h2 class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> Confirmar Eliminación</h2>
+        <p class="text-muted">¿Está seguro de que desea eliminar este registro? Esta acción no se puede deshacer.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h5 class="mb-4 fw-bold">Detalles del ejemplar</h5>
+
+                <dl class="row">
+                    <dt class="col-sm-4 text-muted">Código (Arete)</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.codigo</dd>
+
+                    <dt class="col-sm-4 text-muted">Nombre</dt>
+                    <dd class="col-sm-8">@Model.nombre</dd>
+
+                    <dt class="col-sm-4 text-muted">Raza</dt>
+                    <dd class="col-sm-8">@Model.raza</dd>
+
+                    <dt class="col-sm-4 text-muted">Estado</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-light text-dark border">@Model.Estado</span>
+                    </dd>
+                </dl>
+
+                <hr class="my-4">
+
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="idAnimal" />
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-danger px-4">
+                            <i class="fa-solid fa-trash me-2"></i> Eliminar definitivamente
+                        </button>
+                        <a asp-action="Index" class="btn btn-light border px-4">Cancelar</a>
+=======
+>>>>>>> rama-recuperada
 <style>
     body {
         background-color: #eaf2e9;
@@ -87,6 +128,10 @@
                             <i class="fa-solid fa-trash me-2"></i> Eliminar permanentemente
                         </button>
                         <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">Cancelar</a>
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                     </div>
                 </form>
             </div>

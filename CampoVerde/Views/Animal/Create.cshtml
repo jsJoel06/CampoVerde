@@ -5,29 +5,65 @@
 }
 
 <style>
+<<<<<<< HEAD
     
     body {
         background-color: #eaf2e9;
+=======
+<<<<<<< HEAD
+    body {
+        background-color: #d8e1d5;
+=======
+    
+    body {
+        background-color: #eaf2e9;
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
         font-family: 'Segoe UI', sans-serif;
     }
 
     .card-ganaderia {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        background-color: #f8f7f2;
+        border-radius: 25px;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        padding: 45px;
+        border: none;
+=======
+>>>>>>> rama-recuperada
         
         background-color: #fdfdf5;
         border-radius: 30px;
         box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
         padding: 45px;
         border: 1px solid #d4e0d4;
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     }
 
     h2 {
         font-family: 'Georgia', serif;
+<<<<<<< HEAD
         color: #1a3c1a; 
         font-weight: 700;
+=======
+<<<<<<< HEAD
+        color: #2d412d;
+        font-weight: 600;
+=======
+        color: #1a3c1a; 
+        font-weight: 700;
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
         margin-bottom: 35px;
     }
 
     .form-label {
+<<<<<<< HEAD
         color: #3d663d;
         font-weight: 600;
     }
@@ -40,6 +76,80 @@
         color: #2d3a2d;
     }
 
+        .form-control:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
+        }
+
+    /* Botón principal verde pradera */
+    .btn-crear {
+        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+=======
+<<<<<<< HEAD
+        color: #4a5d4a;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .form-control, .form-select {
+        background-color: #f0f4ef !important;
+        border: none;
+        border-radius: 12px;
+=======
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+>>>>>>> actualizado
+        padding: 12px 18px;
+        color: #2d3a2d;
+    }
+
+<<<<<<< HEAD
+    .btn-crear {
+        background: linear-gradient(135deg, #4a7c4a, #346334);
+>>>>>>> rama-recuperada
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        font-weight: bold;
+        border: none;
+<<<<<<< HEAD
+        transition: all 0.4s ease;
+    }
+
+        .btn-crear:hover {
+            background: #2d4d2d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(61, 102, 61, 0.3);
+            color: #ffffff;
+        }
+
+=======
+        transition: all 0.3s ease;
+    }
+
+        .btn-crear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            color: white;
+        }
+
+    .btn-cancelar {
+        background-color: #e2e8e2;
+        color: #4a5d4a;
+        border-radius: 50px;
+        padding: 12px 35px;
+        border: none;
+        transition: background-color 0.3s;
+    }
+</style>
+
+=======
         .form-control:focus {
             border-color: #4a7c4a;
             box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
@@ -63,6 +173,7 @@
             color: #ffffff;
         }
 
+>>>>>>> rama-recuperada
     /* Botón cancelar  */
     .btn-cancelar {
         background-color: #d1e0d1;
@@ -73,13 +184,25 @@
     }
 </style>
 
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-9 col-lg-8">
             <div class="card card-ganaderia">
                 <h2>Registrar nuevo ejemplar</h2>
 
+<<<<<<< HEAD
                 <form asp-action="Create" method="post" enctype="multipart/form-data">
+=======
+<<<<<<< HEAD
+                <form asp-action="Create" method="post">
+=======
+                <form asp-action="Create" method="post" enctype="multipart/form-data">
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                     @Html.AntiForgeryToken()
 
                     <div class="row">
@@ -104,7 +227,15 @@
                         <div class="col-md-6 mb-4">
                             <label asp-for="Estado" class="form-label">Estado Actual</label>
                             <select asp-for="Estado" class="form-select">
+<<<<<<< HEAD
                                 <option value="" disabled selected>Seleccione el estado...</option>
+=======
+<<<<<<< HEAD
+                                <option value="" disabled selected>Seleccione...</option>
+=======
+                                <option value="" disabled selected>Seleccione el estado...</option>
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                                 @foreach (var e in Enum.GetValues(typeof(EstadoAnimal)))
                                 {
                                     <option value="@e">@e</option>
@@ -114,6 +245,13 @@
                         </div>
                     </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+                    <!-- NUEVOS CAMPOS AGREGADOS AQUÍ -->
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                     <div class="row">
                         <div class="col-md-6 mb-4">
                             <label asp-for="lote" class="form-label">Lote / Potrero</label>
@@ -135,6 +273,11 @@
                         </div>
                     </div>
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> rama-recuperada
                     <div class="row">
                         <div class="col-md-12 mb-4">
                             <label class="form-label">Fotografía del Animal</label>
@@ -147,6 +290,10 @@
                         <button type="submit" class="btn btn-crear">Guardar Registro</button>
                     </div>
 
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                     <div class="d-flex justify-content-between align-items-center mt-4">
                         <a asp-action="Index" class="btn btn-cancelar">Cancelar</a>
                         <button type="submit" class="btn btn-crear">Guardar Registro</button>

@@ -33,16 +33,32 @@ namespace CampoVerde.Controllers
         // POST: Animal/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+<<<<<<< HEAD
         public async Task<IActionResult> Create(Animal animal, IFormFile? imagenArchivo)
         {
             if (ModelState.IsValid)
             {
+=======
+<<<<<<< HEAD
+        public async Task<IActionResult> Create(Animal animal)
+        {
+            if (ModelState.IsValid)
+            {
+                if (animal.fechaNacimiento.HasValue)
+                    animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
+=======
+        public async Task<IActionResult> Create(Animal animal, IFormFile? imagenArchivo)
+        {
+            if (ModelState.IsValid)
+            {
+>>>>>>> rama-recuperada
                 // 1. Manejo de la imagen
                 if (imagenArchivo != null && imagenArchivo.Length > 0)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
                     // Asegúrate de que esta carpeta exista en wwwroot
                     string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
+<<<<<<< HEAD
 
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
@@ -51,6 +67,17 @@ namespace CampoVerde.Controllers
                     animal.imagen = "/images/ganado/" + fileName;
                 }
 
+=======
+
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await imagenArchivo.CopyToAsync(stream);
+                    }
+                    animal.imagen = "/images/ganado/" + fileName;
+                }
+>>>>>>> actualizado
+
+>>>>>>> rama-recuperada
                 // 2. Configuración de fecha
                 if (animal.fechaNacimiento.HasValue)
                     animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
@@ -71,9 +98,22 @@ namespace CampoVerde.Controllers
             return View(animal);
         }
 
+<<<<<<< HEAD
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
+=======
+<<<<<<< HEAD
+        // POST: Animal/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Animal animal)
+=======
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
         {
             if (id != animal.idAnimal) return NotFound();
 
@@ -81,6 +121,11 @@ namespace CampoVerde.Controllers
             {
                 try
                 {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> rama-recuperada
                     // 1. Obtener el registro actual para no perder la imagen si no se sube una nueva
                     var animalExistente = await _context.Animales.AsNoTracking().FirstOrDefaultAsync(a => a.idAnimal == id);
 
@@ -105,6 +150,10 @@ namespace CampoVerde.Controllers
                         }
                     }
 
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                     if (animal.fechaNacimiento.HasValue)
                         animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
 
@@ -121,7 +170,14 @@ namespace CampoVerde.Controllers
             return View(animal);
         }
 
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+=======
+
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
         // GET: Animal/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
@@ -166,8 +222,17 @@ namespace CampoVerde.Controllers
 
             return View(animal);
         }
+<<<<<<< HEAD
 
 
       
+=======
+<<<<<<< HEAD
+=======
+
+
+      
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     }
 }

@@ -5,6 +5,29 @@
 }
 
 <style>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    .card-detail {
+        background-color: #f8f7f2;
+        border-radius: 25px;
+        padding: 40px;
+        border: none;
+    }
+
+    .header-detail {
+        color: #2d412d;
+        font-family: 'Georgia', serif;
+    }
+
+    .label-detail {
+        color: #64748b;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+=======
+>>>>>>> rama-recuperada
     body {
         background-color: #eaf2e9;
     }
@@ -29,20 +52,45 @@
         text-transform: uppercase;
         letter-spacing: 0.15em;
         font-weight: 800;
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
         margin-bottom: 5px;
     }
 
     .value-detail {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        color: #2d3a2d;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+=======
+>>>>>>> rama-recuperada
         color: #2d4d2d;
         font-size: 1.2rem;
         font-weight: 600;
         margin-bottom: 20px;
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     }
 
     .qr-box {
         background: white;
         padding: 15px;
         border-radius: 20px;
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        border: 2px dashed #d1d5db;
+        display: inline-block;
+    }
+=======
+>>>>>>> rama-recuperada
         border: 2px dashed #a3bfa3;
         display: inline-block;
     }
@@ -74,10 +122,64 @@
         border-radius: 20px;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
 </style>
 
 <div class="container py-5">
     <div class="row justify-content-center">
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        <div class="col-md-8">
+            <div class="card card-detail shadow-sm">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div>
+                        <h2 class="header-detail m-0">Detalles de @Model.nombre</h2>
+                        <span class="text-muted">Registro: @Model.codigo</span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success p-2 px-3 rounded-pill">@Model.Estado</span>
+                </div>
+
+                <div class="row">
+                    <!-- Datos principales -->
+                    <div class="col-md-7">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="label-detail">Raza</div>
+                                <div class="value-detail">@Model.raza</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="label-detail">Lote / Potrero</div>
+                                <div class="value-detail">@Model.lote</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="label-detail">Peso Actual</div>
+                                <div class="value-detail">@Model.pesoActual.ToString("F1") kg</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="label-detail">Fecha de Nacimiento</div>
+                                <div class="value-detail">@(Model.fechaNacimiento?.ToString("dd/MM/yyyy") ?? "No registrada")</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección del QR -->
+                    <div class="col-md-5 text-center d-flex flex-column align-items-center justify-content-center">
+                        <div class="qr-box">
+                            <img src="@ViewBag.QrCodeUri" alt="QR del Animal" style="width: 140px; height: 140px;" />
+                        </div>
+                        <p class="small text-muted mt-3">Escanea para acceder a<br>la ficha técnica digital</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 d-flex gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.idAnimal" class="btn btn-dark px-4 rounded-pill">Editar datos</a>
+                    <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-pill">Volver al listado</a>
+=======
+>>>>>>> rama-recuperada
         <div class="col-md-10">
             <div class="card card-detail">
                 <div class="d-flex justify-content-between align-items-start mb-4">
@@ -138,6 +240,10 @@
                 <div class="mt-4 d-flex gap-2">
                     <a asp-action="Edit" asp-route-id="@Model.idAnimal" class="btn btn-custom-dark">Editar datos</a>
                     <a asp-action="Index" class="btn btn-outline-success rounded-pill px-4">Volver al listado</a>
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
                 </div>
             </div>
         </div>

@@ -9,23 +9,101 @@
 @functions {
     string GetEstadoBadge(EstadoAnimal estado) => estado switch
     {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        EstadoAnimal.ACTIVO => "bg-success-subtle text-success border-success-subtle",
+        EstadoAnimal.ENFERMO => "bg-danger-subtle text-danger border-danger-subtle",
+        EstadoAnimal.OBSERVACION => "bg-warning-subtle text-warning border-warning-subtle",
+        _ => "bg-secondary-subtle text-secondary border-secondary-subtle"
+=======
+>>>>>>> rama-recuperada
         EstadoAnimal.ACTIVO => "bg-success text-white",
         EstadoAnimal.ENFERMO => "bg-danger text-white",
         EstadoAnimal.OBSERVACION => "bg-warning text-dark",
         _ => "bg-secondary text-white"
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     };
 }
 
 <style>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+=======
+>>>>>>> rama-recuperada
     body {
         background-color: #eaf2e9;
     }
 
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     .header-section {
         margin-bottom: 2.5rem;
     }
 
     .table-container {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        background: #ffffff;
+        border: 1px solid #eef0f2;
+        border-radius: 16px;
+        padding: 1.5rem;
+    }
+
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 0.5rem;
+    }
+
+        .table thead th {
+            border: none;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .table tbody tr {
+            background: #fcfcfd;
+            border-radius: 12px;
+            transition: 0.2s;
+        }
+
+            .table tbody tr:hover {
+                background: #f8fafc;
+            }
+
+    .btn-dark {
+        background-color: #1e293b;
+        border-radius: 10px;
+        padding: 10px 22px;
+        font-weight: 500;
+    }
+
+    .badge {
+        font-weight: 600;
+        padding: 0.5em 0.8em;
+        border: 1px solid;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        transition: 0.2s;
+=======
+>>>>>>> rama-recuperada
         background: #fdfdf5;
         border: 1px solid #d4e0d4;
         border-radius: 25px;
@@ -71,29 +149,105 @@
         align-items: center;
         justify-content: center;
         border-radius: 12px;
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     }
 </style>
 
 <div class="container py-5">
     <div class="header-section d-flex justify-content-between align-items-center">
         <div>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+            <h2 class="fw-bold text-dark m-0">Control de Ganado Vacuno</h2>
+            <p class="text-muted">Administración de inventario, lotes y pesaje</p>
+        </div>
+        <a asp-action="Create" asp-controller="Animal" class="btn btn-dark">
+=======
+>>>>>>> rama-recuperada
             <h2 class="fw-bold" style="color: #1a3c1a;">Control de Ganado Vacuno</h2>
             <p style="color: #3d663d;">Administración de inventario, lotes y pesaje</p>
         </div>
         <a asp-action="Create" class="btn btn-campo">
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
             <i class="fa-solid fa-plus me-2"></i> Registrar Res
         </a>
     </div>
 
     @if (!Model?.Any() ?? true)
     {
+<<<<<<< HEAD
         <div class="text-center py-5" style="color: #3d663d;">
             <i class="fa-solid fa-cow fs-1 mb-3"></i>
+=======
+<<<<<<< HEAD
+        <div class="text-center py-5 text-muted">
+            <i class="fa-solid fa-cow fs-2 mb-3"></i>
+=======
+        <div class="text-center py-5" style="color: #3d663d;">
+            <i class="fa-solid fa-cow fs-1 mb-3"></i>
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
             <p>No hay reses registradas en el sistema.</p>
         </div>
     }
     else
     {
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        <div class="table-container shadow-sm">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th class="ps-3">Código</th>
+                        <th>Nombre</th>
+                        <th>Lote</th>
+                        <th>Peso (kg)</th>
+                        <th>Estado</th>
+                        <th class="text-end pe-3">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="ps-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3" style="width: 42px; height: 42px; background: #e2e8f0; border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fa-solid fa-cow text-secondary"></i>
+                                    </div>
+                                    <strong class="text-dark">@item.codigo</strong>
+                                </div>
+                            </td>
+                            <td>@item.nombre</td>
+                            <td><span class="badge bg-light text-secondary border">@item.lote</span></td>
+                            <td><strong class="text-dark">@item.pesoActual.ToString("F1") kg</strong></td>
+                            <td>
+                                <span class="badge rounded-pill @GetEstadoBadge(item.Estado)">
+                                    @item.Estado.ToString()
+                                </span>
+                            </td>
+                            <td class="text-end pe-3">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a asp-action="Details" asp-route-id="@item.idAnimal" class="btn btn-light btn-action" title="Ver"><i class="fa-solid fa-eye"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@item.idAnimal" class="btn btn-outline-primary btn-action" title="Editar"><i class="fa-solid fa-pen"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.idAnimal" class="btn btn-outline-danger btn-action" title="Eliminar"><i class="fa-solid fa-trash"></i></a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+=======
+>>>>>>> rama-recuperada
        <div class="table-container shadow-sm">
     <table class="table align-middle">
         <thead>
@@ -146,5 +300,9 @@
         </tbody>
     </table>
 </div>
+<<<<<<< HEAD
+=======
+>>>>>>> actualizado
+>>>>>>> rama-recuperada
     }
 </div>
