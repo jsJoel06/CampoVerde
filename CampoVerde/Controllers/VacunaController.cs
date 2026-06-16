@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // Necesario para Async, ToListAsync, etc.
+using Microsoft.EntityFrameworkCore; 
 using CampoVerde.Models;
 using CampoVerde.Data;
 

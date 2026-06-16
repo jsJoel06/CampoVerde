@@ -17,19 +17,12 @@
     </PackageReference>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="10.0.2" />
     <PackageReference Include="QRCoder" Version="1.8.0" />
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> rama-recuperada
+
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="wwwroot\images\ganado\" />
-<<<<<<< HEAD
-=======
->>>>>>> actualizado
->>>>>>> rama-recuperada
+
   </ItemGroup>
 
 </Project>

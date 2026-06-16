@@ -22,8 +22,6 @@ namespace CampoVerde.Controllers
             return View(animals);
         }
 
-       
-
         // GET: Animal/Create
         public IActionResult Create()
         {
@@ -33,32 +31,15 @@ namespace CampoVerde.Controllers
         // POST: Animal/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-<<<<<<< HEAD
         public async Task<IActionResult> Create(Animal animal, IFormFile? imagenArchivo)
         {
             if (ModelState.IsValid)
             {
-=======
-<<<<<<< HEAD
-        public async Task<IActionResult> Create(Animal animal)
-        {
-            if (ModelState.IsValid)
-            {
-                if (animal.fechaNacimiento.HasValue)
-                    animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
-=======
-        public async Task<IActionResult> Create(Animal animal, IFormFile? imagenArchivo)
-        {
-            if (ModelState.IsValid)
-            {
->>>>>>> rama-recuperada
                 // 1. Manejo de la imagen
                 if (imagenArchivo != null && imagenArchivo.Length > 0)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
-                    // Asegúrate de que esta carpeta exista en wwwroot
                     string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
-<<<<<<< HEAD
 
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
@@ -67,17 +48,6 @@ namespace CampoVerde.Controllers
                     animal.imagen = "/images/ganado/" + fileName;
                 }
 
-=======
-
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await imagenArchivo.CopyToAsync(stream);
-                    }
-                    animal.imagen = "/images/ganado/" + fileName;
-                }
->>>>>>> actualizado
-
->>>>>>> rama-recuperada
                 // 2. Configuración de fecha
                 if (animal.fechaNacimiento.HasValue)
                     animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
@@ -98,22 +68,10 @@ namespace CampoVerde.Controllers
             return View(animal);
         }
 
-<<<<<<< HEAD
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
-=======
-<<<<<<< HEAD
         // POST: Animal/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Animal animal)
-=======
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
->>>>>>> actualizado
->>>>>>> rama-recuperada
         {
             if (id != animal.idAnimal) return NotFound();
 
@@ -121,17 +79,11 @@ namespace CampoVerde.Controllers
             {
                 try
                 {
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
->>>>>>> rama-recuperada
-                    // 1. Obtener el registro actual para no perder la imagen si no se sube una nueva
+                    // 1. Obtener el registro actual para mantener la imagen si no se carga una nueva
                     var animalExistente = await _context.Animales.AsNoTracking().FirstOrDefaultAsync(a => a.idAnimal == id);
 
                     if (animalExistente != null)
                     {
-                        // 2. Si se sube una nueva imagen, guardarla
                         if (imagenArchivo != null && imagenArchivo.Length > 0)
                         {
                             string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
@@ -145,15 +97,10 @@ namespace CampoVerde.Controllers
                         }
                         else
                         {
-                            // Mantener la imagen anterior si no se sube una nueva
                             animal.imagen = animalExistente.imagen;
                         }
                     }
 
-<<<<<<< HEAD
-=======
->>>>>>> actualizado
->>>>>>> rama-recuperada
                     if (animal.fechaNacimiento.HasValue)
                         animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
 
@@ -170,14 +117,6 @@ namespace CampoVerde.Controllers
             return View(animal);
         }
 
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
-=======
-
->>>>>>> actualizado
->>>>>>> rama-recuperada
         // GET: Animal/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
@@ -200,7 +139,6 @@ namespace CampoVerde.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -209,7 +147,6 @@ namespace CampoVerde.Controllers
             if (animal == null) return NotFound();
 
             // Generar el código QR
-            // La URL debe apuntar a donde está el detalle de tu animal (ejemplo real)
             string urlDetalle = $"https://tu-sitio-ganadero.com/Animal/Details/{animal.idAnimal}";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
@@ -217,22 +154,9 @@ namespace CampoVerde.Controllers
             PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
             byte[] qrCodeImage = qrCode.GetGraphic(20);
 
-            // Pasamos el QR a la vista como una imagen base64
             ViewBag.QrCodeUri = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
 
             return View(animal);
         }
-<<<<<<< HEAD
-
-
-      
-=======
-<<<<<<< HEAD
-=======
-
-
-      
->>>>>>> actualizado
->>>>>>> rama-recuperada
     }
 }
