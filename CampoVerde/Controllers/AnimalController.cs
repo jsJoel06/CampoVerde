@@ -147,7 +147,7 @@ namespace CampoVerde.Controllers
             if (animal == null) return NotFound();
 
             // Generar el código QR
-            string urlDetalle = $"https://tu-sitio-ganadero.com/Animal/Details/{animal.IdAnimal}";
+            string urlDetalle = $"https://campoverde.onrender.com/Animal/Details/{animal.IdAnimal}";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(urlDetalle, QRCodeGenerator.ECCLevel.Q);
