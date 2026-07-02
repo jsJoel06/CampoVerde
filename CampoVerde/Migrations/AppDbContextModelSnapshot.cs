@@ -22,13 +22,49 @@ namespace CampoVerde.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CampoVerde.Models.Animal", b =>
+            modelBuilder.Entity("CampoVerde.Models.AlimentoBovino", b =>
                 {
-                    b.Property<int>("idAnimal")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idAnimal"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("CantidadDisponible")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("Categoria")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("CostoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("NivelAlerta")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int>("Unidad")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AlimentosBovinos");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Animal", b =>
+                {
+                    b.Property<int>("IdAnimal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdAnimal"));
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer");
@@ -58,7 +94,7 @@ namespace CampoVerde.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("idAnimal");
+                    b.HasKey("IdAnimal");
 
                     b.ToTable("Animales");
                 });
@@ -98,11 +134,11 @@ namespace CampoVerde.Migrations
 
             modelBuilder.Entity("CampoVerde.Models.Ingreso", b =>
                 {
-                    b.Property<int>("idIngreso")
+                    b.Property<int>("IdIngreso")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idIngreso"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdIngreso"));
 
                     b.Property<string>("Concepto")
                         .IsRequired()
@@ -111,6 +147,9 @@ namespace CampoVerde.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("IdAnimal")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("Monto")
                         .HasColumnType("numeric");
 
@@ -118,27 +157,27 @@ namespace CampoVerde.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("idAnimal")
-                        .HasColumnType("integer");
-
-                    b.HasKey("idIngreso");
+                    b.HasKey("IdIngreso");
 
                     b.ToTable("Ingresos");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Parto", b =>
                 {
-                    b.Property<int>("idParto")
+                    b.Property<int>("IdParto")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idParto"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdParto"));
 
                     b.Property<int>("EstadoCria")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("FechaParto")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IdAnimal")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Observaciones")
                         .IsRequired()
@@ -152,21 +191,42 @@ namespace CampoVerde.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("idAnimal")
-                        .HasColumnType("integer");
-
-                    b.HasKey("idParto");
+                    b.HasKey("IdParto");
 
                     b.ToTable("Partos");
                 });
 
-            modelBuilder.Entity("CampoVerde.Models.Produccion", b =>
+            modelBuilder.Entity("CampoVerde.Models.Potrero", b =>
                 {
-                    b.Property<int>("idProduccion")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idProduccion"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RutasFotos")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Potreros");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Produccion", b =>
+                {
+                    b.Property<int>("IdProduccion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdProduccion"));
+
+                    b.Property<int>("IdAnimal")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Turno")
                         .HasColumnType("integer");
@@ -174,14 +234,15 @@ namespace CampoVerde.Migrations
                     b.Property<double>("cantidadLeche")
                         .HasColumnType("double precision");
 
-                    b.Property<int>("idAnimal")
-                        .HasColumnType("integer");
+                    b.Property<DateTime>("fechaProduccion")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("observaciones")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("idProduccion");
+                    b.HasKey("IdProduccion");
+
+                    b.HasIndex("IdAnimal");
 
                     b.ToTable("Producciones");
                 });
@@ -203,7 +264,6 @@ namespace CampoVerde.Migrations
                         .HasColumnType("character varying(200)");
 
                     b.Property<string>("Encargado")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
@@ -214,10 +274,12 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     b.Property<string>("Notas")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<int>("Prioridad")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("estado")
                         .HasColumnType("integer");
 
                     b.HasKey("IdTarea");
@@ -229,11 +291,11 @@ namespace CampoVerde.Migrations
 
             modelBuilder.Entity("CampoVerde.Models.Usuario", b =>
                 {
-                    b.Property<int>("idUsuario")
+                    b.Property<int>("IdUsuario")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idUsuario"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdUsuario"));
 
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
@@ -249,22 +311,29 @@ namespace CampoVerde.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("telefono")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("idUsuario");
+                    b.HasKey("IdUsuario");
 
                     b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Vacuna", b =>
                 {
-                    b.Property<int>("idVacuna")
+                    b.Property<int>("IdVacuna")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("idVacuna"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdVacuna"));
+
+                    b.Property<int>("IdAnimal")
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("fechaAplicacion")
                         .HasColumnType("timestamp with time zone");
@@ -275,9 +344,6 @@ namespace CampoVerde.Migrations
                     b.Property<int>("frecuenciaMeses")
                         .HasColumnType("integer");
 
-                    b.Property<int>("idAnimal")
-                        .HasColumnType("integer");
-
                     b.Property<string>("nombreVacuna")
                         .IsRequired()
                         .HasColumnType("text");
@@ -286,9 +352,20 @@ namespace CampoVerde.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("idVacuna");
+                    b.HasKey("IdVacuna");
 
                     b.ToTable("Vacunas");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Produccion", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("IdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Tarea", b =>

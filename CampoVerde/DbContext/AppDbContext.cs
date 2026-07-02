@@ -15,5 +15,7 @@ namespace CampoVerde.Data
         public DbSet<Tarea> Tareas { get; set; }
         public DbSet<Ingreso> Ingresos { get; set; }
         public DbSet<Gasto> Gastos { get; set; }
+        public DbSet<AlimentoBovino> AlimentosBovinos { get; set; }
+        public DbSet<Potrero> Potreros { get; set; }
     }
 }

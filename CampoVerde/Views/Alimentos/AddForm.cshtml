@@ -1,0 +1,210 @@
+﻿@model CampoVerde.Models.AlimentoBovino
+
+@{
+    ViewData["Title"] = "Nuevo Alimento";
+}
+
+<style>
+
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74,124,74,.10);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px 18px;
+        color: #2d3a2d;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 .2rem rgba(74,124,74,.25);
+        }
+
+    .btn-crear {
+        background: linear-gradient(135deg,#4a7c4a,#346334);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        font-weight: bold;
+        border: none;
+        transition: .4s;
+    }
+
+        .btn-crear:hover {
+            background: #2d4d2d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(61,102,61,.3);
+            color: white;
+        }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        border: none;
+        text-decoration: none;
+    }
+
+        .btn-cancelar:hover {
+            background: #bdd2bd;
+            color: #1a3c1a;
+        }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card-ganaderia">
+
+                <h2 class="text-center">
+                    🌿 Registrar Nuevo Alimento
+                </h2>
+
+                <form asp-action="AddForm" method="post">
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                    <!-- Nombre -->
+
+                    <div class="mb-4">
+                        <label asp-for="Nombre" class="form-label"></label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+
+                    <!-- Categoría -->
+
+                    <div class="mb-4">
+                        <label asp-for="Categoria" class="form-label"></label>
+
+                        <select asp-for="Categoria"
+                                asp-items="Html.GetEnumSelectList<CampoVerde.Models.CategoriaAlimento>()"
+                                class="form-select">
+
+                            <option value="">Seleccione una categoría</option>
+
+                        </select>
+
+                        <span asp-validation-for="Categoria" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+
+                        <!-- Cantidad -->
+
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="CantidadDisponible" class="form-label"></label>
+                            <input asp-for="CantidadDisponible" class="form-control" />
+                            <span asp-validation-for="CantidadDisponible" class="text-danger"></span>
+                        </div>
+
+                        <!-- Unidad -->
+
+                        <div class="col-md-6 mb-4">
+
+                            <label asp-for="Unidad" class="form-label"></label>
+
+                            <select asp-for="Unidad"
+                                    asp-items="Html.GetEnumSelectList<CampoVerde.Models.UnidadMedida>()"
+                                    class="form-select">
+
+                                <option value="">Seleccione una unidad</option>
+
+                            </select>
+
+                            <span asp-validation-for="Unidad" class="text-danger"></span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Nivel de alerta -->
+
+                    <div class="mb-4">
+
+                        <label asp-for="NivelAlerta" class="form-label"></label>
+
+                        <input asp-for="NivelAlerta" class="form-control" />
+
+                        <span asp-validation-for="NivelAlerta" class="text-danger"></span>
+
+                    </div>
+
+                    <!-- Costo -->
+
+                    <div class="mb-4">
+
+                        <label asp-for="CostoUnitario" class="form-label"></label>
+
+                        <input asp-for="CostoUnitario" class="form-control" />
+
+                        <span asp-validation-for="CostoUnitario" class="text-danger"></span>
+
+                    </div>
+
+                    <div class="text-center mt-5">
+
+                        <button type="submit" class="btn btn-crear me-3">
+
+                            <i class="bi bi-check-circle-fill"></i>
+
+                            Guardar
+
+                        </button>
+
+                        <a asp-action="Index" class="btn btn-cancelar">
+
+                            <i class="bi bi-arrow-left-circle"></i>
+
+                            Cancelar
+
+                        </a>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

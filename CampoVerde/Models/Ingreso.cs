@@ -5,9 +5,9 @@ namespace CampoVerde.Models
     public class Ingreso
     {
         [Key]
-        public int idIngreso { get; set; }
+        public int IdIngreso { get; set; }
 
-        public int? idAnimal { get; set; }
+        public int? IdAnimal { get; set; }
 
         public decimal Monto { get; set; }
 

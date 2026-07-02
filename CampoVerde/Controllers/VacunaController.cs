@@ -24,7 +24,7 @@ public class VacunaController : Controller
         if (id == null) return NotFound();
 
         var vacuna = await _context.Vacunas
-            .FirstOrDefaultAsync(m => m.idVacuna == id);
+            .FirstOrDefaultAsync(m => m.IdVacuna == id);
 
         if (vacuna == null) return NotFound();
 
@@ -37,26 +37,24 @@ public class VacunaController : Controller
         return View();
     }
 
-    // POST: VACUNAS/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("idVacuna,idAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
+    public async Task<IActionResult> Create([Bind("IdAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
     {
-        // Validación: Si la fecha es mínima, forzamos la fecha de hoy para evitar el 01/01/0001
-        if (vacuna.fechaAplicacion == DateTime.MinValue)
-        {
-            vacuna.fechaAplicacion = DateTime.Today;
-        }
+        // Forzamos la zona horaria antes de cualquier validación
+        vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
+
+        // Cálculo de la fecha próxima
+        vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
 
         if (ModelState.IsValid)
         {
-            // Cálculo correcto
-            vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
-
             _context.Add(vacuna);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        // Si llega aquí, es porque algo falló en la validación
         return View(vacuna);
     }
 
@@ -79,23 +77,32 @@ public class VacunaController : Controller
     }
 
     // POST: VACUNAS/Edit/5
+    // POST: VACUNAS/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, [Bind("idVacuna,idAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
+    public async Task<IActionResult> Edit(int id, [Bind("IdVacuna,IdAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
     {
-        if (id != vacuna.idVacuna) return NotFound();
+        if (id != vacuna.IdVacuna) return NotFound();
+
+        // 1. Corregimos el KIND de la fecha antes de cualquier operación
+        vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
+
+        // 2. Calculamos la próxima fecha
+        vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
 
         if (ModelState.IsValid)
         {
-            vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
             try
             {
+                // 3. Importante: Para un Edit, lo ideal es obtener el registro actual 
+                // para no sobrescribir campos que no están en el Bind (como fechaProximaAplicacion 
+                // si fuera calculada en base de datos)
                 _context.Update(vacuna);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VacunaExists(vacuna.idVacuna)) return NotFound();
+                if (!VacunaExists(vacuna.IdVacuna)) return NotFound();
                 else throw;
             }
             return RedirectToAction(nameof(Index));
@@ -108,7 +115,7 @@ public class VacunaController : Controller
     {
         if (id == null) return NotFound();
 
-        var vacuna = await _context.Vacunas.FirstOrDefaultAsync(m => m.idVacuna == id);
+        var vacuna = await _context.Vacunas.FirstOrDefaultAsync(m => m.IdVacuna == id);
         if (vacuna == null) return NotFound();
 
         return View(vacuna);
@@ -116,7 +123,7 @@ public class VacunaController : Controller
 
     }
 
-     
+
 
     // POST: VACUNAS/Delete/5
     [HttpPost, ActionName("Delete")]
@@ -132,13 +139,13 @@ public class VacunaController : Controller
 
     private bool VacunaExists(int idvacuna)
     {
-        return _context.Vacunas.Any(e => e.idVacuna == idvacuna);
+        return _context.Vacunas.Any(e => e.IdVacuna == idvacuna);
     }
 
     public IActionResult Historial(int? idAnimal)
     {
         if (idAnimal == null) return NotFound();
-        var vacunas = _context.Vacunas.Where(v => v.idAnimal == idAnimal).ToList();
+        var vacunas = _context.Vacunas.Where(v => v.IdAnimal == idAnimal).ToList();
         return View(vacunas);
     }
 
@@ -151,4 +158,5 @@ public class VacunaController : Controller
                                .ToList();
         return View(proximas);
     }
+
 }

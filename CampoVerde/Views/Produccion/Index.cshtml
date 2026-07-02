@@ -1,0 +1,255 @@
+﻿@model IEnumerable<CampoVerde.Models.Produccion>
+
+@{
+    ViewData["Title"] = "Producción";
+
+    var totalLeche = Model.Sum(x => x.cantidadLeche);
+    var totalRegistros = Model.Count();
+    var promedioLeche = totalRegistros > 0 ? totalLeche / totalRegistros : 0;
+    var produccionHoy = Model
+        .Where(x => x.fechaProduccion.Date == DateTime.Today)
+        .Sum(x => x.cantidadLeche);
+
+    var totalAnimales = Model
+        .Select(x => x.IdAnimal)
+        .Distinct()
+        .Count();
+}
+
+<style>
+
+    body {
+        background: #eaf2e9;
+    }
+
+    /* DASHBOARD UNIFICADO VERDE */
+    .dashboard-card {
+        border: none;
+        border-radius: 20px;
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        overflow: hidden;
+    }
+
+    /* STATS CARD */
+    .stat-card {
+        border: none;
+        border-radius: 20px;
+        color: white;
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+    }
+
+    /* PRODUCCIÓN CARD */
+    .card-produccion {
+        background: #fdfefd;
+        border: 1px solid #dcefd8;
+        border-radius: 22px;
+        overflow: hidden;
+        transition: none;
+        box-shadow: none;
+    }
+
+    .progress {
+        height: 8px;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <!-- CABECERA -->
+    <div class="row align-items-center mb-5">
+
+        <div class="col-lg-8">
+            <h1 class="fw-bold text-success">
+                🌿 Panel de Producción
+            </h1>
+            <p class="text-muted fs-5">
+                Control inteligente de la producción diaria de leche.
+            </p>
+        </div>
+
+        <div class="col-lg-4 text-lg-end">
+
+            <a asp-action="Create"
+               class="btn btn-success btn-lg">
+
+                <i class="bi bi-plus-circle-fill me-2"></i>
+                Nueva Producción
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="card-body text-center py-4">
+
+                    <i class="bi bi-droplet-half display-3"></i>
+
+                    <h5 class="mt-3">Total de Leche</h5>
+                    <h2 class="fw-bold">@totalLeche.ToString("N1") L</h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="card-body text-center py-4">
+
+                    <i class="bi bi-journal-check display-3"></i>
+
+                    <h5 class="mt-3">Registros</h5>
+                    <h2 class="fw-bold">@totalRegistros</h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="card-body text-center py-4">
+
+                    <i class="bi bi-graph-up-arrow display-3"></i>
+
+                    <h5 class="mt-3">Promedio</h5>
+                    <h2 class="fw-bold">@promedioLeche.ToString("N1") L</h2>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card stat-card">
+                <div class="card-body text-center py-4">
+
+                    <i class="bi bi-cow display-3"></i>
+
+                    <h5 class="mt-3">Animales</h5>
+                    <h2 class="fw-bold">@totalAnimales</h2>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- PRODUCCIÓN DEL DÍA -->
+<div class="card dashboard-card mb-5">
+
+    <div class="card-body d-flex justify-content-between align-items-center">
+
+        <div>
+            <h3 class="fw-bold">
+                <i class="bi bi-sun-fill"></i>
+                Producción del Día
+            </h3>
+            <p class="mb-0">
+                Cantidad producida hoy.
+            </p>
+        </div>
+
+        <h1 class="fw-bold text-success">
+            @ViewBag.ProduccionHoy.ToString("N1") L
+        </h1>
+
+    </div>
+
+</div>
+
+    <!-- TARJETAS -->
+    <div class="row g-4">
+
+        @foreach (var item in Model.OrderByDescending(x => x.fechaProduccion))
+        {
+            <div class="col-md-6 col-lg-4 col-xl-3">
+
+                <div class="card card-produccion h-100">
+
+                    <div class="card-header bg-success text-white">
+
+                        <h4 class="mb-1">
+                            🐄 @item.Animal?.nombre
+                        </h4>
+
+                        <small>
+                            <i class="bi bi-calendar-event"></i>
+                            @item.fechaProduccion.ToString("dd/MM/yyyy")
+                        </small>
+
+                    </div>
+
+                    <div class="card-body">
+
+                        <h2 class="text-success fw-bold">
+                            🥛 @item.cantidadLeche L
+                        </h2>
+
+                        <div class="progress my-3">
+                            <div class="progress-bar bg-success"
+                                 style="width:@Math.Min(item.cantidadLeche * 5, 100)%">
+                            </div>
+                        </div>
+
+                        <p>
+                            <strong>
+                                <i class="bi bi-clock"></i>
+                                Turno:
+                            </strong>
+
+                            <span class="badge bg-success ms-2">
+                                @item.Turno
+                            </span>
+                        </p>
+
+                        @if (!string.IsNullOrWhiteSpace(item.observaciones))
+                        {
+                            <hr />
+
+                            <small class="text-muted">
+                                Observaciones
+                            </small>
+
+                            <p class="mb-0">
+                                @item.observaciones
+                            </p>
+                        }
+
+                    </div>
+
+                    <div class="card-footer bg-white border-0">
+
+                        <div class="d-grid gap-2">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@item.IdProduccion"
+                               class="btn btn-outline-success">
+                                <i class="bi bi-pencil-square"></i>
+                                Editar
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.IdProduccion"
+                               class="btn btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                                Eliminar
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+</div>

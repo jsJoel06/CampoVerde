@@ -15,8 +15,18 @@ namespace CampoVerde.Controllers
             _context = context;
         }
 
+        // En HomeController.cs
         public async Task<IActionResult> Index()
         {
+            // Carga todos, no solo 4, y pásalos como modelo o ViewBag
+            var potreros = await _context.Potreros.OrderBy(p => p.Id).ToListAsync();
+
+            // Si usas ViewBag:
+            ViewBag.Potreros = potreros;
+
+            // O si usas un ViewModel (Recomendado):
+            // return View(new DashboardViewModel { Potreros = potreros });
+
             return View();
         }
 

@@ -6,7 +6,7 @@ namespace CampoVerde.Models
     {
 
         [Key]
-        public int idAnimal { get; set; }
+        public int IdAnimal { get; set; }
         public string codigo { get; set; }
         public string nombre { get; set; }  
         public DateTime? fechaNacimiento { get; set; }

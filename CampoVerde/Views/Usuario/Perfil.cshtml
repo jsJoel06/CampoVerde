@@ -1,0 +1,146 @@
+﻿@model CampoVerde.Models.Usuario
+
+@{
+    ViewData["Title"] = "Panel de Control | Ganadería Campo Verde";
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.08);
+        border: 1px solid #d4e0d4;
+    }
+
+    h2, h3, h4, h5 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+    }
+
+    .card-icon {
+        background-color: #e8f5e9;
+        color: #346334;
+        border-radius: 20px;
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-verde {
+        background: linear-gradient(135deg, #4a7c4a, #346334);
+        color: white;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+    }
+
+        .btn-verde:hover {
+            background: #2d4d2d;
+            color: white;
+            transform: translateY(-3px);
+        }
+
+    .transition-hover:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+</style>
+
+<div class="container py-5">
+    <!-- 1. ENCABEZADO -->
+    <div class="card card-ganaderia border-0 p-4 mb-4">
+        <div class="d-flex align-items-center">
+            <div class="card-icon"><i class="bi bi-person-fill fs-3"></i></div>
+            <div class="ms-4">
+                <h4 class="mb-0 fw-bold">Bienvenido, Ganadero</h4>
+                <p class="text-muted mb-0">usuario@campoverde.com | @DateTime.Now.ToString("dd/MM/yyyy")</p>
+            </div>
+            <div class="ms-auto">
+                <a href="/Perfil/Editar" class="btn btn-outline-success rounded-pill px-4">Editar Datos</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. INDICADORES -->
+    <div class="row g-3 mb-5">
+        @foreach (var kpi in new[] {
+            new { T = "Tareas", V = "6", I = "bi-list-check", C = "text-success" },
+            new { T = "Ventas Hoy", V = "$2,400", I = "bi-cash-coin", C = "text-primary" },
+            new { T = "Gastos", V = "$850", I = "bi-graph-down", C = "text-danger" },
+            new { T = "Alertas", V = "1", I = "bi-exclamation-triangle", C = "text-warning" }
+        })
+        {
+            <div class="col-md-3">
+                <div class="card card-ganaderia border-0 p-3">
+                    <div class="d-flex align-items-center">
+                        <div class="fs-3 @kpi.C"><i class="bi @kpi.I"></i></div>
+                        <div class="ms-3">
+                            <h6 class="text-muted small mb-0">@kpi.T</h6>
+                            <h5 class="fw-bold mb-0">@kpi.V</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- 3. GESTIÓN OPERATIVA -->
+    <h4 class="mb-3 fw-bold">Gestión Operativa</h4>
+    <div class="row g-4 mb-5">
+        @{
+            var modulos = new[] {
+                new { Titulo = "Tareas", Icono = "📋", Color = "btn-success", Url = "/Tarea/Index" },
+                new { Titulo = "Produccion", Icono = "🐄", Color = "btn-primary", Url = "/Produccion/Index" },
+                new { Titulo = "Alimentación", Icono = "🌾", Color = "btn-warning", Url = "/Alimentacion/Index" },
+                new { Titulo = "Salud", Icono = "💉", Color = "btn-danger", Url = "/Salud/Index" }
+            };
+        }
+        @foreach (var m in modulos)
+        {
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-ganaderia border-0 p-4 text-center transition-hover">
+                    <h1 class="mb-3">@m.Icono</h1>
+                    <h5 class="fw-bold">@m.Titulo</h5>
+                    <a href="@m.Url" class="btn @m.Color text-white w-100 mt-3 rounded-pill">Entrar</a>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- 4. FINANCIERO -->
+    <h4 class="mb-3 fw-bold">Gestión Financiera</h4>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card card-ganaderia border-0 p-4 d-flex flex-row align-items-center transition-hover">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-4"><i class="bi bi-cart-plus-fill fs-2"></i></div>
+                <div>
+                    <h5 class="fw-bold mb-1">Registro de Ventas</h5>
+                    <a href="/Ventas/Index" class="btn btn-sm btn-outline-success rounded-pill">Ver Ventas</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card card-ganaderia border-0 p-4 d-flex flex-row align-items-center transition-hover">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle p-3 me-4"><i class="bi bi-wallet2 fs-2"></i></div>
+                <div>
+                    <h5 class="fw-bold mb-1">Registro de Gastos</h5>
+                    <a href="/Gastos/Index" class="btn btn-sm btn-outline-danger rounded-pill">Ver Gastos</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-start mt-5 pt-4 border-top">
+        <a href="/Account/Logout" class="text-danger text-decoration-none fw-bold">
+            <i class="bi bi-box-arrow-left"></i> Cerrar Sesión
+        </a>
+    </div>
+</div>

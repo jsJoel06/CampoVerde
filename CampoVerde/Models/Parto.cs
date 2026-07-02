@@ -6,8 +6,8 @@ namespace CampoVerde.Models
     {
 
         [Key]
-        public int idParto { get; set; }
-        public int idAnimal { get; set; }
+        public int IdParto { get; set; }
+        public int IdAnimal { get; set; }
 
         public DateTime FechaParto { get; set; }
         public string SexoCria { get; set; }

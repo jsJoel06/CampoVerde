@@ -1,0 +1,75 @@
+﻿@model List<CampoVerde.Models.Potrero>
+
+@{
+    var lista = Model ?? new List<CampoVerde.Models.Potrero>();
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #1a3c1a;">Gestión de Lotes</h2>
+            <p class="text-muted">Administra el mapa y las fotos de cada área del predio.</p>
+        </div>
+        <span class="badge bg-success bg-opacity-10 text-success px-3 py-2 rounded-pill fw-bold">
+            <i class="fa-solid fa-map-marked-alt me-2"></i> @lista.Count(p => p != null) / 4 Lotes mapeados
+        </span>
+    </div>
+
+    <div class="row g-4">
+        @for (int i = 1; i <= 4; i++)
+        {
+            var potrero = lista.FirstOrDefault(x => x.Id == i);
+            var foto = potrero?.RutasFotos?.Split(';', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
+
+            <div class="col-lg-3 col-md-6">
+                <a asp-action="AddForm" asp-route-id="@i" class="text-decoration-none">
+                    <div class="card border-0 shadow-sm rounded-4 h-100 p-2 overflow-hidden card-hover-zoom"
+                         style="background-color: #fdfdf5; transition: all 0.3s ease;">
+
+                        <div class="position-relative">
+                            @if (!string.IsNullOrEmpty(foto))
+                            {
+                                <img src="~/uploads/@foto" class="img-fluid rounded-3 w-100"
+                                     style="height: 200px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center rounded-3"
+                                     style="height: 200px; background-color: #eaf2e9; border: 2px dashed #c0d6c0;">
+                                    <i class="fa-solid fa-plus fa-2x" style="color: #a3c1a3;"></i>
+                                </div>
+                            }
+                            <div class="position-absolute top-2 end-2 m-2">
+                                <span class="badge @(potrero != null ? "bg-success" : "bg-secondary") rounded-pill shadow-sm">
+                                    @(potrero != null ? "Configurado" : "Pendiente")
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body text-center">
+                            <h5 class="fw-bold mb-0" style="color: #1a3c1a;">
+                                @(potrero?.Nombre ?? $"Lote {i}")
+                            </h5>
+                            <p class="text-muted small mt-1">Haga clic para editar</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .card-hover-zoom:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(74, 124, 74, 0.15) !important;
+    }
+
+    .top-2 {
+        top: 0;
+    }
+
+    .end-2 {
+        right: 0;
+    }
+</style>

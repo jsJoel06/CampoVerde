@@ -1,0 +1,214 @@
+﻿@model CampoVerde.Models.Produccion
+
+@{
+    ViewData["Title"] = "Registrar Producción";
+}
+
+<style>
+
+    body {
+        background: #eaf2e9;
+    }
+
+    .card-produccion {
+        border: none;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(46,125,50,.15);
+    }
+
+    .card-header-custom {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        padding: 30px;
+    }
+
+    .card-body {
+        background: #f8fcf7;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        border: 1px solid #cde6c8;
+        padding: 12px;
+    }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #43a047;
+            box-shadow: 0 0 0 .20rem rgba(76,175,80,.25);
+        }
+
+    .input-group-text {
+        background: #43a047;
+        color: white;
+        border: none;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 35px;
+        transition: .3s;
+    }
+
+        .btn-guardar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(46,125,50,.25);
+        }
+
+    .btn-cancelar {
+        border-radius: 12px;
+        padding: 12px 30px;
+    }
+
+    .icon-circle {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.15);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card card-produccion">
+
+                <div class="card-header-custom">
+
+                    <div class="d-flex align-items-center">
+
+                        <div class="icon-circle me-4">
+                            🥛
+                        </div>
+
+                        <div>
+
+                            <h2 class="fw-bold mb-1">
+                                Registrar Producción
+                            </h2>
+
+                            <p class="mb-0 text-white-50">
+                                Registra la producción diaria de leche de cada animal.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="card-body p-5">
+
+                    <form asp-action="Create">
+
+                        <div class="mb-4">
+
+                            <label asp-for="IdAnimal" class="form-label fw-bold text-success">
+                                <i class="bi bi-cow me-2"></i>
+                                Animal
+                            </label>
+
+                            <select asp-for="IdAnimal"
+                                    class="form-select form-select-lg"
+                                    asp-items="ViewBag.IdAnimal">
+
+                                <option value="">Seleccione un animal</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="cantidadLeche"
+                                   class="form-label fw-bold text-success">
+
+                                <i class="bi bi-droplet-half me-2"></i>
+                                Cantidad de leche
+
+                            </label>
+
+                            <div class="input-group input-group-lg">
+
+                                <span class="input-group-text">
+                                    🥛
+                                </span>
+
+                                <input asp-for="cantidadLeche"
+                                       class="form-control"
+                                       placeholder="Ej: 18.5" />
+
+                                <span class="input-group-text">
+                                    Litros
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="observaciones"
+                                   class="form-label fw-bold text-success">
+
+                                <i class="bi bi-chat-left-text me-2"></i>
+
+                                Observaciones
+
+                            </label>
+
+                            <textarea asp-for="observaciones"
+                                      rows="5"
+                                      class="form-control"
+                                      placeholder="Ingrese alguna observación del animal o de la producción..."></textarea>
+
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex justify-content-between">
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary btn-cancelar">
+
+                                <i class="bi bi-arrow-left"></i>
+
+                                Volver
+
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-guardar">
+
+                                <i class="bi bi-check-circle-fill me-2"></i>
+
+                                Guardar Producción
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,118 @@
+﻿@model CampoVerde.Models.Tarea
+
+@{
+    ViewData["Title"] = "Detalles de Tarea";
+}
+
+<div class="container mt-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-primary">Detalles de la Tarea</h2>
+
+        <span class="badge bg-secondary fs-6">
+            ID: @Model.IdTarea
+        </span>
+    </div>
+
+    <div class="card border-0 shadow-lg rounded-4">
+        <div class="card-body p-4">
+
+            <div class="row g-4">
+
+                <!-- Descripción -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Descripción</small>
+                        <h5 class="mb-0">@Model.Descripcion</h5>
+                    </div>
+                </div>
+
+                <!-- Animal -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Animal</small>
+                        <h5 class="mb-0">
+                            @Model.Animal?.nombre ?? "Sin animal"
+                        </h5>
+                    </div>
+                </div>
+
+                <!-- Fecha -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Fecha de vencimiento</small>
+                        <h5 class="mb-0">
+                            @Model.FechaVencimiento.ToString("dd/MM/yyyy")
+                        </h5>
+                    </div>
+                </div>
+
+                <!-- Prioridad -->
+                <div class="col-md-6">
+                    <div class="p-3 rounded-3 text-white
+                        @(Model.Prioridad.ToString() == "Alta" ? "bg-danger" :
+                           Model.Prioridad.ToString() == "Urgente" ? "bg-dark" :
+                           Model.Prioridad.ToString() == "Media" ? "bg-warning text-dark" :
+                           "bg-success")">
+
+                        <small>Prioridad</small>
+                        <h5 class="mb-0">@Model.Prioridad</h5>
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Estado</small>
+                        <h5 class="mb-0">@Model.estado</h5>
+                    </div>
+                </div>
+
+                <!-- Completada -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Completada</small>
+                        <h5 class="mb-0">
+                            @(Model.Completada ? "Sí ✔" : "No ❌")
+                        </h5>
+                    </div>
+                </div>
+
+                <!-- Encargado -->
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Encargado</small>
+                        <h5 class="mb-0">@Model.Encargado</h5>
+                    </div>
+                </div>
+
+                <!-- Notas -->
+                <div class="col-12">
+                    <div class="p-3 bg-light rounded-3">
+                        <small class="text-muted">Notas</small>
+                        <p class="mb-0">@Model.Notas</p>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Botones -->
+    <div class="mt-4 d-flex gap-2">
+        <a asp-action="Edit"
+           asp-route-id="@Model.IdTarea"
+           class="btn btn-primary px-4">
+
+            ✏️ Editar
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-secondary px-4">
+
+            ⬅ Volver
+        </a>
+    </div>
+
+</div>

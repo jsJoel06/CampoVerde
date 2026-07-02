@@ -73,14 +73,14 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
         {
-            if (id != animal.idAnimal) return NotFound();
+            if (id != animal.IdAnimal) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
                     // 1. Obtener el registro actual para mantener la imagen si no se carga una nueva
-                    var animalExistente = await _context.Animales.AsNoTracking().FirstOrDefaultAsync(a => a.idAnimal == id);
+                    var animalExistente = await _context.Animales.AsNoTracking().FirstOrDefaultAsync(a => a.IdAnimal == id);
 
                     if (animalExistente != null)
                     {
@@ -109,7 +109,7 @@ namespace CampoVerde.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.Animales.Any(e => e.idAnimal == id)) return NotFound();
+                    if (!_context.Animales.Any(e => e.IdAnimal == id)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
@@ -143,11 +143,11 @@ namespace CampoVerde.Controllers
         {
             if (id == null) return NotFound();
 
-            var animal = await _context.Animales.FirstOrDefaultAsync(m => m.idAnimal == id);
+            var animal = await _context.Animales.FirstOrDefaultAsync(m => m.IdAnimal == id);
             if (animal == null) return NotFound();
 
             // Generar el código QR
-            string urlDetalle = $"https://tu-sitio-ganadero.com/Animal/Details/{animal.idAnimal}";
+            string urlDetalle = $"https://tu-sitio-ganadero.com/Animal/Details/{animal.IdAnimal}";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(urlDetalle, QRCodeGenerator.ECCLevel.Q);

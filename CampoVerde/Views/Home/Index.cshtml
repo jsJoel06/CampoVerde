@@ -1,6 +1,14 @@
-﻿@{
+﻿
+
+@{
     ViewData["Title"] = "Panel Principal - Ganadería Campo Verde";
+
+    var lista = ViewBag.Potreros as List<CampoVerde.Models.Potrero>
+               ?? new List<CampoVerde.Models.Potrero>();
+
 }
+
+
 
 <style>
     body { background-color: #eaf2e9; }
@@ -104,26 +112,72 @@
                         </a>
                     </div>
                     <div class="col-md-6">
+                        <a asp-controller="Home" asp-action="Dashboard" class="text-decoration-none">
                         <div class="p-3 border rounded-4 d-flex align-items-center opacity-50">
                             <div class="icon-box me-3"><i class="fa-solid fa-chart-line"></i></div>
                             <div>
                                 <h6 class="mb-0" style="color: #1a3c1a;">Reportes</h6>
-                                <small class="text-muted">En desarrollo</small>
+                                <small class="text-muted">Ver Dashboard</small>
                             </div>
                         </div>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
+
+
         <div class="col-lg-4">
             <div class="card-dashboard h-100">
-                <h5 class="fw-bold" style="color: #1a3c1a;">Mapa del Predio</h5>
-                <div class="rounded-4 mt-3 d-flex align-items-center justify-content-center" style="height: 180px; background-color: #eaf2e9;">
-                    <p class="text-muted small"><i class="fa-solid fa-map-location-dot me-2"></i> Mapeo pendiente</p>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold m-0" style="color:#1a3c1a;">🌿 Mapa del Predio</h5>
+                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-outline-success">
+                        <i class="fa-solid fa-plus"></i>
+                    </a>
+                </div>
+
+                <div class="row g-2">
+                    @if (lista.Any())
+                    {
+                        @foreach (var potrero in lista.Take(4)) // Mostramos los primeros 4 lotes
+                        {
+                            <div class="col-6">
+                                <div class="position-relative">
+                                    @{
+                                        var primeraFoto = potrero.RutasFotos?.Split(';').FirstOrDefault();
+                                    }
+
+                                    @if (!string.IsNullOrEmpty(primeraFoto))
+                                    {
+                                        <img src="~/uploads/@primeraFoto" class="img-fluid rounded-3 shadow-sm" style="height:80px;width:100%;object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:80px;">
+                                            <i class="fa-solid fa-image text-muted"></i>
+                                        </div>
+                                    }
+
+                                    <div class="position-absolute bottom-0 w-100 p-1 text-center"
+                                         style="background: rgba(26, 60, 26, 0.7); border-radius: 0 0 6px 6px;">
+                                        <small class="text-white fw-bold" style="font-size: 0.7rem;">@potrero.Nombre</small>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-12 text-center py-4 border border-dashed rounded-4">
+                            <p class="text-muted small">No hay lotes mapeados aún.</p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
+
+
     </div>
 </div>
 

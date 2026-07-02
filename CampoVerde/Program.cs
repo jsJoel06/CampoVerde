@@ -1,19 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using CampoVerde.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// 1. REGISTRA EL SERVICIO DEL CONTEXTO DE DATOS
-// Esto le dice a tu app: "Cuando alguien necesite datos, usa esta cadena de conexión"
+// Configuración de la base de datos
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-// Add services to the container.
+// Servicios MVC
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configuración del pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -21,16 +21,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(); // Importante para tus imágenes y CSS
 app.UseRouting();
 app.UseAuthorization();
 
-// Estos son los nuevos métodos de ASP.NET Core 9+ para assets
-app.MapStaticAssets();
-
+// Mapa de rutas estándar
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.Run();
-app.Run();
+app.Run(); 

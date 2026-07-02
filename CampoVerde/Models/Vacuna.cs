@@ -6,9 +6,9 @@ namespace CampoVerde.Models
     public class Vacuna
     {
         [Key]
-        public int idVacuna { get; set; }
+        public int IdVacuna { get; set; }
 
-        public int idAnimal { get; set; }
+        public int IdAnimal { get; set; }
 
         public string nombreVacuna { get; set; }
 

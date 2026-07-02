@@ -91,7 +91,7 @@
 
                         <tr class="@claseFila">
                             <td class="ps-4">
-                                <span class="badge rounded-pill bg-secondary">#@item.idAnimal</span>
+                                <span class="badge rounded-pill bg-secondary">#@item.IdAnimal</span>
                             </td>
                             <td>
                                 <div class="fw-bold text-dark">@item.nombreVacuna</div>
@@ -105,11 +105,11 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group">
-                                    <a asp-action="Details" asp-route-id="@item.idVacuna" class="btn btn-outline-success btn-action" title="Ver"><i class="fa-solid fa-eye"></i></a>
-                                    <a asp-controller="Vacuna" asp-action="Edit" asp-route-id="@item.idVacuna" class="btn btn-sm btn-outline-warning rounded-start">
+                                    <a asp-action="Details" asp-route-id="@item.IdVacuna" class="btn btn-outline-success btn-action" title="Ver"><i class="fa-solid fa-eye"></i></a>
+                                    <a asp-controller="Vacuna" asp-action="Edit" asp-route-id="@item.IdVacuna" class="btn btn-sm btn-outline-primary rounded-start">
                                         Editar
                                     </a>
-                                    <a asp-controller="Vacuna" asp-action="Delete" asp-route-id="@item.idVacuna" class="btn btn-sm btn-outline-danger rounded-end">Eliminar</a>
+                                    <a asp-controller="Vacuna" asp-action="Delete" asp-route-id="@item.IdVacuna" class="btn btn-sm btn-outline-danger rounded-end">Eliminar</a>
                                 </div>
                             </td>
                         </tr>

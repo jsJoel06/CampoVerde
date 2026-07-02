@@ -1,0 +1,116 @@
+﻿@model CampoVerde.Models.Tarea
+
+@{
+    ViewData["Title"] = "Registrar Nueva Tarea";
+}
+
+<style>
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h4 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px 18px;
+        color: #2d3a2d;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, #4a7c4a, #346334);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        font-weight: bold;
+        border: none;
+        transition: all 0.4s ease;
+    }
+
+        .btn-guardar:hover {
+            background: #2d4d2d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-ganaderia border-0">
+                <h4 class="mb-4"><i class="bi bi-plus-circle-fill text-success"></i> Registrar Nueva Tarea</h4>
+
+                <form asp-action="Create" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label asp-for="Descripcion" class="form-label">Descripción</label>
+                            <input asp-for="Descripcion" class="form-control" />
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="IdAnimal" class="form-label">Animal Asociado</label>
+                            <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal">
+                                <option value="">-- Seleccione un animal --</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Prioridad" class="form-label">Prioridad</label>
+                            <select asp-for="Prioridad" class="form-select" asp-items="Html.GetEnumSelectList<PrioridadTarea>()"></select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                            <input asp-for="FechaVencimiento" type="date" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Encargado" class="form-label">Encargado</label>
+                            <input asp-for="Encargado" class="form-control" />
+                        </div>
+
+                        <div class="col-12 mb-4">
+                            <label asp-for="Notas" class="form-label">Notas</label>
+                            <textarea asp-for="Notas" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-3">
+                        <a asp-action="Index" class="btn btn-cancelar">Cancelar</a>
+                        <button type="submit" class="btn btn-guardar">Guardar Tarea</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

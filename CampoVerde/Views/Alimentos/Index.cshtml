@@ -1,0 +1,212 @@
+﻿@model IEnumerable<CampoVerde.Models.AlimentoBovino>
+
+@{
+    ViewData["Title"] = "Inventario de Alimentos";
+}
+
+<style>
+
+    body {
+        background: #eef7ee;
+    }
+
+    .page-title {
+        color: #2e7d32;
+        font-weight: 700;
+    }
+
+    .card-inventario {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+    .card-header-verde {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        padding: 20px;
+    }
+
+    .btn-verde {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        border-radius: 10px;
+    }
+
+        .btn-verde:hover {
+            background: #256628;
+            color: white;
+        }
+
+    .table thead {
+        background: #dcedc8;
+    }
+
+        .table thead th {
+            color: #2e7d32;
+            font-weight: 600;
+            border: none;
+        }
+
+    .table tbody tr {
+        transition: .2s;
+    }
+
+        .table tbody tr:hover {
+            background: #f4fbf4;
+        }
+
+    .badge-categoria {
+        background: #43a047;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 20px;
+    }
+
+    .estado-ok {
+        color: #2e7d32;
+        font-weight: bold;
+    }
+
+    .estado-alerta {
+        color: #d32f2f;
+        font-weight: bold;
+    }
+
+    .btn-editar {
+        border-radius: 10px;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="page-title">
+                🌿 Inventario de Alimentos
+            </h2>
+
+            <p class="text-muted mb-0">
+                Gestión del inventario de alimentos para el ganado.
+            </p>
+
+        </div>
+
+        <a asp-action="AddForm" class="btn btn-verde px-4">
+
+            <i class="bi bi-plus-circle-fill me-2"></i>
+
+            Nuevo Alimento
+
+        </a>
+
+    </div>
+
+    <div class="card card-inventario shadow-sm">
+
+        <div class="card-header-verde">
+
+            <h4 class="mb-0">
+                <i class="bi bi-basket-fill me-2"></i>
+                Lista de Alimentos
+            </h4>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="ps-4">Nombre</th>
+
+                        <th>Categoría</th>
+
+                        <th>Stock Disponible</th>
+
+                        <th>Estado</th>
+
+                        <th class="text-center">Acciones</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td class="ps-4">
+
+                                <strong>@item.Nombre</strong>
+
+                            </td>
+
+                            <td>
+
+                                <span class="badge-categoria">
+
+                                    @item.Categoria
+
+                                </span>
+
+                            </td>
+
+                            <td>
+
+                                <strong>@item.CantidadDisponible</strong> @item.Unidad
+
+                            </td>
+
+                            <td>
+
+                                @if (item.CantidadDisponible <= item.NivelAlerta)
+                                {
+                                    <span class="estado-alerta">
+                                        ⚠ Stock Bajo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="estado-ok">
+                                        ✔ Stock Óptimo
+                                    </span>
+                                }
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <a asp-action="AddForm"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-success btn-editar">
+
+                                    <i class="bi bi-pencil-square"></i>
+
+                                    Editar
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
