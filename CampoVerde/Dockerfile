@@ -2,15 +2,16 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 # Copia el archivo de proyecto y restaura dependencias
-COPY ["GanaderiaCampoVerde.csproj", "./"]
-RUN dotnet restore "GanaderiaCampoVerde.csproj"
+COPY ["CampoVerde.csproj", "./"]
+RUN dotnet restore "CampoVerde.csproj"
 
 # 2. Copia todo el código y compila
 COPY . .
-RUN dotnet publish "GanaderiaCampoVerde.csproj" -c Release -o /app/publish
+RUN dotnet publish "CampoVerde.csproj" -c Release -o /app/publish
 
 # 3. Fase final (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "GanaderiaCampoVerde.dll"]
+# Nota: Aquí el archivo .dll suele llevar el nombre del proyecto original
+ENTRYPOINT ["dotnet", "CampoVerde.dll"]
