@@ -17,5 +17,8 @@ namespace CampoVerde.Models
         public CategoriaGasto Categoria { get; set; }
 
         public string Notas { get; set; }
+
+        // En tu modelo Gasto.cs
+        public virtual Animal Animal { get; set; } 
     }
 }

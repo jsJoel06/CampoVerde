@@ -69,16 +69,22 @@
             </p>
         </div>
 
-        <div class="col-lg-4 text-lg-end">
+        <div class="col-lg-4">
+            <div class="d-flex justify-content-lg-end justify-content-start gap-2">
 
-            <a asp-action="Create"
-               class="btn btn-success btn-lg">
+                <a asp-action="Historial"
+                   class="btn btn-outline-success btn-lg">
+                    <i class="bi bi-clock-history me-2"></i>
+                    Historial
+                </a>
 
-                <i class="bi bi-plus-circle-fill me-2"></i>
-                Nueva Producción
+                <a asp-action="Create"
+                   class="btn btn-success btn-lg">
+                    <i class="bi bi-plus-circle-fill me-2"></i>
+                    Nueva Producción
+                </a>
 
-            </a>
-
+            </div>
         </div>
 
     </div>

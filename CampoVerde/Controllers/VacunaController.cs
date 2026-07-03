@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; 
+﻿using CampoVerde.Data;
 using CampoVerde.Models;
-using CampoVerde.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore; 
 
 public class VacunaController : Controller
 {
@@ -32,8 +33,11 @@ public class VacunaController : Controller
     }
 
     // GET: VACUNAS/Create
+    // GET: Vacunas/Create
     public IActionResult Create()
     {
+        // Carga inicial
+        ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre");
         return View();
     }
 
@@ -41,20 +45,18 @@ public class VacunaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("IdAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
     {
-        // Forzamos la zona horaria antes de cualquier validación
-        vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
-
-        // Cálculo de la fecha próxima
-        vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
-
         if (ModelState.IsValid)
         {
+            vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
+            vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
+
             _context.Add(vacuna);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        // Si llega aquí, es porque algo falló en la validación
+        // ¡IMPORTANTE! Si falla, debes volver a llenar el ViewBag antes de retornar la vista
+        ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre", vacuna.IdAnimal);
         return View(vacuna);
     }
 

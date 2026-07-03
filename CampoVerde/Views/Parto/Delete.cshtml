@@ -1,0 +1,109 @@
+﻿@model CampoVerde.Models.Parto
+
+@{
+    ViewData["Title"] = "Eliminar Registro de Parto";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #dc3545;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .info-label {
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+
+    .info-value {
+        color: #2d3a2d;
+        font-size: 1.1rem;
+        font-weight: 500;
+        margin-bottom: 15px;
+    }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .btn-eliminar {
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 35px;
+        border: none;
+        font-weight: bold;
+    }
+
+        .btn-eliminar:hover {
+            background-color: #a71d2a;
+            color: white;
+        }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card-ganaderia">
+                <h2><i class="bi bi-exclamation-triangle"></i> ¿Eliminar Parto?</h2>
+                <p>Esta acción no se puede deshacer. ¿Está seguro de que desea eliminar permanentemente este registro?</p>
+
+                <hr />
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="info-label">Fecha</div>
+                        <div class="info-value">@Model.FechaParto.ToString("dd/MM/yyyy")</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="info-label">Madre</div>
+                        <div class="info-value">@Model.Animal?.nombre</div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6">
+                        <div class="info-label">Cría</div>
+                        <div class="info-value">@Model.NombreCria</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="info-label">Peso</div>
+                        <div class="info-value">@Model.PesoCria kg</div>
+                    </div>
+                </div>
+
+                <form asp-action="Delete" class="mt-4">
+                    <input type="hidden" asp-for="IdParto" />
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-cancelar">Cancelar</a>
+                        <button type="submit" class="btn btn-eliminar">
+                            <i class="bi bi-trash"></i> Confirmar Eliminación
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

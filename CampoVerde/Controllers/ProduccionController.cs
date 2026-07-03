@@ -160,5 +160,22 @@ namespace CampoVerde.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+
+        public async Task<IActionResult> Historial(int? idAnimal)
+        {
+            var consulta = _context.Producciones
+                .Include(p => p.Animal)
+                .AsQueryable();
+
+            if (idAnimal.HasValue)
+            {
+                consulta = consulta.Where(p => p.IdAnimal == idAnimal);
+            }
+
+            return View(await consulta
+                .OrderByDescending(p => p.fechaProduccion)
+                .ToListAsync());
+        }
     }
 }

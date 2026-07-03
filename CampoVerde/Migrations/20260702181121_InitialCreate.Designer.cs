@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampoVerde.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260701212018_AgregarAlimentosYCorreccion")]
-    partial class AgregarAlimentosYCorreccion
+    [Migration("20260702181121_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,6 +173,10 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdParto"));
 
+                    b.Property<string>("CodigoCria")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("EstadoCria")
                         .HasColumnType("integer");
 
@@ -182,13 +186,15 @@ namespace CampoVerde.Migrations
                     b.Property<int>("IdAnimal")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Observaciones")
+                    b.Property<string>("NombreCria")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PesoCria")
-                        .IsRequired()
+                    b.Property<string>("Observaciones")
                         .HasColumnType("text");
+
+                    b.Property<double>("PesoCria")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("SexoCria")
                         .IsRequired()
@@ -196,7 +202,29 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdParto");
 
+                    b.HasIndex("IdAnimal");
+
                     b.ToTable("Partos");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Potrero", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RutasFotos")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Potreros");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Produccion", b =>
@@ -337,6 +365,17 @@ namespace CampoVerde.Migrations
                     b.HasKey("IdVacuna");
 
                     b.ToTable("Vacunas");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Parto", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("IdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Produccion", b =>

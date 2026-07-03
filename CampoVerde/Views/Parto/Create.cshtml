@@ -1,0 +1,209 @@
+﻿@model CampoVerde.Models.Parto
+@using CampoVerde.Models
+
+@{
+    ViewData["Title"] = "Registrar Parto";
+}
+
+<style>
+
+    body {
+        background: #eef5ef;
+    }
+
+    .card-form {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.10);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        border-radius: 20px 20px 0 0 !important;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+    }
+
+    .btn {
+        border-radius: 12px;
+    }
+
+    .titulo {
+        font-weight: bold;
+        color: #2e7d32;
+        margin-bottom: 20px;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card card-form">
+
+                <div class="card-header py-3">
+
+                    <h3 class="mb-0">
+                        🍼 Registrar Parto
+                    </h3>
+
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-action="Create">
+
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <h5 class="titulo">
+                            🐄 Información de la Madre
+                        </h5>
+
+                        <div class="mb-3">
+
+                            <label asp-for="IdAnimal" class="form-label fw-bold"></label>
+
+                            <select asp-for="IdAnimal"
+                                    asp-items="ViewBag.IdAnimal"
+                                    class="form-select">
+
+                                <option value="">Seleccione un animal</option>
+
+                            </select>
+
+                            <span asp-validation-for="IdAnimal" class="text-danger"></span>
+
+                        </div>
+
+                        <hr />
+
+                        <h5 class="titulo">
+                            🐮 Información de la Cría
+                        </h5>
+
+                        <div class="mb-3">
+
+                            <label asp-for="NombreCria" class="form-label fw-bold"></label>
+
+                            <input asp-for="NombreCria"
+                                   class="form-control"
+                                   placeholder="Nombre de la cría" />
+
+                            <span asp-validation-for="NombreCria" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="CodigoCria" class="form-label fw-bold"></label>
+
+                            <input asp-for="CodigoCria"
+                                   class="form-control"
+                                   placeholder="Código de la cría" />
+
+                            <span asp-validation-for="CodigoCria" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="SexoCria" class="form-label fw-bold"></label>
+
+                            <select asp-for="SexoCria" class="form-select">
+
+                                <option value="">Seleccione</option>
+
+                                <option>Macho</option>
+
+                                <option>Hembra</option>
+
+                            </select>
+
+                            <span asp-validation-for="SexoCria" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="PesoCria" class="form-label fw-bold"></label>
+
+                            <input asp-for="PesoCria"
+                                   class="form-control"
+                                   placeholder="Ej. 32.5" />
+
+                            <span asp-validation-for="PesoCria" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="EstadoCria" class="form-label fw-bold"></label>
+
+                            <select asp-for="EstadoCria"
+                                    asp-items="Html.GetEnumSelectList<EstadoCria>()"
+                                    class="form-select">
+                            </select>
+
+                            <span asp-validation-for="EstadoCria" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Observaciones" class="form-label fw-bold"></label>
+
+                            <textarea asp-for="Observaciones"
+                                      rows="4"
+                                      class="form-control"
+                                      placeholder="Escriba alguna observación..."></textarea>
+
+                            <span asp-validation-for="Observaciones" class="text-danger"></span>
+
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+
+                            <a asp-action="Index" class="btn btn-secondary">
+
+                                <i class="bi bi-arrow-left"></i>
+
+                                Volver
+
+                            </a>
+
+                            <button type="submit" class="btn btn-success">
+
+                                <i class="bi bi-save"></i>
+
+                                Registrar Parto
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

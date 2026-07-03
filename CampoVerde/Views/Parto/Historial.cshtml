@@ -1,0 +1,223 @@
+﻿@model IEnumerable<CampoVerde.Models.Parto>
+
+@{
+    ViewData["Title"] = "Historial de Partos";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+        margin-top: 30px;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+    }
+
+    /* Buscador */
+    #busquedaParto {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 20px !important;
+        padding: 12px 20px;
+    }
+
+        #busquedaParto:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
+        }
+
+    .input-group-text {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-right: none !important;
+        border-radius: 20px 0 0 20px !important;
+    }
+
+    /* Tabla */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0 12px;
+    }
+
+        .table thead th {
+            background-color: #d1e0d1;
+            color: #1a3c1a;
+            border: none;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 15px;
+        }
+
+            .table thead th:first-child {
+                border-top-left-radius: 15px;
+                border-bottom-left-radius: 15px;
+            }
+
+            .table thead th:last-child {
+                border-top-right-radius: 15px;
+                border-bottom-right-radius: 15px;
+            }
+
+        .table tbody tr {
+            background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            transition: transform 0.2s ease;
+            border-radius: 15px;
+        }
+
+            .table tbody tr:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 15px rgba(74, 124, 74, 0.15);
+            }
+
+        .table tbody td {
+            border: none;
+            padding: 18px 15px;
+            vertical-align: middle;
+            color: #2d3a2d;
+        }
+
+    /* Badges y Botones */
+    .badge-sexo {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .bg-macho {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+
+    .bg-hembra {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .btn-accion {
+        border-radius: 10px;
+        padding: 8px 12px;
+    }
+
+    .btn-info-custom {
+        background-color: #e2eef2;
+        color: #0c5460;
+        border: none;
+    }
+
+    .btn-edit-custom {
+        background-color: #fff3cd;
+        color: #856404;
+        border: none;
+    }
+
+    .btn-delete-custom {
+        background-color: #fce4e4;
+        color: #dc3545;
+        border: none;
+    }
+
+    .btn-volver {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: bold;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container mb-5">
+    <div class="card-ganaderia">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="bi bi-clock-history"></i> Historial de Partos</h2>
+            <a asp-action="Index" class="btn btn-volver"><i class="bi bi-arrow-left"></i> Volver</a>
+        </div>
+
+        <!-- Buscador -->
+        <div class="mb-4">
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-search text-success"></i></span>
+                <input type="text" id="busquedaParto" class="form-control" placeholder="Buscar por nombre, código o madre..." onkeyup="filtrarTabla()">
+            </div>
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="alert text-center mt-4" style="background-color: #f5f9f5; border: 2px dashed #c8d9c8; border-radius: 15px; padding: 40px; color: #4a7c4a;">
+                <h5>No hay partos registrados</h5>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table text-center">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Fecha</th>
+                            <th>Madre</th>
+                            <th>Cód. Cría</th>
+                            <th>Nombre Cría</th>
+                            <th>Sexo</th>
+                            <th>Peso</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-start fw-bold text-success"><i class="bi bi-calendar-event me-2"></i>@item.FechaParto.ToString("dd/MM/yyyy")</td>
+                                <td><span class="fw-bold">@(item.Animal?.nombre ?? "Desconocida")</span></td>
+                                <td><span class="badge bg-light text-dark border">@item.CodigoCria</span></td>
+                                <td>@item.NombreCria</td>
+                                <td>
+                                    <span class="badge-sexo @(item.SexoCria == "Macho" ? "bg-macho" : "bg-hembra")">
+                                        <i class="bi @(item.SexoCria == "Macho" ? "bi-gender-male" : "bi-gender-female")"></i> @item.SexoCria
+                                    </span>
+                                </td>
+                                <td><span class="fw-bold">@item.PesoCria</span> kg</td>
+                                <td>
+                                    <a asp-action="Details" asp-route-id="@item.IdParto" class="btn btn-sm btn-accion btn-info-custom" title="Ver"><i class="bi bi-eye"></i></a>
+                                    <a asp-action="Edit" asp-route-id="@item.IdParto" class="btn btn-sm btn-accion btn-edit-custom" title="Editar"><i class="bi bi-pencil"></i></a>
+                                    <a asp-action="Delete" asp-route-id="@item.IdParto" class="btn btn-sm btn-accion btn-delete-custom" title="Eliminar"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function filtrarTabla() {
+            var filter = document.getElementById("busquedaParto").value.toUpperCase();
+            var tr = document.querySelector(".table tbody").getElementsByTagName("tr");
+            for (var i = 0; i < tr.length; i++) {
+                var tds = tr[i].getElementsByTagName("td");
+                var textoFila = tds[1].textContent + tds[2].textContent + tds[3].textContent;
+                tr[i].style.display = textoFila.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+            }
+        }
+    </script>
+}

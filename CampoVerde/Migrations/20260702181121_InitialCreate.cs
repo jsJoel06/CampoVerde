@@ -7,11 +7,30 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampoVerde.Migrations
 {
     /// <inheritdoc />
-    public partial class EstructuraDefinitiva : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AlimentosBovinos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Nombre = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Categoria = table.Column<int>(type: "integer", nullable: false),
+                    CantidadDisponible = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    Unidad = table.Column<int>(type: "integer", nullable: false),
+                    NivelAlerta = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    CostoUnitario = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    FechaRegistro = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AlimentosBovinos", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Animales",
                 columns: table => new
@@ -68,37 +87,17 @@ namespace CampoVerde.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Partos",
+                name: "Potreros",
                 columns: table => new
                 {
-                    IdParto = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAnimal = table.Column<int>(type: "integer", nullable: false),
-                    FechaParto = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    SexoCria = table.Column<string>(type: "text", nullable: false),
-                    PesoCria = table.Column<string>(type: "text", nullable: false),
-                    EstadoCria = table.Column<int>(type: "integer", nullable: false),
-                    Observaciones = table.Column<string>(type: "text", nullable: false)
+                    Nombre = table.Column<string>(type: "text", nullable: false),
+                    RutasFotos = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Partos", x => x.IdParto);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Producciones",
-                columns: table => new
-                {
-                    IdProduccion = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAnimal = table.Column<int>(type: "integer", nullable: false),
-                    cantidadLeche = table.Column<double>(type: "double precision", nullable: false),
-                    observaciones = table.Column<string>(type: "text", nullable: false),
-                    Turno = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Producciones", x => x.IdProduccion);
+                    table.PrimaryKey("PK_Potreros", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,6 +137,55 @@ namespace CampoVerde.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Partos",
+                columns: table => new
+                {
+                    IdParto = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAnimal = table.Column<int>(type: "integer", nullable: false),
+                    FechaParto = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    NombreCria = table.Column<string>(type: "text", nullable: false),
+                    CodigoCria = table.Column<string>(type: "text", nullable: false),
+                    SexoCria = table.Column<string>(type: "text", nullable: false),
+                    PesoCria = table.Column<double>(type: "double precision", nullable: false),
+                    EstadoCria = table.Column<int>(type: "integer", nullable: false),
+                    Observaciones = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Partos", x => x.IdParto);
+                    table.ForeignKey(
+                        name: "FK_Partos_Animales_IdAnimal",
+                        column: x => x.IdAnimal,
+                        principalTable: "Animales",
+                        principalColumn: "IdAnimal",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Producciones",
+                columns: table => new
+                {
+                    IdProduccion = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAnimal = table.Column<int>(type: "integer", nullable: false),
+                    fechaProduccion = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    cantidadLeche = table.Column<double>(type: "double precision", nullable: false),
+                    observaciones = table.Column<string>(type: "text", nullable: true),
+                    Turno = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Producciones", x => x.IdProduccion);
+                    table.ForeignKey(
+                        name: "FK_Producciones_Animales_IdAnimal",
+                        column: x => x.IdAnimal,
+                        principalTable: "Animales",
+                        principalColumn: "IdAnimal",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tareas",
                 columns: table => new
                 {
@@ -148,8 +196,8 @@ namespace CampoVerde.Migrations
                     FechaVencimiento = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Completada = table.Column<bool>(type: "boolean", nullable: false),
                     Prioridad = table.Column<int>(type: "integer", nullable: false),
-                    Encargado = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Notas = table.Column<string>(type: "text", nullable: false),
+                    Encargado = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    Notas = table.Column<string>(type: "text", nullable: true),
                     estado = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -164,6 +212,16 @@ namespace CampoVerde.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Partos_IdAnimal",
+                table: "Partos",
+                column: "IdAnimal");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Producciones_IdAnimal",
+                table: "Producciones",
+                column: "IdAnimal");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Tareas_IdAnimal",
                 table: "Tareas",
                 column: "IdAnimal");
@@ -173,6 +231,9 @@ namespace CampoVerde.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "AlimentosBovinos");
+
+            migrationBuilder.DropTable(
                 name: "Gastos");
 
             migrationBuilder.DropTable(
@@ -180,6 +241,9 @@ namespace CampoVerde.Migrations
 
             migrationBuilder.DropTable(
                 name: "Partos");
+
+            migrationBuilder.DropTable(
+                name: "Potreros");
 
             migrationBuilder.DropTable(
                 name: "Producciones");

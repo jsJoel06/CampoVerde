@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CampoVerde.Models
 {
@@ -8,18 +8,23 @@ namespace CampoVerde.Models
         [Key]
         public int IdVacuna { get; set; }
 
+        [Required]
         public int IdAnimal { get; set; }
 
-        public string nombreVacuna { get; set; }
+        [ForeignKey("IdAnimal")]
+        public virtual Animal? Animal { get; set; }
 
+        [Required]
+        public string nombreVacuna { get; set; } = string.Empty;
+
+        [Required]
         public int frecuenciaMeses { get; set; }
 
-        
+        [Required]
         public DateTime fechaAplicacion { get; set; }
 
-        // CORRECCIÓN: Usar { get; set; }
         public DateTime fechaProximaAplicacion { get; set; }
 
-        public string observaciones { get; set; }
+        public string? observaciones { get; set; }
     }
 }

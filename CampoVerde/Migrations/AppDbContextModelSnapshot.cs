@@ -170,6 +170,10 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdParto"));
 
+                    b.Property<string>("CodigoCria")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("EstadoCria")
                         .HasColumnType("integer");
 
@@ -179,19 +183,23 @@ namespace CampoVerde.Migrations
                     b.Property<int>("IdAnimal")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Observaciones")
+                    b.Property<string>("NombreCria")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PesoCria")
-                        .IsRequired()
+                    b.Property<string>("Observaciones")
                         .HasColumnType("text");
+
+                    b.Property<double>("PesoCria")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("SexoCria")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("IdParto");
+
+                    b.HasIndex("IdAnimal");
 
                     b.ToTable("Partos");
                 });
@@ -209,7 +217,6 @@ namespace CampoVerde.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("RutasFotos")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -355,6 +362,17 @@ namespace CampoVerde.Migrations
                     b.HasKey("IdVacuna");
 
                     b.ToTable("Vacunas");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Parto", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("IdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Produccion", b =>

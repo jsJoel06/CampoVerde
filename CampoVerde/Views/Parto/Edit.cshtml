@@ -1,0 +1,119 @@
+﻿@model CampoVerde.Models.Parto
+
+@{
+    ViewData["Title"] = "Editar Parto";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px 18px;
+    }
+
+    .btn-guardar {
+        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        border: none;
+    }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card-ganaderia">
+                <h2><i class="bi bi-pencil-square"></i> Editar Parto</h2>
+
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="IdParto" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="IdAnimal" class="form-label">Madre (Vaca)</label>
+                        <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal"></select>
+                        <span asp-validation-for="IdAnimal" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FechaParto" class="form-label">Fecha de Parto</label>
+                            <input asp-for="FechaParto" type="date" class="form-control" />
+                            <span asp-validation-for="FechaParto" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="PesoCria" class="form-label">Peso de la Cría (kg)</label>
+                            <input asp-for="PesoCria" type="number" step="0.1" class="form-control" />
+                            <span asp-validation-for="PesoCria" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="NombreCria" class="form-label">Nombre de la Cría</label>
+                            <input asp-for="NombreCria" class="form-control" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="CodigoCria" class="form-label">Código de la Cría</label>
+                            <input asp-for="CodigoCria" class="form-control" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SexoCria" class="form-label">Sexo</label>
+                        <select asp-for="SexoCria" class="form-select">
+                            <option value="Macho">Macho</option>
+                            <option value="Hembra">Hembra</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-cancelar">Cancelar</a>
+                        <button type="submit" class="btn btn-guardar">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

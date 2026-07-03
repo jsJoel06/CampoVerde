@@ -38,7 +38,7 @@
         color: #2d3a2d;
     }
 
-        .form-control:focus {
+        .form-control:focus, .form-select:focus {
             border-color: #4a7c4a;
             box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
         }
@@ -66,6 +66,7 @@
         border-radius: 50px;
         padding: 12px 35px;
         border: none;
+        text-decoration: none;
     }
 </style>
 
@@ -78,9 +79,12 @@
                 <form asp-action="Create">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                    <!-- Selector de Animal -->
                     <div class="mb-3">
-                        <label asp-for="IdAnimal" class="form-label">ID del Animal</label>
-                        <input asp-for="IdAnimal" class="form-control" placeholder="Ingrese el ID del animal" />
+                        <label asp-for="IdAnimal" class="form-label">Seleccionar Animal</label>
+                        <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal">
+                            <option value="">-- Seleccione un animal --</option>
+                        </select>
                         <span asp-validation-for="IdAnimal" class="text-danger"></span>
                     </div>
 
@@ -91,10 +95,8 @@
                     </div>
 
                     <div class="row">
-                        <!-- En tu Create.cshtml -->
-                        <div class="mb-3">
+                        <div class="col-md-6 mb-3">
                             <label asp-for="fechaAplicacion" class="form-label fw-bold">Fecha de Aplicación</label>
-                            <!-- Es vital el type="date" para que el navegador envíe el formato correcto -->
                             <input asp-for="fechaAplicacion" type="date" class="form-control" />
                             <span asp-validation-for="fechaAplicacion" class="text-danger"></span>
                         </div>
