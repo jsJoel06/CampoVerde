@@ -2,6 +2,7 @@
 {
     public enum EstadoRol
     {
+        SUPER_ADMINISTRADOR,
         ADMINISTRADOR,
         VETERINARIO,
         OPERARIO

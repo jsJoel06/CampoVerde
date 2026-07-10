@@ -2,7 +2,7 @@
 using CampoVerde.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 
 public class VacunaController : Controller
 {
@@ -22,110 +22,147 @@ public class VacunaController : Controller
     // GET: VACUNAS/Details/5
     public async Task<IActionResult> Details(int? id)
     {
-        if (id == null) return NotFound();
+        if (id == null)
+            return NotFound();
 
         var vacuna = await _context.Vacunas
             .FirstOrDefaultAsync(m => m.IdVacuna == id);
 
-        if (vacuna == null) return NotFound();
+        if (vacuna == null)
+            return NotFound();
 
         return View(vacuna);
     }
 
     // GET: VACUNAS/Create
-    // GET: Vacunas/Create
     public IActionResult Create()
     {
-        // Carga inicial
         ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre");
         return View();
     }
 
+    // POST: VACUNAS/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("IdAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
     {
         if (ModelState.IsValid)
         {
-            vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
+            vacuna.fechaAplicacion = DateTime.SpecifyKind(
+                vacuna.fechaAplicacion,
+                DateTimeKind.Utc);
+
             vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
 
-            _context.Add(vacuna);
+            _context.Vacunas.Add(vacuna);
+
+            // Notificación
+            _context.Notificaciones.Add(new Notificacion
+            {
+                Mensaje = $"Se registró una nueva vacuna: {vacuna.nombreVacuna}",
+                Fecha = DateTime.UtcNow,
+                Leida = false
+            });
+
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
-        // ¡IMPORTANTE! Si falla, debes volver a llenar el ViewBag antes de retornar la vista
-        ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre", vacuna.IdAnimal);
+        ViewBag.IdAnimal = new SelectList(
+            _context.Animales,
+            "IdAnimal",
+            "nombre",
+            vacuna.IdAnimal);
+
         return View(vacuna);
     }
 
-    // GET: Vacunas/Edit/5
+    // GET: VACUNAS/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
         var vacuna = await _context.Vacunas.FindAsync(id);
-        if (vacuna == null)
-        {
-            return NotFound();
-        }
 
-        // Aquí es donde se carga la vista Edit.cshtml con los datos actuales
+        if (vacuna == null)
+            return NotFound();
+
+        ViewBag.IdAnimal = new SelectList(
+            _context.Animales,
+            "IdAnimal",
+            "nombre",
+            vacuna.IdAnimal);
+
         return View(vacuna);
     }
 
-    // POST: VACUNAS/Edit/5
     // POST: VACUNAS/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, [Bind("IdVacuna,IdAnimal,nombreVacuna,fechaAplicacion,frecuenciaMeses,observaciones")] Vacuna vacuna)
     {
-        if (id != vacuna.IdVacuna) return NotFound();
+        if (id != vacuna.IdVacuna)
+            return NotFound();
 
-        // 1. Corregimos el KIND de la fecha antes de cualquier operación
-        vacuna.fechaAplicacion = DateTime.SpecifyKind(vacuna.fechaAplicacion, DateTimeKind.Utc);
+        vacuna.fechaAplicacion = DateTime.SpecifyKind(
+            vacuna.fechaAplicacion,
+            DateTimeKind.Utc);
 
-        // 2. Calculamos la próxima fecha
-        vacuna.fechaProximaAplicacion = vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
+        vacuna.fechaProximaAplicacion =
+            vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
 
         if (ModelState.IsValid)
         {
             try
             {
-                // 3. Importante: Para un Edit, lo ideal es obtener el registro actual 
-                // para no sobrescribir campos que no están en el Bind (como fechaProximaAplicacion 
-                // si fuera calculada en base de datos)
                 _context.Update(vacuna);
+
+                // Notificación
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    Mensaje = $"Se actualizó la vacuna: {vacuna.nombreVacuna}",
+                    Fecha = DateTime.UtcNow,
+                    Leida = false
+                });
+
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!VacunaExists(vacuna.IdVacuna)) return NotFound();
-                else throw;
+                if (!VacunaExists(vacuna.IdVacuna))
+                    return NotFound();
+
+                throw;
             }
+
             return RedirectToAction(nameof(Index));
         }
+
+        ViewBag.IdAnimal = new SelectList(
+            _context.Animales,
+            "IdAnimal",
+            "nombre",
+            vacuna.IdAnimal);
+
         return View(vacuna);
     }
 
     // GET: VACUNAS/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
-        if (id == null) return NotFound();
+        if (id == null)
+            return NotFound();
 
-        var vacuna = await _context.Vacunas.FirstOrDefaultAsync(m => m.IdVacuna == id);
-        if (vacuna == null) return NotFound();
+        var vacuna = await _context.Vacunas
+            .FirstOrDefaultAsync(m => m.IdVacuna == id);
+
+        if (vacuna == null)
+            return NotFound();
 
         return View(vacuna);
-
-
     }
-
-
 
     // POST: VACUNAS/Delete/5
     [HttpPost, ActionName("Delete")]
@@ -133,9 +170,22 @@ public class VacunaController : Controller
     public async Task<IActionResult> DeleteConfirmed(int? idvacuna)
     {
         var vacuna = await _context.Vacunas.FindAsync(idvacuna);
-        if (vacuna != null) _context.Vacunas.Remove(vacuna);
+
+        if (vacuna == null)
+            return NotFound();
+
+        // Notificación
+        _context.Notificaciones.Add(new Notificacion
+        {
+            Mensaje = $"Se eliminó la vacuna: {vacuna.nombreVacuna}",
+            Fecha = DateTime.UtcNow,
+            Leida = false
+        });
+
+        _context.Vacunas.Remove(vacuna);
 
         await _context.SaveChangesAsync();
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -144,21 +194,30 @@ public class VacunaController : Controller
         return _context.Vacunas.Any(e => e.IdVacuna == idvacuna);
     }
 
+    // HISTORIAL
     public IActionResult Historial(int? idAnimal)
     {
-        if (idAnimal == null) return NotFound();
-        var vacunas = _context.Vacunas.Where(v => v.IdAnimal == idAnimal).ToList();
+        if (idAnimal == null)
+            return NotFound();
+
+        var vacunas = _context.Vacunas
+            .Where(v => v.IdAnimal == idAnimal)
+            .ToList();
+
         return View(vacunas);
     }
 
+    // PRÓXIMAS VACUNAS
     public IActionResult ProximasVacunas()
     {
         DateTime hoy = DateTime.Today;
+
         var proximas = _context.Vacunas
-                               .Where(v => v.fechaProximaAplicacion >= hoy && v.fechaProximaAplicacion <= hoy.AddDays(30))
-                               .OrderBy(v => v.fechaProximaAplicacion)
-                               .ToList();
+            .Where(v => v.fechaProximaAplicacion >= hoy &&
+                        v.fechaProximaAplicacion <= hoy.AddDays(30))
+            .OrderBy(v => v.fechaProximaAplicacion)
+            .ToList();
+
         return View(proximas);
     }
-
 }

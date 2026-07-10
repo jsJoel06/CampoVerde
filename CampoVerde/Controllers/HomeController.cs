@@ -18,14 +18,44 @@ namespace CampoVerde.Controllers
         // En HomeController.cs
         public async Task<IActionResult> Index()
         {
-            // Carga todos, no solo 4, y pásalos como modelo o ViewBag
-            var potreros = await _context.Potreros.OrderBy(p => p.Id).ToListAsync();
 
-            // Si usas ViewBag:
-            ViewBag.Potreros = potreros;
+            ViewBag.Prueba = "Hola Mundo";
 
-            // O si usas un ViewModel (Recomendado):
-            // return View(new DashboardViewModel { Potreros = potreros });
+            // Potreros
+            ViewBag.Potreros = await _context.Potreros
+                .OrderBy(p => p.Id)
+                .ToListAsync();
+
+            // Próxima vacuna
+            ViewBag.ProximaVacuna = await _context.Vacunas
+                .Where(v => v.fechaProximaAplicacion.Date >= DateTime.UtcNow.Date)
+                .OrderBy(v => v.fechaProximaAplicacion)
+                .FirstOrDefaultAsync();
+
+            // Total de tareas
+            ViewBag.TotalTareas = await _context.Tareas.CountAsync();
+
+            // Tareas pendientes
+            ViewBag.TareasPendientes = await _context.Tareas
+                .CountAsync(t => !t.Completada);
+
+            // Ingresos de hoy
+            ViewBag.IngresosHoy = await _context.Ingresos
+                .Where(i => i.Fecha.Date == DateTime.UtcNow.Date)
+                .SumAsync(i => (decimal?)i.Monto) ?? 0;
+
+            // Gastos de hoy
+            ViewBag.GastosHoy = await _context.Gastos
+                .Where(g => g.Fecha.Date == DateTime.UtcNow.Date)
+                .SumAsync(g => (decimal?)g.Monto) ?? 0;
+
+            // Total de animales
+            ViewBag.TotalAnimales = await _context.Animales.CountAsync();
+
+            // Vacunas próximas (7 días)
+            ViewBag.AlertasVacunas = await _context.Vacunas
+                .CountAsync(v => v.fechaProximaAplicacion >= DateTime.UtcNow.Date &&
+                                 v.fechaProximaAplicacion <= DateTime.UtcNow.Date.AddDays(7));
 
             return View();
         }

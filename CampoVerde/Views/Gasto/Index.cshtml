@@ -126,6 +126,9 @@
                             <td>@(item.Animal?.nombre ?? "N/A")</td>
                             <td class="fw-bold text-danger">@item.Monto.ToString("C2")</td>
                             <td>
+                                <a asp-action="Details" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-info btn-accion" title="Ver Detalles">
+                                    <i class="bi bi-eye"></i>
+                                </a>
                                 <a asp-action="Edit" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-warning btn-accion"><i class="bi bi-pencil"></i></a>
                                 <a asp-action="Delete" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-danger btn-accion"><i class="bi bi-trash"></i></a>
                             </td>

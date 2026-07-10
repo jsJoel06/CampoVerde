@@ -1,0 +1,96 @@
+﻿@model CampoVerde.Models.Gasto
+
+@{
+    ViewData["Title"] = "Editar Gasto";
+}
+
+<style>
+    /* Estilo personalizado Campo Verde */
+    .card-verde {
+        border-top: 5px solid #28a745; /* Verde principal */
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        border-radius: 8px;
+    }
+
+    .btn-campo-verde {
+        background-color: #28a745;
+        color: white;
+    }
+
+        .btn-campo-verde:hover {
+            background-color: #218838;
+            color: white;
+        }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-verde p-4">
+                <h2 class="text-success mb-4"><i class="bi bi-pencil-square"></i> Editar Gasto</h2>
+                <hr />
+
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="IdGasto" />
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Concepto" class="control-label fw-bold"></label>
+                            <input asp-for="Concepto" class="form-control" />
+                            <span asp-validation-for="Concepto" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Monto" class="control-label fw-bold"></label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                <input asp-for="Monto" class="form-control" type="number" step="0.01" />
+                            </div>
+                            <span asp-validation-for="Monto" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Fecha" class="control-label fw-bold"></label>
+                            <input asp-for="Fecha" type="date" class="form-control" />
+                            <span asp-validation-for="Fecha" class="text-danger"></span>
+                        </div>
+
+                        <div class="col-md-6 form-group mb-3">
+                            <label asp-for="Categoria" class="control-label fw-bold"></label>
+                            <select asp-for="Categoria" class="form-select" asp-items="Html.GetEnumSelectList<CampoVerde.Models.CategoriaGasto>()">
+                                <option value="">-- Seleccione categoría --</option>
+                            </select>
+                            <span asp-validation-for="Categoria" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="IdAnimal" class="control-label fw-bold">Animal relacionado</label>
+                        <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal">
+                            <option value="">-- Sin animal relacionado --</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Notas" class="control-label fw-bold"></label>
+                        <textarea asp-for="Notas" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                        <button type="submit" class="btn btn-campo-verde px-4">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

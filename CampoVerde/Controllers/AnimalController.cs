@@ -54,11 +54,23 @@ namespace CampoVerde.Controllers
 
                 // 3. Guardar en base de datos
                 _context.Add(animal);
+
+                // --- INICIO DE NOTIFICACIÓN AUTOMÁTICA ---
+                var nuevaNotif = new CampoVerde.Models.Notificacion
+                {
+                    Mensaje = $"Se ha registrado un nuevo animal: {animal.nombre}",
+                    Fecha = DateTime.UtcNow,
+                    Leida = false
+                };
+                _context.Add(nuevaNotif);
+                // --- FIN DE NOTIFICACIÓN ---
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(animal);
         }
+
 
         // GET: Animal/Edit/5
         public async Task<IActionResult> Edit(int id)
@@ -69,51 +81,75 @@ namespace CampoVerde.Controllers
         }
 
         // POST: Animal/Edit/5
+        // POST: Animal/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
         {
-            if (id != animal.IdAnimal) return NotFound();
+            if (id != animal.IdAnimal)
+                return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // 1. Obtener el registro actual para mantener la imagen si no se carga una nueva
-                    var animalExistente = await _context.Animales.AsNoTracking().FirstOrDefaultAsync(a => a.IdAnimal == id);
+                    // Obtener el registro actual
+                    var animalExistente = await _context.Animales
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(a => a.IdAnimal == id);
 
-                    if (animalExistente != null)
+                    if (animalExistente == null)
+                        return NotFound();
+
+                    // Manejo de imagen
+                    if (imagenArchivo != null && imagenArchivo.Length > 0)
                     {
-                        if (imagenArchivo != null && imagenArchivo.Length > 0)
-                        {
-                            string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
-                            string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
+                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
+                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
 
-                            using (var stream = new FileStream(path, FileMode.Create))
-                            {
-                                await imagenArchivo.CopyToAsync(stream);
-                            }
-                            animal.imagen = "/images/ganado/" + fileName;
-                        }
-                        else
+                        using (var stream = new FileStream(path, FileMode.Create))
                         {
-                            animal.imagen = animalExistente.imagen;
+                            await imagenArchivo.CopyToAsync(stream);
                         }
+
+                        animal.imagen = "/images/ganado/" + fileName;
+                    }
+                    else
+                    {
+                        animal.imagen = animalExistente.imagen;
                     }
 
+                    // Fecha UTC
                     if (animal.fechaNacimiento.HasValue)
-                        animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
+                    {
+                        animal.fechaNacimiento = DateTime.SpecifyKind(
+                            animal.fechaNacimiento.Value,
+                            DateTimeKind.Utc);
+                    }
 
-                    _context.Update(animal);
+                    // Actualizar animal
+                    _context.Animales.Update(animal);
+
+                    // Agregar notificación
+                    _context.Notificaciones.Add(new Notificacion
+                    {
+                        Mensaje = $"Se ha actualizado el animal: {animal.nombre}",
+                        Fecha = DateTime.UtcNow,
+                        Leida = false
+                    });
+
+                    // Guardar todo
                     await _context.SaveChangesAsync();
+
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception ex)
                 {
-                    if (!_context.Animales.Any(e => e.IdAnimal == id)) return NotFound();
-                    else throw;
+                    Console.WriteLine(ex.ToString());
+                    throw;
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(animal);
         }
 
@@ -130,14 +166,33 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var animal = await _context.Animales.FindAsync(id);
-            if (animal != null)
+            try
             {
+                var animal = await _context.Animales.FindAsync(id);
+
+                if (animal == null)
+                    return NotFound();
+
+                _context.Notificaciones.Add(new Notificacion
+                {
+                    Mensaje = $"Se ha eliminado el animal: {animal.nombre}",
+                    Fecha = DateTime.UtcNow,
+                    Leida = false
+                });
+
                 _context.Animales.Remove(animal);
+
                 await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
             }
-            return RedirectToAction(nameof(Index));
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                throw;
+            }
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {

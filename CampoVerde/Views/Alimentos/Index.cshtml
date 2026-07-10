@@ -2,10 +2,13 @@
 
 @{
     ViewData["Title"] = "Inventario de Alimentos";
+
+    var total = Model.Count();
+    var stockBajo = Model.Count(x => x.CantidadDisponible <= x.NivelAlerta);
+    var stockOk = total - stockBajo;
 }
 
 <style>
-
     body {
         background: #eef7ee;
     }
@@ -17,7 +20,7 @@
 
     .card-inventario {
         border: none;
-        border-radius: 20px;
+        border-radius: 22px;
         overflow: hidden;
     }
 
@@ -45,39 +48,51 @@
 
         .table thead th {
             color: #2e7d32;
-            font-weight: 600;
             border: none;
+            font-weight: 600;
         }
 
-    .table tbody tr {
-        transition: .2s;
+    .table tbody tr:hover {
+        background: #f7fcf7;
     }
-
-        .table tbody tr:hover {
-            background: #f4fbf4;
-        }
 
     .badge-categoria {
         background: #43a047;
         color: white;
-        padding: 8px 12px;
+        padding: 8px 14px;
         border-radius: 20px;
     }
 
     .estado-ok {
         color: #2e7d32;
-        font-weight: bold;
+        font-weight: 600;
     }
 
     .estado-alerta {
         color: #d32f2f;
-        font-weight: bold;
+        font-weight: 600;
     }
 
-    .btn-editar {
-        border-radius: 10px;
+    .card-kpi {
+        border: none;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,.08);
+        transition: .3s;
     }
 
+        .card-kpi:hover {
+            transform: translateY(-5px);
+        }
+
+    .icono {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 28px;
+    }
 </style>
 
 <div class="container py-5">
@@ -85,33 +100,121 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
-
             <h2 class="page-title">
                 🌿 Inventario de Alimentos
             </h2>
 
-            <p class="text-muted mb-0">
-                Gestión del inventario de alimentos para el ganado.
+            <p class="text-muted">
+                Administración del inventario de alimentos para el ganado.
             </p>
+        </div>
+
+        <div>
+
+            <a asp-action="Historial" class="btn btn-outline-secondary me-2">
+                <i class="bi bi-clock-history"></i>
+                Historial
+            </a>
+
+            <a asp-action="AddForm" class="btn btn-verde">
+                <i class="bi bi-plus-circle-fill"></i>
+                Nuevo Alimento
+            </a>
 
         </div>
 
-        <a asp-action="AddForm" class="btn btn-verde px-4">
+    </div>
 
-            <i class="bi bi-plus-circle-fill me-2"></i>
+    <!-- Indicadores -->
 
-            Nuevo Alimento
+    <div class="row mb-4">
 
-        </a>
+        <div class="col-md-4">
+
+            <div class="card card-kpi p-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="icono bg-success text-white">
+                        <i class="bi bi-basket-fill"></i>
+                    </div>
+
+                    <div class="ms-3">
+
+                        <small class="text-muted">
+                            Total de alimentos
+                        </small>
+
+                        <h3>@total</h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card card-kpi p-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="icono bg-warning text-dark">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+
+                    <div class="ms-3">
+
+                        <small class="text-muted">
+                            Stock bajo
+                        </small>
+
+                        <h3>@stockBajo</h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="card card-kpi p-3">
+
+                <div class="d-flex align-items-center">
+
+                    <div class="icono bg-primary text-white">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+
+                    <div class="ms-3">
+
+                        <small class="text-muted">
+                            Stock óptimo
+                        </small>
+
+                        <h3>@stockOk</h3>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
 
     </div>
 
-    <div class="card card-inventario shadow-sm">
+    <div class="card card-inventario shadow">
 
         <div class="card-header-verde">
 
             <h4 class="mb-0">
-                <i class="bi bi-basket-fill me-2"></i>
+                <i class="bi bi-box-seam"></i>
                 Lista de Alimentos
             </h4>
 
@@ -129,7 +232,7 @@
 
                         <th>Categoría</th>
 
-                        <th>Stock Disponible</th>
+                        <th>Disponible</th>
 
                         <th>Estado</th>
 
@@ -146,25 +249,18 @@
                         <tr>
 
                             <td class="ps-4">
-
                                 <strong>@item.Nombre</strong>
-
                             </td>
 
                             <td>
-
                                 <span class="badge-categoria">
-
                                     @item.Categoria
-
                                 </span>
-
                             </td>
 
                             <td>
-
-                                <strong>@item.CantidadDisponible</strong> @item.Unidad
-
+                                <strong>@item.CantidadDisponible</strong>
+                                @item.Unidad
                             </td>
 
                             <td>
@@ -186,14 +282,22 @@
 
                             <td class="text-center">
 
+                                <a asp-action="Details"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-info btn-sm">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+
                                 <a asp-action="AddForm"
                                    asp-route-id="@item.Id"
-                                   class="btn btn-outline-success btn-editar">
+                                   class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-pencil-fill"></i>
+                                </a>
 
-                                    <i class="bi bi-pencil-square"></i>
-
-                                    Editar
-
+                                <a asp-action="Delete"
+                                   asp-route-id="@item.Id"
+                                   class="btn btn-outline-danger btn-sm">
+                                    <i class="bi bi-trash-fill"></i>
                                 </a>
 
                             </td>

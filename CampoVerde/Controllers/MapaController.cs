@@ -14,14 +14,14 @@ public class MapaController : Controller
         _env = env;
     }
 
-    // 🔥 DASHBOARD: 4 potreros
+    // DASHBOARD
     public async Task<IActionResult> Index()
     {
         var potreros = await _context.Potreros.ToListAsync();
         return View(potreros);
     }
 
-    // 🔥 FORM CREATE/EDIT
+    // FORM CREATE/EDIT
     public async Task<IActionResult> AddForm(int? id)
     {
         if (id == null)
@@ -42,7 +42,7 @@ public class MapaController : Controller
         return View(potrero);
     }
 
-    // 🔥 GUARDAR
+    // GUARDAR
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Guardar(Potrero potrero)
@@ -51,6 +51,7 @@ public class MapaController : Controller
             return View("AddForm", potrero);
 
         var carpeta = Path.Combine(_env.WebRootPath, "uploads");
+
         if (!Directory.Exists(carpeta))
             Directory.CreateDirectory(carpeta);
 
@@ -72,7 +73,8 @@ public class MapaController : Controller
             }
         }
 
-        var existente = await _context.Potreros.FirstOrDefaultAsync(x => x.Id == potrero.Id);
+        var existente = await _context.Potreros
+            .FirstOrDefaultAsync(x => x.Id == potrero.Id);
 
         if (existente == null)
         {
@@ -84,6 +86,14 @@ public class MapaController : Controller
             };
 
             _context.Potreros.Add(existente);
+
+            // Notificación de creación
+            _context.Notificaciones.Add(new Notificacion
+            {
+                Mensaje = $"Se registró un nuevo potrero: {existente.Nombre}",
+                Fecha = DateTime.UtcNow,
+                Leida = false
+            });
         }
         else
         {
@@ -98,6 +108,14 @@ public class MapaController : Controller
             existente.RutasFotos = string.Join(";", fotosAntiguas);
 
             _context.Potreros.Update(existente);
+
+            // Notificación de edición
+            _context.Notificaciones.Add(new Notificacion
+            {
+                Mensaje = $"Se actualizó el potrero: {existente.Nombre}",
+                Fecha = DateTime.UtcNow,
+                Leida = false
+            });
         }
 
         await _context.SaveChangesAsync();

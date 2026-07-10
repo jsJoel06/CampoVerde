@@ -3,6 +3,7 @@ using System;
 using CampoVerde.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampoVerde.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260704003512_FixForeignKeyGasto")]
+    partial class FixForeignKeyGasto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,9 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdGasto"));
 
+                    b.Property<int>("AnimalIdAnimal")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Categoria")
                         .HasColumnType("integer");
 
@@ -129,7 +135,7 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdGasto");
 
-                    b.HasIndex("IdAnimal");
+                    b.HasIndex("AnimalIdAnimal");
 
                     b.ToTable("Gastos");
                 });
@@ -161,32 +167,7 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdIngreso");
 
-                    b.HasIndex("IdAnimal");
-
                     b.ToTable("Ingresos");
-                });
-
-            modelBuilder.Entity("CampoVerde.Models.Notificacion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("Leida")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Mensaje")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Notificaciones");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Parto", b =>
@@ -396,16 +377,9 @@ namespace CampoVerde.Migrations
                 {
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
-                        .HasForeignKey("IdAnimal");
-
-                    b.Navigation("Animal");
-                });
-
-            modelBuilder.Entity("CampoVerde.Models.Ingreso", b =>
-                {
-                    b.HasOne("CampoVerde.Models.Animal", "Animal")
-                        .WithMany()
-                        .HasForeignKey("IdAnimal");
+                        .HasForeignKey("AnimalIdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Animal");
                 });

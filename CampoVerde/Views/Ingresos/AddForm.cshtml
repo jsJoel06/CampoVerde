@@ -1,0 +1,133 @@
+﻿@model CampoVerde.Models.Ingreso
+
+@{
+    ViewData["Title"] = (Model?.IdIngreso == 0) ? "Registrar Nueva Venta" : "Editar Registro de Venta";
+}
+
+<style>
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .form-label {
+        color: #3d663d;
+        font-weight: 600;
+    }
+
+    .form-control, .form-select {
+        background-color: #f5f9f5 !important;
+        border: 1px solid #c8d9c8;
+        border-radius: 15px;
+        padding: 12px 18px;
+        color: #2d3a2d;
+    }
+
+        .form-control:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 0.2rem rgba(74, 124, 74, 0.25);
+        }
+
+    .btn-crear {
+        background: linear-gradient(135deg, #4a7c4a, #346334);
+        color: white;
+        border-radius: 50px;
+        padding: 12px 45px;
+        font-weight: bold;
+        border: none;
+        transition: all 0.4s ease;
+    }
+
+        .btn-crear:hover {
+            background: #2d4d2d;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(61, 102, 61, 0.3);
+            color: white;
+        }
+
+    .btn-cancelar {
+        background-color: #d1e0d1;
+        color: #2d4d2d;
+        border-radius: 50px;
+        padding: 12px 35px;
+        border: none;
+        text-decoration: none;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-9 col-lg-8">
+            <div class="card card-ganaderia">
+                <h2 class="mb-4">@ViewData["Title"]</h2>
+
+                <form asp-action="Save" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="IdIngreso" />
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label asp-for="IdAnimal" class="form-label">Animal relacionado</label>
+                            <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.Animales">
+                                <option value="">-- Seleccione un animal (Opcional) --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Concepto" class="form-label">Concepto</label>
+                            <input asp-for="Concepto" class="form-control" placeholder="Ej. Venta de novillo" />
+                            <span asp-validation-for="Concepto" class="text-danger small"></span>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <label asp-for="Monto" class="form-label">Monto (RD$)</label>
+                            <input asp-for="Monto" type="number" step="0.01" class="form-control" placeholder="0.00" />
+                            <span asp-validation-for="Monto" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label asp-for="Fecha" class="form-label">Fecha</label>
+                            <input asp-for="Fecha" type="date" class="form-control" />
+                            <span asp-validation-for="Fecha" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-4">
+                            <label asp-for="Notas" class="form-label">Notas</label>
+                            <textarea asp-for="Notas" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notas" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <a asp-action="Index" class="btn btn-cancelar">Cancelar</a>
+                        <button type="submit" class="btn btn-crear">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

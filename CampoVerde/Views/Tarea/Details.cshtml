@@ -1,118 +1,262 @@
 ﻿@model CampoVerde.Models.Tarea
 
 @{
-    ViewData["Title"] = "Detalles de Tarea";
+    ViewData["Title"] = "Detalles de la Tarea";
 }
 
-<div class="container mt-5">
+<style>
+    body {
+        background: #eef6ee;
+    }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="fw-bold text-primary">Detalles de la Tarea</h2>
+    .card-campo {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+        overflow: hidden;
+    }
 
-        <span class="badge bg-secondary fs-6">
-            ID: @Model.IdTarea
-        </span>
-    </div>
+    .header-campo {
+        background: linear-gradient(135deg,#2e7d32,#4caf50);
+        color: white;
+        padding: 25px;
+    }
 
-    <div class="card border-0 shadow-lg rounded-4">
+    .info-card {
+        background: white;
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 3px 12px rgba(0,0,0,.05);
+        height: 100%;
+        transition: .3s;
+    }
+
+        .info-card:hover {
+            transform: translateY(-4px);
+        }
+
+    .titulo {
+        font-size: .85rem;
+        color: #6c757d;
+        margin-bottom: 5px;
+    }
+
+    .valor {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #1b4332;
+    }
+
+    .btn-campo {
+        background: #2e7d32;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 25px;
+    }
+
+        .btn-campo:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
+    .badge-prioridad {
+        font-size: 15px;
+        padding: 10px 18px;
+    }
+</style>
+
+<div class="container py-5">
+
+    <div class="card card-campo">
+
+        <div class="header-campo d-flex justify-content-between align-items-center">
+
+            <div>
+
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-list-check"></i>
+                    Detalles de la Tarea
+                </h2>
+
+                <small>Campo Verde • Gestión Ganadera</small>
+
+            </div>
+
+            <span class="badge bg-light text-success fs-6">
+                ID #@Model.IdTarea
+            </span>
+
+        </div>
+
         <div class="card-body p-4">
 
             <div class="row g-4">
 
-                <!-- Descripción -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Descripción</small>
-                        <h5 class="mb-0">@Model.Descripcion</h5>
+                    <div class="info-card">
+                        <div class="titulo">
+                            <i class="bi bi-card-text"></i>
+                            Descripción
+                        </div>
+
+                        <div class="valor">
+                            @Model.Descripcion
+                        </div>
                     </div>
                 </div>
 
-                <!-- Animal -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Animal</small>
-                        <h5 class="mb-0">
-                            @Model.Animal?.nombre ?? "Sin animal"
-                        </h5>
+                    <div class="info-card">
+                        <div class="titulo">
+                            <i class="bi bi-cow"></i>
+                            Animal
+                        </div>
+
+                        <div class="valor">
+                            @(Model.Animal?.nombre ?? "Sin animal")
+                        </div>
                     </div>
                 </div>
 
-                <!-- Fecha -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Fecha de vencimiento</small>
-                        <h5 class="mb-0">
+                    <div class="info-card">
+                        <div class="titulo">
+                            <i class="bi bi-calendar-event"></i>
+                            Fecha de vencimiento
+                        </div>
+
+                        <div class="valor">
                             @Model.FechaVencimiento.ToString("dd/MM/yyyy")
-                        </h5>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Prioridad -->
                 <div class="col-md-6">
-                    <div class="p-3 rounded-3 text-white
-                        @(Model.Prioridad.ToString() == "Alta" ? "bg-danger" :
-                           Model.Prioridad.ToString() == "Urgente" ? "bg-dark" :
-                           Model.Prioridad.ToString() == "Media" ? "bg-warning text-dark" :
-                           "bg-success")">
 
-                        <small>Prioridad</small>
-                        <h5 class="mb-0">@Model.Prioridad</h5>
+                    <div class="info-card">
+
+                        <div class="titulo">
+                            <i class="bi bi-flag-fill"></i>
+                            Prioridad
+                        </div>
+
+                        @if (Model.Prioridad.ToString() == "Urgente")
+                        {
+                            <span class="badge bg-dark badge-prioridad">@Model.Prioridad</span>
+                        }
+                        else if (Model.Prioridad.ToString() == "Alta")
+                        {
+                            <span class="badge bg-danger badge-prioridad">@Model.Prioridad</span>
+                        }
+                        else if (Model.Prioridad.ToString() == "Media")
+                        {
+                            <span class="badge bg-warning text-dark badge-prioridad">@Model.Prioridad</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success badge-prioridad">@Model.Prioridad</span>
+                        }
+
                     </div>
+
                 </div>
 
-                <!-- Estado -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Estado</small>
-                        <h5 class="mb-0">@Model.estado</h5>
+                    <div class="info-card">
+
+                        <div class="titulo">
+                            <i class="bi bi-check-circle"></i>
+                            Estado
+                        </div>
+
+                        @if (Model.Completada)
+                        {
+                            <span class="badge bg-success fs-6">
+                                ✔ Completada
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-warning text-dark fs-6">
+                                Pendiente
+                            </span>
+                        }
+
                     </div>
                 </div>
 
-                <!-- Completada -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Completada</small>
-                        <h5 class="mb-0">
-                            @(Model.Completada ? "Sí ✔" : "No ❌")
-                        </h5>
+                    <div class="info-card">
+
+                        <div class="titulo">
+                            <i class="bi bi-diagram-3"></i>
+                            Estado del Registro
+                        </div>
+
+                        <div class="valor">
+                            @Model.estado
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- Encargado -->
                 <div class="col-md-6">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Encargado</small>
-                        <h5 class="mb-0">@Model.Encargado</h5>
+                    <div class="info-card">
+
+                        <div class="titulo">
+                            <i class="bi bi-person-fill"></i>
+                            Encargado
+                        </div>
+
+                        <div class="valor">
+                            @Model.Encargado
+                        </div>
+
                     </div>
                 </div>
 
-                <!-- Notas -->
                 <div class="col-12">
-                    <div class="p-3 bg-light rounded-3">
-                        <small class="text-muted">Notas</small>
-                        <p class="mb-0">@Model.Notas</p>
+                    <div class="info-card">
+
+                        <div class="titulo">
+                            <i class="bi bi-journal-text"></i>
+                            Observaciones
+                        </div>
+
+                        <div class="valor">
+                            @(string.IsNullOrWhiteSpace(Model.Notas)
+                                ? "No existen observaciones."
+                                : Model.Notas)
+                        </div>
+
                     </div>
                 </div>
 
             </div>
 
         </div>
+
     </div>
 
-    <!-- Botones -->
-    <div class="mt-4 d-flex gap-2">
+    <div class="mt-4 d-flex justify-content-end gap-3">
+
         <a asp-action="Edit"
            asp-route-id="@Model.IdTarea"
-           class="btn btn-primary px-4">
+           class="btn btn-campo">
 
-            ✏️ Editar
+            <i class="bi bi-pencil-square"></i>
+            Editar
+
         </a>
 
         <a asp-action="Index"
-           class="btn btn-secondary px-4">
+           class="btn btn-outline-secondary rounded-pill">
 
-            ⬅ Volver
+            <i class="bi bi-arrow-left"></i>
+            Volver
+
         </a>
+
     </div>
 
 </div>

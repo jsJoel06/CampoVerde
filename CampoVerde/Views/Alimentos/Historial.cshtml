@@ -1,0 +1,267 @@
+﻿@model IEnumerable<CampoVerde.Models.AlimentoBovino>
+
+@{
+    ViewData["Title"] = "Historial de Alimentos";
+}
+
+<style>
+    body {
+        background: #eef7ee;
+    }
+
+    .card-verde {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+
+    .header-verde {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        padding: 20px;
+    }
+
+    .badge-stock {
+        background: #43a047;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 30px;
+    }
+
+    .btn-verde {
+        background: #2e7d32;
+        color: white;
+        border-radius: 10px;
+    }
+
+        .btn-verde:hover {
+            background: #1b5e20;
+            color: white;
+        }
+
+    .table thead {
+        background: #dcedc8;
+    }
+
+        .table thead th {
+            color: #2e7d32;
+            font-weight: 700;
+            border: none;
+        }
+
+    .table tbody tr {
+        transition: .25s;
+    }
+
+        .table tbody tr:hover {
+            background: #f4fbf4;
+        }
+
+    .input-group-text {
+        background: #2e7d32;
+        color: white;
+        border: none;
+    }
+
+    #buscarAlimento {
+        border-radius: 0 10px 10px 0;
+    }
+
+    .contador {
+        color: #2e7d32;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container py-5">
+
+    <!-- ENCABEZADO -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold text-success">
+                <i class="bi bi-clock-history"></i>
+                Historial de Alimentos
+            </h2>
+
+            <p class="text-muted mb-0">
+                Consulta el historial completo del inventario de alimentos.
+            </p>
+
+        </div>
+
+        <a asp-action="Index" class="btn btn-verde">
+            <i class="bi bi-arrow-left-circle me-2"></i>
+            Volver
+        </a>
+
+    </div>
+
+    <!-- BUSCADOR -->
+    <div class="row mb-3">
+
+        <div class="col-md-6">
+
+            <div class="input-group shadow-sm">
+
+                <span class="input-group-text">
+                    <i class="bi bi-search"></i>
+                </span>
+
+                <input type="text"
+                       id="buscarAlimento"
+                       class="form-control"
+                       placeholder="Buscar por nombre, categoría o unidad..." />
+
+            </div>
+
+        </div>
+
+        <div class="col-md-6 text-end">
+
+            <span class="contador">
+                Total de registros:
+                <span id="contadorRegistros">@Model.Count()</span>
+            </span>
+
+        </div>
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="card card-verde">
+
+        <div class="header-verde">
+
+            <h4 class="mb-0">
+                <i class="bi bi-journal-text me-2"></i>
+                Historial del Inventario
+            </h4>
+
+        </div>
+
+        <div class="card-body p-0">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead>
+
+                    <tr>
+
+                        <th class="ps-4">ID</th>
+
+                        <th>Nombre</th>
+
+                        <th>Categoría</th>
+
+                        <th>Cantidad</th>
+
+                        <th>Unidad</th>
+
+                        <th>Nivel Alerta</th>
+
+                        <th>Estado</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="tablaAlimentos">
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td class="ps-4">
+                                @item.Id
+                            </td>
+
+                            <td>
+                                <strong>@item.Nombre</strong>
+                            </td>
+
+                            <td>
+                                @item.Categoria
+                            </td>
+
+                            <td>
+                                <span class="badge-stock">
+                                    @item.CantidadDisponible
+                                </span>
+                            </td>
+
+                            <td>
+                                @item.Unidad
+                            </td>
+
+                            <td>
+                                @item.NivelAlerta
+                            </td>
+
+                            <td>
+
+                                @if (item.CantidadDisponible <= item.NivelAlerta)
+                                {
+                                    <span class="badge bg-danger">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        Stock Bajo
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-success">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Stock Óptimo
+                                    </span>
+                                }
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    const buscador = document.getElementById("buscarAlimento");
+    const filas = document.querySelectorAll("#tablaAlimentos tr");
+    const contador = document.getElementById("contadorRegistros");
+
+    buscador.addEventListener("keyup", function () {
+
+        const texto = this.value.toLowerCase();
+        let visibles = 0;
+
+        filas.forEach(function (fila) {
+
+            const contenido = fila.textContent.toLowerCase();
+
+            if (contenido.includes(texto)) {
+
+                fila.style.display = "";
+                visibles++;
+
+            } else {
+
+                fila.style.display = "none";
+
+            }
+
+        });
+
+        contador.innerText = visibles;
+
+    });
+
+</script>

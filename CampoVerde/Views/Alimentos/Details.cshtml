@@ -1,0 +1,226 @@
+﻿@model CampoVerde.Models.AlimentoBovino
+
+@{
+    ViewData["Title"] = "Detalles del Alimento";
+}
+
+<style>
+    body {
+        background: #eef7ee;
+    }
+
+    .card-campo {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    }
+
+    .header-campo {
+        background: linear-gradient(135deg,#2e7d32,#43a047);
+        color: white;
+        border-radius: 25px 25px 0 0;
+        padding: 25px;
+    }
+
+    .info-card {
+        background: #f8fbf8;
+        border-left: 5px solid #43a047;
+        border-radius: 15px;
+        padding: 18px;
+        height: 100%;
+    }
+
+    .info-title {
+        font-size: .9rem;
+        color: gray;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #2d2d2d;
+    }
+
+    .badge-stock {
+        padding: 8px 18px;
+        border-radius: 30px;
+        font-size: .95rem;
+    }
+
+    .btn-verde {
+        background: #2e7d32;
+        color: white;
+        border-radius: 30px;
+        padding: 10px 30px;
+    }
+
+        .btn-verde:hover {
+            background: #256628;
+            color: white;
+        }
+</style>
+
+<div class="container py-5">
+
+    <div class="card card-campo">
+
+        <div class="header-campo">
+
+            <div class="d-flex justify-content-between align-items-center">
+
+                <div>
+                    <h2 class="mb-1">
+                        🌿 @Model.Nombre
+                    </h2>
+
+                    <small>
+                        Información completa del alimento bovino
+                    </small>
+                </div>
+
+                <span class="badge bg-light text-success fs-6">
+                    ID #@Model.Id
+                </span>
+
+            </div>
+
+        </div>
+
+        <div class="card-body p-5">
+
+            <div class="row g-4">
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Nombre
+                        </div>
+
+                        <div class="info-value">
+                            @Model.Nombre
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Categoría
+                        </div>
+
+                        <div class="info-value">
+                            @Model.Categoria
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Cantidad Disponible
+                        </div>
+
+                        <div class="info-value">
+                            @Model.CantidadDisponible @Model.Unidad
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Nivel de Alerta
+                        </div>
+
+                        <div class="info-value">
+                            @Model.NivelAlerta @Model.Unidad
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Estado del Inventario
+                        </div>
+
+                        @if (Model.CantidadDisponible <= Model.NivelAlerta)
+                        {
+                            <span class="badge bg-danger badge-stock">
+                                ⚠ Stock Bajo
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success badge-stock">
+                                ✔ Stock Óptimo
+                            </span>
+                        }
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <div class="info-title">
+                            Unidad de Medida
+                        </div>
+
+                        <div class="info-value">
+                            @Model.Unidad
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="mt-4 d-flex gap-3">
+
+        <a asp-action="AddForm"
+           asp-route-id="@Model.Id"
+           class="btn btn-verde">
+
+            <i class="bi bi-pencil-square"></i>
+            Editar
+
+        </a>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary rounded-pill px-4">
+
+            <i class="bi bi-arrow-left"></i>
+            Volver
+
+        </a>
+
+    </div>
+
+</div>

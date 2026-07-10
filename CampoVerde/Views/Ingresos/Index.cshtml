@@ -1,0 +1,186 @@
+﻿@model IEnumerable<CampoVerde.Models.Ingreso>
+
+@{
+    ViewData["Title"] = "Registro de Ingresos";
+}
+
+<style>
+    .tabla-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 35px;
+    }
+
+    .btn-registrar {
+        background: linear-gradient(135deg, #4a7c4a, #346334);
+        color: white;
+        border-radius: 50px;
+        padding: 10px 30px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+        .btn-registrar:hover {
+            background: #2d4d2d;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .table {
+        color: #2d3a2d;
+    }
+
+        .table thead {
+            color: #3d663d;
+            border-bottom: 2px solid #d4e0d4;
+        }
+
+    .badge-animal {
+        background-color: #eaf2e9;
+        color: #3d663d;
+        border: 1px solid #c8d9c8;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.85em;
+    }
+
+    /* Estilos para acciones modernas */
+    .action-btn {
+        padding: 6px 12px;
+        border-radius: 10px;
+        font-size: 0.9em;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-block;
+        border: 1px solid transparent;
+    }
+
+    .btn-edit {
+        background-color: #fff3cd;
+        color: #856404;
+        border-color: #ffeeba;
+    }
+
+        .btn-edit:hover {
+            background-color: #ffeeba;
+            transform: translateY(-2px);
+        }
+
+    .btn-delete {
+        background-color: #f8d7da;
+        color: #721c24;
+        border-color: #f5c6cb;
+    }
+
+        .btn-delete:hover {
+            background-color: #f5c6cb;
+            transform: translateY(-2px);
+        }
+
+    .btn-details {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border-color: #d6d8db;
+    }
+
+        .btn-details:hover {
+            background-color: #d6d8db;
+            transform: translateY(-2px);
+        }
+
+    .btn-history {
+        background-color: #d1ecf1;
+        color: #0c5460;
+        border-color: #bee5eb;
+    }
+
+        .btn-history:hover {
+            background-color: #bee5eb;
+            transform: translateY(-2px);
+        }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="tabla-ganaderia">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Registro de Ventas</h2>
+            <a asp-action="AddForm" class="btn-registrar"><i class="fas fa-plus-circle"></i> Nueva Venta</a>
+        </div>
+
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Concepto</th>
+                    <th>Animal</th>
+                    <th>Monto</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">@item.Fecha.ToShortDateString()</td>
+                            <td>@item.Concepto</td>
+                            <td>
+                                <span class="badge-animal">
+                                    @(item.Animal?.nombre ?? "General")
+                                </span>
+                            </td>
+                            <td class="text-success fw-bold">@item.Monto.ToString("C")</td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Detalles -->
+                                    <a asp-action="Details" asp-route-id="@item.IdIngreso" class="action-btn btn-details" title="Ver Detalles">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+
+                                    <!-- Historial -->
+                                    @if (item.IdAnimal.HasValue)
+                                    {
+                                        <a asp-action="Historial" asp-route-idAnimal="@item.IdAnimal" class="action-btn btn-history" title="Historial del Animal">
+                                            <i class="fas fa-history"></i>
+                                        </a>
+                                    }
+
+                                    <!-- Editar -->
+                                    <a asp-action="AddForm" asp-route-id="@item.IdIngreso" class="action-btn btn-edit" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+
+                                    <!-- Eliminar -->
+                                    <form asp-action="Delete" asp-route-id="@item.IdIngreso" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="action-btn btn-delete" title="Eliminar"
+                                                onclick="return confirm('¿Seguro que deseas eliminar?')">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">No hay ventas registradas.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

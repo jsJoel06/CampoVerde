@@ -1,0 +1,83 @@
+﻿@model CampoVerde.Models.Ingreso
+
+@{
+    ViewData["Title"] = "Detalle de Venta";
+}
+
+<style>
+    .tabla-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .label-campo {
+        font-weight: bold;
+        color: #3d663d;
+    }
+
+    .card-detalle {
+        background: #fff;
+        padding: 20px;
+        border-radius: 20px;
+        border: 1px solid #e9ecef;
+    }
+
+    .btn-acciones {
+        padding: 10px 25px;
+        border-radius: 50px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="tabla-ganaderia">
+                <h2><i class="fas fa-info-circle"></i> Detalle de Venta</h2>
+
+                <div class="card-detalle">
+                    <dl class="row">
+                        <dt class="col-sm-4 label-campo">Concepto:</dt>
+                        <dd class="col-sm-8">@Model.Concepto</dd>
+
+                        <dt class="col-sm-4 label-campo">Fecha:</dt>
+                        <dd class="col-sm-8">@Model.Fecha.ToLongDateString()</dd>
+
+                        <dt class="col-sm-4 label-campo">Animal Asociado:</dt>
+                        <dd class="col-sm-8">
+                            <span class="badge" style="background-color: #eaf2e9; color: #3d663d; border-radius: 20px; padding: 5px 15px;">
+                                @(Model.Animal?.nombre ?? "Ninguno")
+                            </span>
+                        </dd>
+
+                        <dt class="col-sm-4 label-campo">Monto:</dt>
+                        <dd class="col-sm-8 text-success fw-bold fs-5">@Model.Monto.ToString("C")</dd>
+
+                        <dt class="col-sm-4 label-campo">Notas:</dt>
+                        <dd class="col-sm-8 text-muted">@(string.IsNullOrEmpty(Model.Notas) ? "Sin observaciones adicionales." : Model.Notas)</dd>
+                    </dl>
+                </div>
+
+                <div class="mt-4 d-flex gap-2">
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-acciones">
+                        <i class="fas fa-arrow-left"></i> Volver al Registro
+                    </a>
+                    <a asp-action="AddForm" asp-route-id="@Model.IdIngreso" class="btn btn-warning btn-acciones" style="color: #856404;">
+                        <i class="fas fa-edit"></i> Editar Registro
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

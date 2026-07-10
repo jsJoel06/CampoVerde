@@ -51,6 +51,8 @@
 
 <div class="container py-5">
     <div class="mb-5">
+
+
         <h2 class="fw-bold" style="color: #1a3c1a;">Bienvenido, Joel</h2>
         <p style="color: #3d663d;">Panel central de gestión para Ganadería Campo Verde</p>
     </div>
@@ -84,10 +86,21 @@
             <div class="card-dashboard h-100">
                 <h5 class="text-secondary small text-uppercase fw-bold">Operaciones</h5>
                 <p class="mt-3 mb-0 fw-bold" style="color: #1a3c1a;">Próxima vacunación</p>
-                <small class="text-secondary">Fecha: 15 de Junio</small>
+
+                @if (ViewBag.ProximaVacuna != null)
+                {
+                    <!-- Mostramos el nombre de la vacuna y la fecha -->
+                    <p class="mb-0 text-success fw-bold">@ViewBag.ProximaVacuna.nombreVacuna</p>
+                    <small class="text-secondary">
+                        Fecha: @ViewBag.ProximaVacuna.fechaProximaAplicacion.ToString("dd 'de' MMMM")
+                    </small>
+                }
+                else
+                {
+                    <small class="text-muted">No hay próximas programadas</small>
+                }
             </div>
         </div>
-    </div>
 
     <div class="row g-4">
         <div class="col-lg-8">

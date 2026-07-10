@@ -1,0 +1,107 @@
+﻿@model CampoVerde.Models.Gasto
+
+@{
+    ViewData["Title"] = "Detalles del Gasto";
+}
+
+<style>
+    /* Diseño Minimalista Campo Verde */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid #e0e8e0;
+        border-radius: 25px;
+        padding: 2rem;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+    }
+
+    .header-icon {
+        background-color: #d1e0d1;
+        color: #1a3c1a;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+
+    .info-group {
+        border-bottom: 1px solid #f0f0f0;
+        padding: 1rem 0;
+    }
+
+    .info-label {
+        color: #889988;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .info-value {
+        color: #2d3a2d;
+        font-weight: 500;
+        font-size: 1.05rem;
+        margin-top: 2px;
+    }
+
+    .btn-custom {
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="glass-card text-center">
+                <div class="header-icon">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <h4 class="mb-4" style="color: #1a3c1a;">Detalles del Gasto</h4>
+
+                <div class="text-start">
+                    <div class="info-group">
+                        <span class="info-label">Concepto</span>
+                        <div class="info-value">@Model.Concepto</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 info-group">
+                            <span class="info-label">Monto</span>
+                            <div class="info-value text-success">$@Model.Monto.ToString("N2")</div>
+                        </div>
+                        <div class="col-6 info-group">
+                            <span class="info-label">Fecha</span>
+                            <div class="info-value">@Model.Fecha.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Categoría</span>
+                        <div class="info-value">@Model.Categoria</div>
+                    </div>
+
+                    <div class="info-group">
+                        <span class="info-label">Animal relacionado</span>
+                        <div class="info-value">
+                            @(Model.Animal?.nombre ?? "Sin animal asociado")
+                        </div>
+                    </div>
+
+                    <div class="info-group border-0">
+                        <span class="info-label">Notas</span>
+                        <div class="info-value">@(string.IsNullOrEmpty(Model.Notas) ? "-" : Model.Notas)</div>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <a asp-action="Edit" asp-route-id="@Model?.IdGasto" class="btn btn-outline-success btn-custom">Editar</a>
+                    <a asp-action="Index" class="btn btn-light btn-custom">Volver al listado</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

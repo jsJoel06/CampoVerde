@@ -71,25 +71,63 @@
 
     <!-- 2. INDICADORES -->
     <div class="row g-3 mb-5">
-        @foreach (var kpi in new[] {
-            new { T = "Tareas", V = "6", I = "bi-list-check", C = "text-success" },
-            new { T = "Ventas Hoy", V = "$2,400", I = "bi-cash-coin", C = "text-primary" },
-            new { T = "Gastos", V = "$850", I = "bi-graph-down", C = "text-danger" },
-            new { T = "Alertas", V = "1", I = "bi-exclamation-triangle", C = "text-warning" }
-        })
-        {
-            <div class="col-md-3">
-                <div class="card card-ganaderia border-0 p-3">
-                    <div class="d-flex align-items-center">
-                        <div class="fs-3 @kpi.C"><i class="bi @kpi.I"></i></div>
-                        <div class="ms-3">
-                            <h6 class="text-muted small mb-0">@kpi.T</h6>
-                            <h5 class="fw-bold mb-0">@kpi.V</h5>
-                        </div>
+
+        <div class="col-md-3">
+            <div class="card card-ganaderia border-0 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="fs-3 text-success">
+                        <i class="bi bi-list-check"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="text-muted small mb-0">Tareas Pendientes</h6>
+                        <h5 class="fw-bold">@ViewBag.TareasPendientes</h5>
                     </div>
                 </div>
             </div>
-        }
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-ganaderia border-0 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="fs-3 text-primary">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="text-muted small mb-0">Ingresos Hoy</h6>
+                        <h5 class="fw-bold">$@ViewBag.IngresosHoy</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-ganaderia border-0 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="fs-3 text-danger">
+                        <i class="bi bi-graph-down"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="text-muted small mb-0">Gastos Hoy</h6>
+                        <h5 class="fw-bold">$@ViewBag.GastosHoy</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card card-ganaderia border-0 p-3">
+                <div class="d-flex align-items-center">
+                    <div class="fs-3 text-warning">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                    <div class="ms-3">
+                        <h6 class="text-muted small mb-0">Vacunas Próximas</h6>
+                        <h5 class="fw-bold">@ViewBag.AlertasVacunas</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <!-- 3. GESTIÓN OPERATIVA -->
@@ -123,7 +161,7 @@
                 <div class="bg-success bg-opacity-10 text-success rounded-circle p-3 me-4"><i class="bi bi-cart-plus-fill fs-2"></i></div>
                 <div>
                     <h5 class="fw-bold mb-1">Registro de Ventas</h5>
-                    <a href="/Ventas/Index" class="btn btn-sm btn-outline-success rounded-pill">Ver Ventas</a>
+                    <a href="/Ingresos/Index" class="btn btn-sm btn-outline-success rounded-pill">Ver Ventas</a>
                 </div>
             </div>
         </div>

@@ -1,0 +1,213 @@
+﻿@model CampoVerde.Models.AlimentoBovino
+
+@{
+    ViewData["Title"] = "Eliminar Alimento";
+}
+
+<style>
+
+    body {
+        background: #eef7ee;
+    }
+
+    .card-delete {
+        border: none;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.10);
+        overflow: hidden;
+    }
+
+    .header-delete {
+        background: linear-gradient(135deg,#c62828,#e53935);
+        color: white;
+        padding: 25px;
+    }
+
+    .dato {
+        background: #f5f8f5;
+        border-radius: 15px;
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+
+        .dato small {
+            color: #777;
+        }
+
+    .btn-danger-custom {
+        background: #c62828;
+        color: white;
+        border-radius: 12px;
+        padding: 10px 25px;
+        border: none;
+    }
+
+        .btn-danger-custom:hover {
+            background: #8e0000;
+            color: white;
+        }
+
+    .btn-volver {
+        border-radius: 12px;
+        padding: 10px 25px;
+    }
+
+</style>
+
+
+<div class="container py-5">
+
+
+    <div class="card card-delete">
+
+
+        <!-- HEADER -->
+
+        <div class="header-delete">
+
+            <h2 class="mb-0">
+
+                <i class="bi bi-trash-fill"></i>
+
+                Eliminar Alimento
+
+            </h2>
+
+            <p class="mb-0 mt-2">
+                Esta acción eliminará este registro del inventario.
+            </p>
+
+        </div>
+
+
+
+        <div class="card-body p-4">
+
+
+            <div class="alert alert-danger">
+
+                <i class="bi bi-exclamation-triangle-fill"></i>
+
+                ¿Está seguro que desea eliminar este alimento?
+
+                <strong>Esta acción no se puede deshacer.</strong>
+
+            </div>
+
+
+
+            <div class="row">
+
+
+                <div class="col-md-6">
+
+                    <div class="dato">
+
+                        <small>
+                            Nombre
+                        </small>
+
+                        <h5 class="mb-0 fw-bold">
+                            @Model.Nombre
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-md-6">
+
+                    <div class="dato">
+
+                        <small>
+                            Categoría
+                        </small>
+
+                        <h5 class="mb-0">
+                            @Model.Categoria
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-md-6">
+
+                    <div class="dato">
+
+                        <small>
+                            Cantidad disponible
+                        </small>
+
+                        <h5 class="mb-0">
+                            @Model.CantidadDisponible @Model.Unidad
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-md-6">
+
+                    <div class="dato">
+
+                        <small>
+                            Nivel de alerta
+                        </small>
+
+                        <h5 class="mb-0">
+                            @Model.NivelAlerta
+                        </h5>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+
+            <form asp-action="Delete" method="post" class="mt-4">
+
+
+                <input type="hidden" asp-for="Id" />
+
+
+                <button type="submit"
+                        class="btn btn-danger-custom">
+
+                    <i class="bi bi-trash"></i>
+
+                    Sí, eliminar
+
+                </button>
+
+
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary btn-volver ms-2">
+
+                    <i class="bi bi-arrow-left"></i>
+
+                    Cancelar
+
+                </a>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

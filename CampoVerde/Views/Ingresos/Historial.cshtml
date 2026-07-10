@@ -1,0 +1,104 @@
+﻿@model IEnumerable<CampoVerde.Models.Ingreso>
+
+@{
+    ViewData["Title"] = "Historial del Animal";
+}
+
+<style>
+    .tabla-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+    }
+
+    h2 {
+        font-family: 'Georgia', serif;
+        color: #1a3c1a;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .subtitle {
+        color: #557755;
+        margin-bottom: 30px;
+    }
+
+    .btn-volver {
+        background-color: #e2e3e5;
+        color: #383d41;
+        border-radius: 50px;
+        padding: 8px 20px;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+        .btn-volver:hover {
+            background-color: #d6d8db;
+            color: #000;
+        }
+
+    .table {
+        color: #2d3a2d;
+    }
+
+        .table thead {
+            color: #3d663d;
+            border-bottom: 2px solid #d4e0d4;
+        }
+</style>
+
+<div class="container mt-5 mb-5">
+    <div class="tabla-ganaderia">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2>Historial de Ingresos</h2>
+                <p class="subtitle">Animal: <strong>@ViewBag.AnimalNombre</strong></p>
+            </div>
+            <a asp-action="Index" class="btn-volver"><i class="fas fa-arrow-left"></i> Volver a Ventas</a>
+        </div>
+
+        <table class="table table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Concepto</th>
+                    <th>Notas</th>
+                    <th class="text-end">Monto</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.Fecha.ToShortDateString()</td>
+                            <td>@item.Concepto</td>
+                            <td class="text-muted">@(item.Notas ?? "Sin observaciones")</td>
+                            <td class="text-success fw-bold text-end">@item.Monto.ToString("C")</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            No se encontraron registros históricos para este animal.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                @if (Model != null && Model.Any())
+                {
+                    <tr class="border-top">
+                        <td colspan="3" class="text-end fw-bold">Total Acumulado:</td>
+                        <td class="text-success fw-bold text-end">@Model.Sum(i => i.Monto).ToString("C")</td>
+                    </tr>
+                }
+            </tfoot>
+        </table>
+    </div>
+</div>
