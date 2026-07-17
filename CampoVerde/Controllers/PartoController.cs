@@ -20,8 +20,17 @@ namespace CampoVerde.Controllers
         //=========================
         public async Task<IActionResult> Index()
         {
-            var partos = await _context.Partos
-                .Include(p => p.Animal)
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Parto> consulta = _context.Partos.Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var partos = await consulta
                 .OrderByDescending(p => p.FechaParto)
                 .ToListAsync();
 
@@ -38,8 +47,17 @@ namespace CampoVerde.Controllers
         //=========================
         public async Task<IActionResult> Historial()
         {
-            var historial = await _context.Partos
-                .Include(p => p.Animal)
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Parto> consulta = _context.Partos.Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var historial = await consulta
                 .OrderByDescending(p => p.FechaParto)
                 .ToListAsync();
 
@@ -54,9 +72,17 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var parto = await _context.Partos
-                .Include(p => p.Animal)
-                .FirstOrDefaultAsync(x => x.IdParto == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Parto> consulta = _context.Partos.Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var parto = await consulta.FirstOrDefaultAsync(x => x.IdParto == id);
 
             if (parto == null)
                 return NotFound();
@@ -64,14 +90,28 @@ namespace CampoVerde.Controllers
             return View(parto);
         }
 
+
         //=========================
         // CREATE
         //=========================
         public IActionResult Create()
         {
-            ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre");
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            var animales = _context.Animales.AsQueryable();
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
+            ViewData["IdAnimal"] = new SelectList(animales, "IdAnimal", "nombre");
+
             return View();
+
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -93,6 +133,15 @@ namespace CampoVerde.Controllers
                     ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre", parto.IdAnimal);
                     return View(parto);
                 }
+
+                var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                if (clienteId == null)
+                {
+                    return Unauthorized();
+                }
+
+                parto.ClienteId = clienteId.Value;
 
                 // Registrar el parto
                 _context.Partos.Add(parto);
@@ -127,6 +176,7 @@ namespace CampoVerde.Controllers
 
             return View(parto);
         }
+
         //=========================
         // EDIT
         //=========================
@@ -135,7 +185,17 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var parto = await _context.Partos.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Parto> consulta = _context.Partos;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var parto = await consulta.FirstOrDefaultAsync(p => p.IdParto == id);
 
             if (parto == null)
                 return NotFound();
@@ -156,6 +216,9 @@ namespace CampoVerde.Controllers
             {
                 try
                 {
+                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
+                    parto.ClienteId = clienteId.Value;
+
                     _context.Update(parto);
                     await _context.SaveChangesAsync();
                 }
@@ -182,10 +245,17 @@ namespace CampoVerde.Controllers
         {
             if (id == null)
                 return NotFound();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            var parto = await _context.Partos
-                .Include(p => p.Animal)
-                .FirstOrDefaultAsync(x => x.IdParto == id);
+            IQueryable<Parto> consulta = _context.Partos.Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var parto = await consulta.FirstOrDefaultAsync(x => x.IdParto == id);
 
             if (parto == null)
                 return NotFound();
@@ -193,17 +263,28 @@ namespace CampoVerde.Controllers
             return View(parto);
         }
 
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parto = await _context.Partos.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            if (parto != null)
+            IQueryable<Parto> consulta = _context.Partos;
+
+            if (rol != "SUPER_ADMINISTRADOR")
             {
-                _context.Partos.Remove(parto);
-                await _context.SaveChangesAsync();
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
             }
+
+            var parto = await consulta.FirstOrDefaultAsync(p => p.IdParto == id);
+
+            if (parto == null)
+                return NotFound();
+
+            _context.Partos.Remove(parto);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

@@ -15,71 +15,489 @@ namespace CampoVerde.Controllers
             _context = context;
         }
 
-        // En HomeController.cs
+        // HOME
         public async Task<IActionResult> Index()
         {
-
             ViewBag.Prueba = "Hola Mundo";
 
-            // Potreros
-            ViewBag.Potreros = await _context.Potreros
-                .OrderBy(p => p.Id)
+
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+
+            IQueryable<Animal> animales = _context.Animales;
+
+            IQueryable<Tarea> tareas = _context.Tareas
+                .Include(t => t.Animal);
+
+            IQueryable<Ingreso> ingresos = _context.Ingresos
+                .Include(i => i.Animal);
+
+            IQueryable<Gasto> gastos = _context.Gastos
+                .Include(g => g.Animal);
+
+            IQueryable<Vacuna> vacunas = _context.Vacunas
+                .Include(v => v.Animal);
+
+            IQueryable<Potrero> potreros = _context.Potreros;
+
+
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+
+                animales = animales
+                    .Where(a => a.ClienteId == clienteId);
+
+
+                tareas = tareas
+                    .Where(t => t.Animal.ClienteId == clienteId);
+
+
+                ingresos = ingresos
+                    .Where(i => i.Animal.ClienteId == clienteId);
+
+
+                gastos = gastos
+                    .Where(g => g.Animal.ClienteId == clienteId);
+
+
+                vacunas = vacunas
+                    .Where(v => v.Animal.ClienteId == clienteId);
+
+
+
+                potreros = potreros
+                    .Where(p => p.ClienteId == clienteId);
+
+            }
+
+
+
+
+
+            // =========================
+            // POTREROS
+            // =========================
+
+            ViewBag.Potreros = await potreros
+                .OrderByDescending(p => p.Id)
+                .Take(6)
                 .ToListAsync();
 
-            // Próxima vacuna
-            ViewBag.ProximaVacuna = await _context.Vacunas
-                .Where(v => v.fechaProximaAplicacion.Date >= DateTime.UtcNow.Date)
+
+
+
+
+            // =========================
+            // VACUNAS
+            // =========================
+
+
+            ViewBag.ProximaVacuna = await vacunas
                 .OrderBy(v => v.fechaProximaAplicacion)
                 .FirstOrDefaultAsync();
 
-            // Total de tareas
-            ViewBag.TotalTareas = await _context.Tareas.CountAsync();
 
-            // Tareas pendientes
-            ViewBag.TareasPendientes = await _context.Tareas
-                .CountAsync(t => !t.Completada);
 
-            // Ingresos de hoy
-            ViewBag.IngresosHoy = await _context.Ingresos
-                .Where(i => i.Fecha.Date == DateTime.UtcNow.Date)
-                .SumAsync(i => (decimal?)i.Monto) ?? 0;
+            ViewBag.VacunasPendientes = await vacunas
+                .CountAsync(v =>
+                    v.fechaProximaAplicacion >= DateTime.UtcNow.Date);
 
-            // Gastos de hoy
-            ViewBag.GastosHoy = await _context.Gastos
-                .Where(g => g.Fecha.Date == DateTime.UtcNow.Date)
-                .SumAsync(g => (decimal?)g.Monto) ?? 0;
 
-            // Total de animales
-            ViewBag.TotalAnimales = await _context.Animales.CountAsync();
 
-            // Vacunas próximas (7 días)
-            ViewBag.AlertasVacunas = await _context.Vacunas
-                .CountAsync(v => v.fechaProximaAplicacion >= DateTime.UtcNow.Date &&
-                                 v.fechaProximaAplicacion <= DateTime.UtcNow.Date.AddDays(7));
+
+
+
+            // =========================
+            // ANIMALES
+            // =========================
+
+
+            ViewBag.TotalReses =
+                await animales.CountAsync();
+
+
+
+            ViewBag.AnimalesActivos =
+                await animales
+                .CountAsync(a =>
+                    a.Estado == EstadoAnimal.ACTIVO);
+
+
+
+            ViewBag.AnimalesEnfermos =
+                await animales
+                .CountAsync(a =>
+                    a.Estado == EstadoAnimal.ENFERMO);
+
+
+
+            ViewBag.AnimalesObservacion =
+                await animales
+                .CountAsync(a =>
+                    a.Estado == EstadoAnimal.OBSERVACION);
+
+
+
+            // =========================
+            // TAREAS
+            // =========================
+
+
+            ViewBag.TotalTareas =
+                await tareas.CountAsync();
+
+
+            ViewBag.TareasPendientes =
+                await tareas
+                .CountAsync(t =>
+                    !t.Completada);
+
+
+            // =========================
+            // FINANZAS
+            // =========================
+
+
+            ViewBag.IngresosHoy =
+                await ingresos
+                .Where(i =>
+                    i.Fecha.Date == DateTime.UtcNow.Date)
+                .SumAsync(i =>
+                    (decimal?)i.Monto) ?? 0;
+
+
+
+            ViewBag.GastosHoy =
+                await gastos
+                .Where(g =>
+                    g.Fecha.Date == DateTime.UtcNow.Date)
+                .SumAsync(g =>
+                    (decimal?)g.Monto) ?? 0;
+
+
+            // =========================
+            // STOCK BAJO
+            // =========================
+            // Ajustar cuando tengas modelo de inventario
+
+
+            ViewBag.StockBajo = 0;
+
+
+            // =========================
+            // ULTIMOS ANIMALES
+            // =========================
+
+
+            ViewBag.UltimosAnimales =
+                await animales
+                .OrderByDescending(a => a.IdAnimal)
+                .Take(5)
+                .ToListAsync();
+
+            // =========================
+            // PARTOS
+            // =========================
+
+            ViewBag.ProximosPartos = 0;
+
+
+            ViewBag.ListaPartos = new List<Parto>();
+
 
             return View();
         }
 
-        // Dashboard funcional con corrección de fechas
+        // DASHBOARD
         public async Task<IActionResult> Dashboard()
         {
-            // Obtenemos la fecha actual en formato UTC para evitar conflictos de zona horaria con PostgreSQL
             var hoy = DateTime.UtcNow;
+            var inicioMes = new DateTime(
+    hoy.Year,
+    hoy.Month,
+    1,
+    0,
+    0,
+    0,
+    DateTimeKind.Utc
+);
 
-            ViewBag.TotalAnimales = await _context.Animales.CountAsync();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            ViewBag.TareasPendientes = await _context.Tareas
-                .CountAsync();
 
-            
-            ViewBag.VacunasVencidas = await _context.Vacunas
-                .CountAsync(v => v.fechaProximaAplicacion < hoy);
+            // ==============================
+            // CONSULTAS BASE
+            // ==============================
 
-            ViewBag.IngresosMes = await _context.Ingresos
-                .Where(i => i.Fecha.Month == hoy.Month && i.Fecha.Year == hoy.Year)
-                .SumAsync(i => (decimal?)i.Monto) ?? 0; // Manejo de nulos por si no hay ingresos
+            IQueryable<Animal> animales = _context.Animales;
+
+            IQueryable<Tarea> tareas =
+                _context.Tareas
+                .Include(t => t.Animal);
+
+
+            IQueryable<Vacuna> vacunas =
+                _context.Vacunas
+                .Include(v => v.Animal);
+
+
+            IQueryable<Ingreso> ingresos =
+                _context.Ingresos
+                .Include(i => i.Animal);
+
+
+            IQueryable<Gasto> gastos =
+                _context.Gastos
+                .Include(g => g.Animal);
+
+
+            IQueryable<Produccion> producciones =
+                _context.Producciones
+                .Include(p => p.Animal);
+
+
+            IQueryable<Parto> partos =
+                _context.Partos
+                .Include(p => p.Animal);
+
+
+
+            // ==============================
+            // FILTRO POR CLIENTE
+            // ==============================
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+
+                animales =
+                    animales.Where(a =>
+                    a.ClienteId == clienteId);
+
+
+
+                tareas =
+                    tareas.Where(t =>
+                    t.Animal.ClienteId == clienteId);
+
+
+
+                vacunas =
+                    vacunas.Where(v =>
+                    v.Animal.ClienteId == clienteId);
+
+
+
+                ingresos =
+                    ingresos.Where(i =>
+                    i.Animal.ClienteId == clienteId);
+
+
+
+                gastos =
+                    gastos.Where(g =>
+                    g.Animal.ClienteId == clienteId);
+
+
+
+                producciones =
+                    producciones.Where(p =>
+                    p.Animal.ClienteId == clienteId);
+
+
+
+                partos =
+                    partos.Where(p =>
+                    p.Animal.ClienteId == clienteId);
+
+            }
+
+
+
+
+            // ==============================
+            // TARJETAS PRINCIPALES
+            // ==============================
+
+
+            ViewBag.TotalAnimales =
+                await animales.CountAsync();
+
+
+
+            ViewBag.TareasPendientes =
+                await tareas.CountAsync(t =>
+                !t.Completada);
+
+
+
+            ViewBag.VacunasVencidas =
+                await vacunas.CountAsync(v =>
+                v.fechaProximaAplicacion < hoy);
+
+
+
+            ViewBag.IngresosMes =
+                await ingresos
+                .Where(i =>
+                i.Fecha >= inicioMes)
+                .SumAsync(i =>
+                (decimal?)i.Monto) ?? 0;
+
+
+
+            // ==============================
+            // GASTOS
+            // ==============================
+
+
+            ViewBag.GastosMes =
+                await gastos
+                .Where(g =>
+                g.Fecha >= inicioMes)
+                .SumAsync(g =>
+                (decimal?)g.Monto) ?? 0;
+
+
+
+            // ==============================
+            // PRODUCCIÓN
+            // ==============================
+
+
+            ViewBag.ProduccionHoy =
+                await producciones
+                .Where(p =>
+                p.fechaProduccion.Date == hoy.Date)
+                .SumAsync(p =>
+                (decimal?)p.cantidadLeche) ?? 0;
+
+
+
+            ViewBag.ProduccionSemana =
+                await producciones
+                .Where(p =>
+                p.fechaProduccion >= hoy.AddDays(-7))
+                .SumAsync(p =>
+                (decimal?)p.cantidadLeche) ?? 0;
+
+
+
+            ViewBag.ProduccionMes =
+                await producciones
+                .Where(p =>
+                p.fechaProduccion >= inicioMes)
+                .SumAsync(p =>
+                (decimal?)p.cantidadLeche) ?? 0;
+
+
+
+
+            // ==============================
+            // ESTADO ANIMALES
+            // ==============================
+
+
+            ViewBag.AnimalesActivos =
+                await animales.CountAsync(a =>
+                a.Estado == EstadoAnimal.ACTIVO);
+
+
+
+            ViewBag.AnimalesEnfermos =
+                await animales.CountAsync(a =>
+                a.Estado == EstadoAnimal.ENFERMO);
+
+
+
+            ViewBag.AnimalesObservacion =
+                await animales.CountAsync(a =>
+                a.Estado == EstadoAnimal.OBSERVACION);
+
+
+
+
+
+            // ==============================
+            // ALIMENTOS
+            // ==============================
+
+
+            ViewBag.StockBajo =
+                await _context.AlimentosBovinos
+                .CountAsync(a =>
+                a.CantidadDisponible <= a.NivelAlerta);
+
+
+
+
+
+            // ==============================
+            // PARTOS
+            // ==============================
+
+
+            ViewBag.ProximosPartos =
+                await partos
+                .CountAsync(p =>
+                p.FechaParto >= hoy);
+
+
+
+            ViewBag.ListaPartos =
+                await partos
+                .OrderBy(p =>
+                p.FechaParto)
+                .Take(5)
+                .ToListAsync();
+
+
+
+
+
+            // ==============================
+            // ULTIMOS ANIMALES
+            // ==============================
+
+
+            ViewBag.UltimosAnimales =
+                await animales
+                .OrderByDescending(a =>
+                a.IdAnimal)
+                .Take(5)
+                .ToListAsync();
+
+
+
+            // ==============================
+            // PERMISOS PARA DASHBOARD
+            // ==============================
+
+
+            ViewBag.Rol = rol;
+
+
+            ViewBag.EsSuperAdmin =
+                rol == "SUPER_ADMINISTRADOR";
+
+
+            ViewBag.EsAdmin =
+                rol == "ADMINISTRADOR";
+
+
+            ViewBag.EsVeterinario =
+                rol == "VETERINARIO";
+
+
+            ViewBag.EsOperario =
+                rol == "OPERARIO";
+
+
 
             return View();
+
         }
 
         public IActionResult Privacy()
@@ -87,10 +505,16 @@ namespace CampoVerde.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        [ResponseCache(Duration = 0,
+            Location = ResponseCacheLocation.None,
+            NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel
+            {
+                RequestId = Activity.Current?.Id ??
+                            HttpContext.TraceIdentifier
+            });
         }
     }
 }

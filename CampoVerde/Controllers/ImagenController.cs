@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using CampoVerde.Data;
-
+﻿using CampoVerde.Data;
+using CampoVerde.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace CampoVerde.Controllers
 {
     public class ImagenController : Controller
     {
-
         private readonly AppDbContext _context;
 
         public ImagenController(AppDbContext context)
@@ -15,25 +15,50 @@ namespace CampoVerde.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> subirFoto(int animalId, IFormFile fotos)
+        public async Task<IActionResult> SubirFoto(int animalId, IFormFile fotos)
         {
-            if( fotos != null && fotos.Length > 0)
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Animal> consulta = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
             {
-                var nombreArchivo = $"{animalId}_{Guid.NewGuid()}.jpg";
-                var rutaGuardado = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes", nombreArchivo);
+                consulta = consulta.Where(a => a.ClienteId == clienteId);
+            }
+
+            var animal = await consulta.FirstOrDefaultAsync(a => a.IdAnimal == animalId);
+
+            if (animal == null)
+                return NotFound();
+
+            if (fotos != null && fotos.Length > 0)
+            {
+                string carpeta = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot",
+                    "imagenes");
+
+                if (!Directory.Exists(carpeta))
+                    Directory.CreateDirectory(carpeta);
+
+                string extension = Path.GetExtension(fotos.FileName);
+
+                string nombreArchivo = $"{animalId}_{Guid.NewGuid()}{extension}";
+
+                string rutaGuardado = Path.Combine(carpeta, nombreArchivo);
 
                 using (var stream = new FileStream(rutaGuardado, FileMode.Create))
                 {
                     await fotos.CopyToAsync(stream);
                 }
-                var animal = await _context.Animales.FindAsync(animalId);
+
                 animal.imagen = nombreArchivo;
+
                 await _context.SaveChangesAsync();
-               
             }
 
-            return RedirectToAction("Detalles", "Animal", new { id = animalId });
+            return RedirectToAction("Details", "Animal", new { id = animalId });
         }
-
     }
 }

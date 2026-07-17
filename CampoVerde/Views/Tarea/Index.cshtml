@@ -1,162 +1,472 @@
 ﻿@model IEnumerable<CampoVerde.Models.Tarea>
+@using CampoVerde.Models
 
 @{
     ViewData["Title"] = "Gestión de Tareas";
+
+    var rol = Context.Session.GetString("Rol");
+
+
+    bool puedeAdministrar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
+
+
+    bool puedeEditar =
+        puedeAdministrar ||
+        rol == EstadoRol.VETERINARIO.ToString();
+
+
+    bool esOperario =
+        rol == EstadoRol.OPERARIO.ToString();
+
 }
 
+
 <style>
+
     body {
         background-color: #eaf2e9;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Segoe UI',sans-serif;
     }
+
 
     .card-ganaderia {
-        background-color: #fdfdf5;
+        background: #fdfdf5;
         border-radius: 30px;
-        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
-        padding: 30px;
+        padding: 35px;
         border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
     }
 
+
+
     h2 {
-        font-family: 'Georgia', serif;
         color: #1a3c1a;
+        font-family: Georgia,serif;
         font-weight: 700;
     }
 
-    .table thead {
-        background-color: #f5f9f5;
-        color: #3d663d;
-    }
 
-    .table td, .table th {
-        vertical-align: middle;
-        padding: 1.2rem;
-    }
 
     .btn-nueva {
-        background: linear-gradient(135deg, #4a7c4a, #346334);
+        background: linear-gradient(135deg,#4a7c4a,#346334);
         color: white;
         border-radius: 50px;
-        padding: 10px 30px;
+        padding: 10px 25px;
         font-weight: bold;
-        border: none;
-        transition: all 0.4s ease;
     }
+
+
 
         .btn-nueva:hover {
             background: #2d4d2d;
-            transform: translateY(-2px);
             color: white;
         }
+
+
+
+    .table thead {
+        background: #f5f9f5;
+        color: #3d663d;
+    }
+
+
+
+    .table td,
+    .table th {
+        padding: 1.2rem;
+        vertical-align: middle;
+    }
+
+
 
     .badge {
         padding: 8px 15px;
         border-radius: 20px;
-        font-weight: 600;
-        font-size: 0.85em;
     }
+
+
+
+    .action-btn {
+        width: 35px;
+        height: 35px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+
 </style>
 
+
+
+
+
 <div class="container mt-5 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-md-11">
-            <div class="card card-ganaderia">
 
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2>📋 Gestión de Tareas</h2>
-                        <p class="text-muted">Organización de labores en Campo Verde</p>
-                    </div>
 
-                    <a asp-action="Create" class="btn btn-nueva">
-                        <i class="bi bi-plus-lg"></i> Nueva Tarea
-                    </a>
-                </div>
+    <div class="card-ganaderia">
 
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Descripción</th>
-                                <th>Animal</th>
-                                <th>Prioridad</th>
-                                <th>Vencimiento</th>
-                                <th>Estado</th>
-                                <th class="text-center">Acciones</th>
-                            </tr>
-                        </thead>
 
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
-                                <tr>
-                                    <td class="fw-bold text-dark">
-                                        @item.Descripcion
-                                    </td>
 
-                                    <td>
-                                        @if (item.Animal != null)
-                                        {
-                                            <span class="text-success fw-bold">
-                                                @item.Animal.nombre
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted small">
-                                                <em>Sin asignar</em>
-                                            </span>
-                                        }
-                                    </td>
+        <div class="d-flex justify-content-between align-items-center mb-4">
 
-                                    <td>
-                                        <span class="badge @(item.Prioridad == PrioridadTarea.Urgente ? "bg-danger" : "bg-info text-dark")">
-                                            @item.Prioridad
-                                        </span>
-                                    </td>
 
-                                    <td class="text-secondary">
-                                        @item.FechaVencimiento.ToString("dd/MM/yyyy")
-                                    </td>
+            <div>
 
-                                    <td>
-                                        <span class="badge @(item.Completada ? "bg-success" : "bg-warning text-dark")">
-                                            @(item.Completada ? "Completada" : "Pendiente")
-                                        </span>
-                                    </td>
+                <h2>
+                    <i class="bi bi-list-task"></i>
+                    Gestión de Tareas
+                </h2>
 
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center align-items-center gap-2">
 
-                                            <a asp-action="Details" asp-route-id="@item.IdTarea"
-                                               class="btn btn-sm btn-outline-primary action-btn"
-                                               title="Detalles">
-                                                <i class="bi bi-eye"></i>
-                                            </a>
+                <p class="text-muted">
+                    Organización de labores en Campo Verde
+                </p>
 
-                                            <a asp-action="Edit" asp-route-id="@item.IdTarea"
-                                               class="btn btn-sm btn-outline-success action-btn"
-                                               title="Editar">
-                                                <i class="bi bi-pencil"></i>
-                                            </a>
-
-                                            <a asp-action="Delete" asp-route-id="@item.IdTarea"
-                                               class="btn btn-sm btn-outline-danger action-btn"
-                                               title="Eliminar">
-                                                <i class="bi bi-trash"></i>
-                                            </a>
-
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-
-                    </table>
-                </div>
 
             </div>
+
+
+
+            @if (puedeAdministrar)
+            {
+
+                <a asp-action="Create"
+                   class="btn btn-nueva">
+
+                    <i class="bi bi-plus-lg"></i>
+
+                    Nueva Tarea
+
+                </a>
+
+            }
+
+
         </div>
+
+
+
+
+
+        <div class="table-responsive">
+
+
+            <table class="table table-hover">
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Descripción
+                        </th>
+
+                        <th>
+                            Animal
+                        </th>
+
+                        <th>
+                            Prioridad
+                        </th>
+
+                        <th>
+                            Vencimiento
+                        </th>
+
+                        <th>
+                            Estado
+                        </th>
+
+                        <th class="text-center">
+                            Acciones
+                        </th>
+
+
+                    </tr>
+
+                </thead>
+
+
+
+
+
+                <tbody>
+
+
+                    @if (Model != null && Model.Any())
+                    {
+
+
+                        foreach (var item in Model)
+                        {
+
+
+                            <tr>
+
+
+
+                                <td class="fw-bold">
+
+                                    @item.Descripcion
+
+                                </td>
+
+
+
+
+
+                                <td>
+
+
+                                    @if (item.Animal != null)
+                                    {
+
+                                        <span class="text-success fw-bold">
+
+                                            🐄 @item.Animal.nombre
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="text-muted">
+
+                                            Sin asignar
+
+                                        </span>
+
+                                    }
+
+
+                                </td>
+
+
+
+
+
+
+                                <td>
+
+
+                                    @if (item.Prioridad == PrioridadTarea.Urgente)
+                                    {
+
+                                        <span class="badge bg-danger">
+
+                                            Urgente
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-info text-dark">
+
+                                            @item.Prioridad
+
+                                        </span>
+
+                                    }
+
+
+                                </td>
+
+
+
+
+
+
+
+                                <td>
+
+                                    @item.FechaVencimiento.ToString("dd/MM/yyyy")
+
+                                </td>
+
+
+
+
+
+
+
+                                <td>
+
+
+                                    @if (item.Completada)
+                                    {
+
+                                        <span class="badge bg-success">
+
+                                            ✔ Completada
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-warning text-dark">
+
+                                            Pendiente
+
+                                        </span>
+
+                                    }
+
+
+                                </td>
+
+
+
+
+
+
+
+                                <td class="text-center">
+
+
+                                    <div class="d-flex justify-content-center gap-2">
+
+
+
+                                        <!-- TODOS PUEDEN VER -->
+
+
+                                        <a asp-action="Details"
+                                           asp-route-id="@item.IdTarea"
+                                           class="btn btn-outline-primary action-btn">
+
+                                            <i class="bi bi-eye"></i>
+
+                                        </a>
+
+
+
+
+
+                                        <!-- ADMIN Y VETERINARIO -->
+                                        @if (puedeEditar)
+                                        {
+
+
+                                            <a asp-action="Edit"
+                                               asp-route-id="@item.IdTarea"
+                                               class="btn btn-outline-success action-btn">
+
+                                                <i class="bi bi-pencil"></i>
+
+                                            </a>
+
+
+                                        }
+
+
+
+
+
+
+                                        <!-- SOLO ADMIN -->
+                                        @if (puedeAdministrar)
+                                        {
+
+
+                                            <a asp-action="Delete"
+                                               asp-route-id="@item.IdTarea"
+                                               class="btn btn-outline-danger action-btn">
+
+                                                <i class="bi bi-trash"></i>
+
+                                            </a>
+
+
+                                        }
+
+
+
+
+
+
+                                        <!-- OPERARIO -->
+                                        @if (esOperario && !item.Completada)
+                                        {
+
+
+                                            <form asp-action="Completar"
+                                                  asp-route-id="@item.IdTarea"
+                                                  method="post">
+
+
+                                                <button class="btn btn-outline-success action-btn"
+                                                        title="Completar">
+
+
+                                                    <i class="bi bi-check-lg"></i>
+
+
+                                                </button>
+
+
+                                            </form>
+
+
+                                        }
+
+
+
+
+
+                                    </div>
+
+
+                                </td>
+
+
+
+                            </tr>
+
+
+                        }
+
+
+                    }
+                    else
+                    {
+
+
+                        <tr>
+
+                            <td colspan="6" class="text-center text-muted">
+
+                                No hay tareas registradas.
+
+                            </td>
+
+                        </tr>
+
+
+                    }
+
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+
+
     </div>
+
+
 </div>

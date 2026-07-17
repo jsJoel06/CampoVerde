@@ -52,5 +52,10 @@ namespace CampoVerde.Models
 
         [Display(Name = "Fecha de Registro")]
         public DateTime FechaRegistro { get; set; } = DateTime.UtcNow;
+
+        public int? ClienteId { get; set; }
+
+        [ForeignKey("ClienteId")]
+        public virtual Cliente? Cliente { get; set; }
     }
 }

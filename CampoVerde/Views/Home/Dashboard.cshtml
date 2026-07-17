@@ -1,238 +1,1409 @@
-﻿@{
+﻿@using CampoVerde.Models
+
+@{
     ViewData["Title"] = "Dashboard - Campo Verde";
+
+    var rol = Context.Session.GetString("Rol");
+
+    bool esSuperAdmin = rol == EstadoRol.SUPER_ADMINISTRADOR.ToString();
+    bool esAdmin = rol == EstadoRol.ADMINISTRADOR.ToString();
+    bool esVeterinario = rol == EstadoRol.VETERINARIO.ToString();
+    bool esOperario = rol == EstadoRol.OPERARIO.ToString();
 }
 
 <link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+
     body {
-        background: #f4f7fc;
+    background: #f5f8f7;
     }
 
     .dashboard-title {
-        font-weight: 800;
-        color: #1b4332;
+    font-weight: 800;
+    color: #215732;
     }
 
-    .stat-card {
-        border: none;
-        border-radius: 20px;
-        overflow: hidden;
-        position: relative;
-        transition: .3s;
-        box-shadow: 0 10px 25px rgba(0,0,0,.08);
+    .dashboard-subtitle {
+    color: #6b7280;
     }
 
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card .icon {
-            font-size: 3rem;
-            opacity: .15;
-            position: absolute;
-            right: 20px;
-            top: 15px;
-        }
-
-    .gradient-green {
-        background: linear-gradient(135deg,#2d6a4f,#40916c);
-        color: white;
+    .kpi-card {
+    border: none;
+    border-radius: 22px;
+    overflow: hidden;
+    transition: .3s;
+    box-shadow: 0 15px 35px rgba(0,0,0,.08);
     }
 
-    .gradient-blue {
-        background: linear-gradient(135deg,#4361ee,#4895ef);
-        color: white;
+    .kpi-card:hover {
+    transform: translateY(-6px);
     }
 
-    .gradient-red {
-        background: linear-gradient(135deg,#d90429,#ef233c);
-        color: white;
+    .kpi-body {
+    padding: 28px;
     }
 
-    .gradient-yellow {
-        background: linear-gradient(135deg,#ffb703,#ffd60a);
-        color: #222;
+    .kpi-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    background: rgba(255,255,255,.20);
+    }
+
+    .kpi-number {
+    font-size: 32px;
+    font-weight: 800;
+    }
+
+    .kpi-title {
+    opacity: .9;
+    }
+
+    .green {
+    background: linear-gradient(135deg,#2e7d32,#43a047);
+    color: white;
+    }
+
+    .blue {
+    background: linear-gradient(135deg,#1565c0,#42a5f5);
+    color: white;
+    }
+
+    .orange {
+    background: linear-gradient(135deg,#ef6c00,#ffa726);
+    color: white;
+    }
+
+    .red {
+    background: linear-gradient(135deg,#c62828,#ef5350);
+    color: white;
+    }
+
+    .quick-card {
+    background: white;
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.05);
+    }
+
+    .quick-btn {
+    border-radius: 18px;
+    padding: 20px;
+    transition: .3s;
+    text-decoration: none;
+    display: block;
+    color: #215732;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    }
+
+    .quick-btn:hover {
+    background: #43a047;
+    color: white;
+    transform: translateY(-4px);
+    }
+
+    .quick-btn i {
+    font-size: 35px;
+    margin-bottom: 12px;
     }
 
     .chart-card {
-        border-radius: 25px;
-        border: none;
-        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    background: white;
+    border: none;
+    border-radius: 22px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.05);
     }
+
 </style>
 
 <div class="container-fluid py-4">
 
-    <h2 class="dashboard-title mb-4">
-        <i class="fas fa-chart-line me-2"></i>
-        Panel Estratégico Campo Verde
-    </h2>
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
+
+        <div>
+
+            <h2 class="dashboard-title">
+
+                <i class="fa-solid fa-chart-column text-success"></i>
+
+                Dashboard Campo Verde
+
+            </h2>
+
+            <p class="dashboard-subtitle">
+
+                Bienvenido al panel principal del sistema ganadero.
+
+            </p>
+
+        </div>
+
+        <div>
+
+            <span class="badge bg-success fs-6 p-3">
+
+                <i class="fa-solid fa-user"></i>
+
+                @rol
+
+            </span>
+
+        </div>
+
+    </div>
 
     <div class="row g-4">
 
-        <div class="col-md-3">
-            <div class="card stat-card gradient-green p-4">
-                <i class="fas fa-cow icon"></i>
-                <h6>Total Animales</h6>
-                <h2 class="fw-bold">@ViewBag.TotalAnimales</h2>
+        <div class="col-md-6 col-xl-3">
+
+            <div class="kpi-card green">
+
+                <div class="kpi-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="kpi-title">
+
+                                Animales
+
+                            </div>
+
+                            <div class="kpi-number">
+
+                                @ViewBag.TotalAnimales
+
+                            </div>
+
+                        </div>
+
+                        <div class="kpi-icon">
+
+                            <i class="fa-solid fa-cow"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card gradient-blue p-4">
-                <i class="fas fa-list-check icon"></i>
-                <h6>Tareas Pendientes</h6>
-                <h2 class="fw-bold">@ViewBag.TareasPendientes</h2>
+        <div class="col-md-6 col-xl-3">
+
+            <div class="kpi-card blue">
+
+                <div class="kpi-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="kpi-title">
+
+                                Tareas
+
+                            </div>
+
+                            <div class="kpi-number">
+
+                                @ViewBag.TareasPendientes
+
+                            </div>
+
+                        </div>
+
+                        <div class="kpi-icon">
+
+                            <i class="fa-solid fa-list-check"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card gradient-yellow p-4">
-                <i class="fas fa-dollar-sign icon"></i>
-                <h6>Ingresos del Mes</h6>
-                <h2 class="fw-bold">
-                    $@ViewBag.IngresosMes.ToString("N0")
-                </h2>
+        <div class="col-md-6 col-xl-3">
+
+            <div class="kpi-card orange">
+
+                <div class="kpi-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="kpi-title">
+
+                                Ingresos
+
+                            </div>
+
+                            <div class="kpi-number">
+
+                                RD$ @ViewBag.IngresosMes.ToString("N0")
+
+                            </div>
+
+                        </div>
+
+                        <div class="kpi-icon">
+
+                            <i class="fa-solid fa-money-bill-wave"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card gradient-red p-4">
-                <i class="fas fa-syringe icon"></i>
-                <h6>Vacunas Vencidas</h6>
-                <h2 class="fw-bold">@ViewBag.VacunasVencidas</h2>
+        <div class="col-md-6 col-xl-3">
+
+            <div class="kpi-card red">
+
+                <div class="kpi-body">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+
+                            <div class="kpi-title">
+
+                                Vacunas
+
+                            </div>
+
+                            <div class="kpi-number">
+
+                                @ViewBag.VacunasVencidas
+
+                            </div>
+
+                        </div>
+
+                        <div class="kpi-icon">
+
+                            <i class="fa-solid fa-syringe"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
 
     </div>
 
-    <div class="row mt-5">
+    <div class="quick-card mt-5 p-4">
+
+        <h4 class="mb-4">
+
+            <i class="fa-solid fa-bolt text-warning"></i>
+
+            Accesos rápidos
+
+        </h4>
+
+        <div class="row g-3">
+
+            <!-- ACCESOS RAPIDOS -->
+
+            <div class="col-md-3">
+
+                <a asp-controller="Animal"
+                   asp-action="Index"
+                   class="quick-btn text-center">
+
+                    <i class="fa-solid fa-cow"></i>
+
+                    <h6>
+                        Animales
+                    </h6>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a asp-controller="Produccion"
+                   asp-action="Index"
+                   class="quick-btn text-center">
+
+                    <i class="fa-solid fa-droplet"></i>
+
+                    <h6>
+                        Producción
+                    </h6>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a asp-controller="Vacuna"
+                   asp-action="Index"
+                   class="quick-btn text-center">
+
+                    <i class="fa-solid fa-syringe"></i>
+
+                    <h6>
+                        Vacunas
+                    </h6>
+
+                </a>
+
+            </div>
+
+
+            <div class="col-md-3">
+
+                <a asp-controller="AlimentoBovino"
+                   asp-action="Index"
+                   class="quick-btn text-center">
+
+                    <i class="fa-solid fa-seedling"></i>
+
+                    <h6>
+                        Alimentos
+                    </h6>
+
+                </a>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCCION Y ESTADO -->
+
+    <div class="row g-4 mt-4">
+
 
         <div class="col-lg-8">
-            <div class="card chart-card p-4">
-                <h5 class="mb-3">Resumen General</h5>
-                <canvas id="dashboardChart"></canvas>
+
+
+            <div class="chart-card p-4">
+
+
+                <h5 class="fw-bold text-success mb-4">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Producción de Leche
+
+                </h5>
+
+
+                <canvas id="produccionChart"></canvas>
+
+
             </div>
+
+
         </div>
 
+
+
         <div class="col-lg-4">
-            <div class="card chart-card p-4">
-                <h5 class="mb-3">Distribución</h5>
-                <canvas id="pieChart"></canvas>
+
+
+            <div class="chart-card p-4">
+
+
+                <h5 class="fw-bold text-success mb-4">
+
+                    <i class="fa-solid fa-heart-pulse"></i>
+
+                    Estado del Ganado
+
+                </h5>
+
+
+                <canvas id="estadoChart"></canvas>
+
+
             </div>
+
+
         </div>
+
 
     </div>
 
-</div>
 
-@section Scripts {
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- RESUMEN PRODUCCION -->
+
+
+    <div class="row g-4 mt-4">
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-sun text-warning fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    Producción Hoy
+
+                </h6>
+
+
+                <h2 class="fw-bold text-success">
+
+                    @ViewBag.ProduccionHoy L
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-calendar-week text-primary fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    Producción Semana
+
+                </h6>
+
+
+                <h2 class="fw-bold text-success">
+
+                    @ViewBag.ProduccionSemana L
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-calendar-days text-danger fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    Producción Mes
+
+                </h6>
+
+
+                <h2 class="fw-bold text-success">
+
+                    @ViewBag.ProduccionMes L
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+    <!-- GRAFICOS FINANCIEROS -->
+
+    <div class="row g-4 mt-4">
+
+
+        <div class="col-lg-7">
+
+            <div class="chart-card p-4">
+
+                <h5 class="fw-bold text-success mb-4">
+
+                    <i class="fa-solid fa-chart-column"></i>
+
+                    Ingresos vs Gastos
+
+                </h5>
+
+
+                <canvas id="finanzasChart"></canvas>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="col-lg-5">
+
+
+            <div class="chart-card p-4">
+
+
+                <h5 class="fw-bold text-success mb-4">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    Alertas del Sistema
+
+                </h5>
+
+
+
+                <div class="list-group">
+
+
+                    <div class="list-group-item d-flex justify-content-between">
+
+                        <span>
+                            💉 Vacunas pendientes
+                        </span>
+
+                        <span class="badge bg-danger">
+
+                            @ViewBag.VacunasVencidas
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="list-group-item d-flex justify-content-between">
+
+                        <span>
+                            🌱 Stock bajo alimento
+                        </span>
+
+                        <span class="badge bg-warning text-dark">
+
+                            @ViewBag.StockBajo
+
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="list-group-item d-flex justify-content-between">
+
+                        <span>
+                            🍼 Próximos partos
+                        </span>
+
+                        <span class="badge bg-success">
+
+                            @ViewBag.ProximosPartos
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="list-group-item d-flex justify-content-between">
+
+                        <span>
+                            📋 Tareas pendientes
+                        </span>
+
+                        <span class="badge bg-primary">
+
+                            @ViewBag.TareasPendientes
+
+                        </span>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    <!-- ESTADO GENERAL GANADO -->
+
+
+    <div class="row g-4 mt-4">
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-cow text-success fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    Animales Activos
+
+                </h6>
+
+
+                <h2 class="fw-bold text-success">
+
+                    @ViewBag.AnimalesActivos
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-heart-crack text-danger fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    Animales Enfermos
+
+                </h6>
+
+
+                <h2 class="fw-bold text-danger">
+
+                    @ViewBag.AnimalesEnfermos
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="chart-card p-4 text-center">
+
+
+                <i class="fa-solid fa-eye text-warning fs-1"></i>
+
+
+                <h6 class="mt-3 text-muted">
+
+                    En Observación
+
+                </h6>
+
+
+                <h2 class="fw-bold text-warning">
+
+                    @ViewBag.AnimalesObservacion
+
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- JAVASCRIPT CHARTS -->
+
 
     <script>
 
-        const valores = [
-        @ViewBag.TotalAnimales,
-        @ViewBag.TareasPendientes,
-        @ViewBag.VacunasVencidas,
-        @ViewBag.IngresosMes
-        ];
 
-        // Gráfico principal premium
-        new Chart(document.getElementById('dashboardChart'), {
+        // Producción leche
 
-        data: {
+        new Chart(
+        document.getElementById('produccionChart'),
+        {
 
-        labels: [
-        'Animales',
-        'Tareas',
-        'Vacunas',
-        'Ingresos'
+        type:'line',
+
+        data:{
+
+        labels:[
+
+        'Lun',
+        'Mar',
+        'Mié',
+        'Jue',
+        'Vie',
+        'Sáb',
+        'Dom'
+
         ],
 
-        datasets: [
+
+        datasets:[{
+
+        label:'Litros de leche',
+
+        data:[
+
+        10,
+        20,
+        35,
+        30,
+        45,
+        50,
+        60
+
+        ],
+
+
+        borderWidth:3,
+
+        tension:.4,
+
+        fill:true,
+
+        backgroundColor:'rgba(67,160,71,.15)',
+
+        borderColor:'#2e7d32'
+
+
+        }]
+
+
+        },
+
+
+        options:{
+
+        responsive:true
+
+        }
+
+
+        });
+
+
+
+
+
+        // Estado animales
+
+
+        new Chart(
+
+        document.getElementById('estadoChart'),
+
         {
-        type: 'bar',
-        label: 'Indicadores',
-        data: valores,
-        borderRadius: 12,
-        backgroundColor: [
-        '#40916c',
-        '#4895ef',
-        '#ef233c',
-        '#ffb703'
+
+        type:'doughnut',
+
+
+        data:{
+
+
+        labels:[
+
+        'Activos',
+        'Enfermos',
+        'Observación'
+
+        ],
+
+
+        datasets:[{
+
+        data:[
+
+        @ViewBag.AnimalesActivos,
+
+        @ViewBag.AnimalesEnfermos,
+
+        @ViewBag.AnimalesObservacion
+
+        ],
+
+
+        backgroundColor:[
+
+        '#2e7d32',
+        '#e53935',
+        '#ffb300'
+
         ]
+
+
+        }]
+
+
         },
+
+
+        options:{
+
+        cutout:'70%',
+
+        responsive:true
+
+
+        }
+
+
+        });
+
+
+
+
+
+
+        // Finanzas
+
+
+        new Chart(
+
+        document.getElementById('finanzasChart'),
+
         {
-        type: 'line',
-        label: 'Tendencia',
-        data: valores,
-        borderColor: '#1b4332',
-        backgroundColor: '#1b4332',
-        tension: 0.4,
-        fill: false
-        }]
-        },
 
-        options: {
 
-        responsive: true,
+        type:'bar',
 
-        plugins: {
-        legend: {
-        position: 'top'
-        }
-        },
 
-        scales: {
-        y: {
-        beginAtZero: true,
-        grid: {
-        color: '#e9ecef'
-        }
-        }
-        }
-        }
-        });
+        data:{
 
-        // Doughnut moderno
-        new Chart(document.getElementById('pieChart'), {
 
-        type: 'doughnut',
+        labels:[
 
-        data: {
-        labels: [
-        'Animales',
-        'Tareas',
-        'Vacunas',
-        'Ingresos'
+        'Ingresos',
+        'Gastos'
+
         ],
 
-        datasets: [{
-        data: valores,
-        backgroundColor: [
-        '#40916c',
-        '#4895ef',
-        '#ef233c',
-        '#ffb703'
+
+
+        datasets:[{
+
+
+        label:'RD$',
+
+
+        data:[
+
+        @ViewBag.IngresosMes,
+
+        @ViewBag.GastosMes
+
         ],
-        borderWidth: 0
+
+
+
+        backgroundColor:[
+
+        '#43a047',
+        '#e53935'
+
+        ],
+
+
+        borderRadius:12
+
+
         }]
+
+
         },
 
-        options: {
-        cutout: '70%',
-        plugins: {
-        legend: {
-        position: 'bottom'
+
+
+        options:{
+
+
+        responsive:true,
+
+
+        scales:{
+
+
+        y:{
+
+
+        beginAtZero:true
+
+
         }
+
+
         }
+
+
         }
+
+
+
         });
+
 
     </script>
+    <!-- ACTIVIDAD RECIENTE -->
 
-}
+    <div class="row g-4 mt-4">
+
+
+        <!-- ULTIMOS ANIMALES -->
+
+        <div class="col-lg-6">
+
+            <div class="chart-card p-4">
+
+                <h5 class="fw-bold text-success mb-4">
+
+                    <i class="fa-solid fa-cow"></i>
+
+                    Últimos Animales Registrados
+
+                </h5>
+
+
+                <div class="list-group">
+
+
+                    @if (ViewBag.UltimosAnimales != null)
+                    {
+
+                        foreach (var animal in ViewBag.UltimosAnimales)
+                        {
+
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+
+
+                                <div>
+
+                                    <strong>
+                                        @animal.nombre
+                                    </strong>
+
+                                    <br />
+
+                                    <small class="text-muted">
+
+                                        Código:
+                                        @animal.codigo
+
+                                    </small>
+
+                                </div>
+
+
+                                <span class="badge bg-success rounded-pill">
+
+                                    @animal.Estado
+
+                                </span>
+
+
+                            </div>
+
+                        }
+
+                    }
+                    else
+                    {
+
+                        <div class="text-muted text-center">
+
+                            No hay registros recientes.
+
+                        </div>
+
+                    }
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+        <!-- PROXIMOS PARTOS -->
+
+
+        <div class="col-lg-6">
+
+
+            <div class="chart-card p-4">
+
+
+                <h5 class="fw-bold text-success mb-4">
+
+
+                    <i class="fa-solid fa-baby"></i>
+
+
+                    Próximos Partos
+
+
+                </h5>
+
+
+
+                <div class="list-group">
+
+
+                    @if (ViewBag.ListaPartos != null)
+                    {
+
+                        foreach (var parto in ViewBag.ListaPartos)
+                        {
+
+
+                            <div class="list-group-item d-flex justify-content-between">
+
+
+                                <div>
+
+
+                                    <strong>
+
+                                        🐄 @parto.Animal.nombre
+
+                                    </strong>
+
+
+                                    <br />
+
+
+                                    <small class="text-muted">
+
+                                        Fecha estimada:
+
+                                        @parto.FechaParto.ToString("dd/MM/yyyy")
+
+                                    </small>
+
+
+                                </div>
+
+
+
+                                <span class="badge bg-warning text-dark">
+
+
+                                    Próximo
+
+
+                                </span>
+
+
+                            </div>
+
+
+                        }
+
+
+                    }
+                    else
+                    {
+
+
+                        <div class="text-center text-muted">
+
+                            No hay partos próximos.
+
+                        </div>
+
+
+                    }
+
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+    <!-- MENU SEGUN ROL -->
+
+
+    <div class="row mt-5">
+
+
+        <div class="col-12">
+
+
+            <div class="chart-card p-4">
+
+
+                <h5 class="fw-bold text-success mb-4">
+
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+
+                    Módulos disponibles
+
+
+                </h5>
+
+
+
+                <div class="row g-3">
+
+
+
+                    @if (esSuperAdmin || esAdmin)
+                    {
+
+
+                        <div class="col-md-3">
+
+                            <a asp-controller="Usuario"
+                               asp-action="Index"
+                               class="quick-btn text-center">
+
+
+                                <i class="fa-solid fa-users"></i>
+
+
+                                <h6>
+
+                                    Usuarios
+
+                                </h6>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+                        <div class="col-md-3">
+
+
+                            <a asp-controller="Cliente"
+                               asp-action="Index"
+                               class="quick-btn text-center">
+
+
+                                <i class="fa-solid fa-building"></i>
+
+
+                                <h6>
+
+                                    Clientes
+
+                                </h6>
+
+
+                            </a>
+
+
+                        </div>
+
+
+                    }
+
+
+
+
+
+                    @if (esSuperAdmin || esAdmin || esVeterinario)
+                    {
+
+
+                        <div class="col-md-3">
+
+
+                            <a asp-controller="Vacuna"
+                               asp-action="Index"
+                               class="quick-btn text-center">
+
+
+                                <i class="fa-solid fa-syringe"></i>
+
+
+                                <h6>
+
+                                    Vacunación
+
+                                </h6>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+                    }
+
+
+
+                    @if (esSuperAdmin || esAdmin || esOperario)
+                    {
+
+
+                        <div class="col-md-3">
+
+
+                            <a asp-controller="Tarea"
+                               asp-action="Index"
+                               class="quick-btn text-center">
+
+
+                                <i class="fa-solid fa-list-check"></i>
+
+
+                                <h6>
+
+                                    Tareas
+
+                                </h6>
+
+
+                            </a>
+
+
+                        </div>
+
+
+                    }
+
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+</div>
+
+
+<!-- FOOTER DASHBOARD -->
+
+
+<div class="text-center mt-5 mb-3 text-muted">
+
+
+    <i class="fa-solid fa-leaf text-success"></i>
+
+
+    Campo Verde Sistema Ganadero
+
+
+    <br>
+
+
+    <small>
+
+        Control inteligente de producción y administración
+
+    </small>
+
+
+</div>

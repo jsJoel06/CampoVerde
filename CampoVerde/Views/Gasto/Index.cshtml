@@ -1,141 +1,364 @@
 ﻿@model IEnumerable<CampoVerde.Models.Gasto>
+@using CampoVerde.Models
+@using Microsoft.AspNetCore.Http
 
 @{
     ViewData["Title"] = "Control de Gastos";
-    // Cálculo de totales rápidos para el resumen
-    decimal totalGastos = Model.Sum(x => x.Monto);
+
+    var listaGastos = Model ?? new List<Gasto>();
+
+    decimal totalGastos = listaGastos.Sum(x => x.Monto);
+
+
+    var rol = Context.Session.GetString("Rol");
+
+
+    bool puedeEditar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
+
+
+    bool soloLectura =
+        rol == EstadoRol.VETERINARIO.ToString() ||
+        rol == EstadoRol.OPERARIO.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
+
 }
 
+
 <style>
+
     body {
         background-color: #eaf2e9;
-        font-family: 'Segoe UI', sans-serif;
+        font-family: 'Segoe UI',sans-serif;
     }
+
 
     .card-ganaderia {
-        background-color: #fdfdf5;
+        background: #fdfdf5;
         border-radius: 30px;
-        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
-        padding: 40px;
+        padding: 35px;
         border: 1px solid #d4e0d4;
-        margin-top: 30px;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
     }
 
+
     h2 {
-        font-family: 'Georgia', serif;
         color: #1a3c1a;
+        font-family: Georgia,serif;
         font-weight: 700;
     }
 
-    /* Tarjetas de Resumen */
+
     .resumen-card {
-        background: linear-gradient(135deg, #4a7c4a, #2d4d2d);
+        background: linear-gradient(135deg,#4a7c4a,#2d4d2d);
         color: white;
-        border-radius: 20px;
+        border-radius: 25px;
         padding: 25px;
-        box-shadow: 0 8px 20px rgba(45, 77, 45, 0.2);
     }
 
-    .resumen-val {
+
+    .resumen-numero {
         font-size: 2rem;
         font-weight: bold;
     }
 
-    /* Tabla Estilizada */
+
+    .btn-verde {
+        background: #4a7c4a;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 25px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #2d4d2d;
+            color: white;
+        }
+
+
+
     .table {
         border-collapse: separate;
         border-spacing: 0 12px;
     }
 
-        .table thead th {
-            background-color: #d1e0d1;
-            color: #1a3c1a;
-            border: none;
-            padding: 15px;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-        }
 
         .table tbody tr {
-            background-color: #ffffff;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            border-radius: 15px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,.05);
         }
 
-        .table tbody td {
-            padding: 18px 15px;
+
+        .table td {
+            padding: 18px;
             vertical-align: middle;
-            color: #2d3a2d;
         }
 
-    /* Acciones */
-    .btn-crear {
-        background-color: #4a7c4a;
-        color: white;
-        border-radius: 50px;
-        padding: 10px 25px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .btn-accion {
-        border-radius: 10px;
-        padding: 5px 10px;
-        margin: 0 2px;
-    }
 </style>
 
-<div class="container mb-5">
-    <!-- Resumen -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="resumen-card">
-                <div class="small opacity-75">Total Invertido en Gastos</div>
-                <div class="resumen-val">@totalGastos.ToString("C2")</div>
-            </div>
-        </div>
+
+
+<div class="container py-5">
+
+
+    <div class="mb-4">
+
+        <h2>
+            <i class="bi bi-wallet2"></i>
+            Gestión de Gastos
+        </h2>
+
+
+        <p class="text-muted">
+
+            Control financiero de Ganadería Campo Verde
+
+            <span class="badge bg-success">
+                @rol
+            </span>
+
+        </p>
+
+
     </div>
+
+
+
+    <div class="row mb-4">
+
+
+        <div class="col-md-4">
+
+            <div class="resumen-card">
+
+                <div>
+                    Total Gastos
+                </div>
+
+
+                <div class="resumen-numero">
+
+                    @totalGastos.ToString("C2")
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+
+
 
     <div class="card-ganaderia">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="bi bi-wallet2"></i> Gestión de Gastos</h2>
-            <a asp-action="Create" class="btn btn-crear">
-                <i class="bi bi-plus-circle"></i> Nuevo Gasto
-            </a>
+
+
+        <div class="d-flex justify-content-between mb-4">
+
+
+            <h4>
+                Historial de Gastos
+            </h4>
+
+
+
+            @if (puedeEditar)
+            {
+
+                <a asp-action="Create"
+                   class="btn btn-verde">
+
+                    <i class="bi bi-plus-circle"></i>
+                    Nuevo Gasto
+
+                </a>
+
+            }
+
+
         </div>
 
+
+
+
+
+
         <div class="table-responsive">
+
+
             <table class="table text-center">
+
+
                 <thead>
+
                     <tr>
-                        <th class="text-start">Fecha</th>
+
+                        <th>Fecha</th>
+
                         <th>Concepto</th>
+
                         <th>Categoría</th>
-                        <th>Animal Asociado</th>
+
+                        <th>Animal</th>
+
                         <th>Monto</th>
+
                         <th>Acciones</th>
+
+
                     </tr>
+
                 </thead>
+
+
+
                 <tbody>
-                    @foreach (var item in Model)
+
+
+                    @if (listaGastos.Any())
                     {
-                        <tr>
-                            <td class="text-start fw-bold">@item.Fecha.ToString("dd/MM/yyyy")</td>
-                            <td>@item.Concepto</td>
-                            <td><span class="badge bg-secondary">@item.Categoria</span></td>
-                            <td>@(item.Animal?.nombre ?? "N/A")</td>
-                            <td class="fw-bold text-danger">@item.Monto.ToString("C2")</td>
-                            <td>
-                                <a asp-action="Details" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-info btn-accion" title="Ver Detalles">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a asp-action="Edit" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-warning btn-accion"><i class="bi bi-pencil"></i></a>
-                                <a asp-action="Delete" asp-route-id="@item.IdGasto" class="btn btn-sm btn-outline-danger btn-accion"><i class="bi bi-trash"></i></a>
-                            </td>
-                        </tr>
+
+
+                        foreach (var item in listaGastos)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    @item.Fecha.ToString("dd/MM/yyyy")
+
+                                </td>
+
+
+                                <td class="fw-bold">
+
+                                    @item.Concepto
+
+                                </td>
+
+
+
+                                <td>
+
+                                    <span class="badge bg-secondary">
+
+                                        @item.Categoria
+
+                                    </span>
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @(item.Animal?.nombre ?? "Sin animal")
+
+                                </td>
+
+
+
+                                <td class="text-danger fw-bold">
+
+                                    @item.Monto.ToString("C2")
+
+                                </td>
+
+
+
+                                <td>
+
+
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdGasto"
+                                       class="btn btn-sm btn-outline-info">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+
+                                    @if (puedeEditar)
+                                    {
+
+
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.IdGasto"
+                                           class="btn btn-sm btn-outline-warning">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+
+
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.IdGasto"
+                                           class="btn btn-sm btn-outline-danger">
+
+                                            <i class="bi bi-trash"></i>
+
+                                        </a>
+
+
+                                    }
+
+
+                                </td>
+
+
+
+                            </tr>
+
+
+                        }
+
+
                     }
+                    else
+                    {
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="text-muted">
+
+                                No existen registros de gastos
+
+                            </td>
+
+
+                        </tr>
+
+
+                    }
+
+
                 </tbody>
+
+
+
             </table>
+
+
+
         </div>
+
+
     </div>
+
+
+
 </div>

@@ -1,96 +1,418 @@
 ﻿@model CampoVerde.Models.Gasto
+@using CampoVerde.Models
 
 @{
     ViewData["Title"] = "Editar Gasto";
+
+    var rol = Context.Session.GetString("Rol");
+
+    bool puedeEditar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
 }
 
+
 <style>
-    /* Estilo personalizado Campo Verde */
-    .card-verde {
-        border-top: 5px solid #28a745; /* Verde principal */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        border-radius: 8px;
+
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
     }
 
-    .btn-campo-verde {
-        background-color: #28a745;
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.12);
+    }
+
+
+
+    h2 {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+
+
+    .icon-box {
+        width: 60px;
+        height: 60px;
+        background: #d4e0d4;
+        color: #1a3c1a;
+        border-radius: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 25px;
+    }
+
+
+
+    .form-control,
+    .form-select {
+        border-radius: 15px;
+        padding: 12px;
+        border: 1px solid #cdddc9;
+    }
+
+
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 .2rem rgba(74,124,74,.25);
+        }
+
+
+
+    .btn-verde {
+        background: #1a3c1a;
         color: white;
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: bold;
     }
 
-        .btn-campo-verde:hover {
-            background-color: #218838;
+
+
+        .btn-verde:hover {
+            background: #3d663d;
             color: white;
         }
+
+
+
+    .btn-volver {
+        border-radius: 50px;
+        padding: 12px 30px;
+    }
+
 </style>
 
-<div class="container mt-4">
+
+
+
+<div class="container py-5">
+
+
     <div class="row justify-content-center">
+
+
         <div class="col-md-8">
-            <div class="card card-verde p-4">
-                <h2 class="text-success mb-4"><i class="bi bi-pencil-square"></i> Editar Gasto</h2>
-                <hr />
 
-                <form asp-action="Edit">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="IdGasto" />
 
-                    <div class="row">
-                        <div class="col-md-6 form-group mb-3">
-                            <label asp-for="Concepto" class="control-label fw-bold"></label>
-                            <input asp-for="Concepto" class="form-control" />
-                            <span asp-validation-for="Concepto" class="text-danger"></span>
+            <div class="card-ganaderia">
+
+
+
+                <div class="d-flex align-items-center mb-4">
+
+
+                    <div class="icon-box me-3">
+
+                        <i class="bi bi-pencil-square"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2 class="mb-0">
+
+                            Editar Gasto
+
+                        </h2>
+
+
+                        <p class="text-muted mb-0">
+
+                            Actualización de información financiera
+
+                        </p>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                @if (!puedeEditar)
+                {
+
+                    <div class="alert alert-danger">
+
+                        No tienes permisos para editar gastos.
+
+                    </div>
+
+                }
+                else
+                {
+
+
+                    <form asp-action="Edit" method="post">
+
+
+                        <input type="hidden" asp-for="IdGasto" />
+
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger">
                         </div>
 
-                        <div class="col-md-6 form-group mb-3">
-                            <label asp-for="Monto" class="control-label fw-bold"></label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input asp-for="Monto" class="form-control" type="number" step="0.01" />
+
+
+
+                        <div class="row">
+
+
+
+                            <div class="col-md-6 mb-3">
+
+
+                                <label asp-for="Concepto"
+                                       class="form-label fw-bold">
+                                </label>
+
+
+                                <input asp-for="Concepto"
+                                       class="form-control" />
+
+
+                                <span asp-validation-for="Concepto"
+                                      class="text-danger">
+                                </span>
+
+
                             </div>
-                            <span asp-validation-for="Monto" class="text-danger"></span>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6 form-group mb-3">
-                            <label asp-for="Fecha" class="control-label fw-bold"></label>
-                            <input asp-for="Fecha" type="date" class="form-control" />
-                            <span asp-validation-for="Fecha" class="text-danger"></span>
+
+
+
+                            <div class="col-md-6 mb-3">
+
+
+                                <label asp-for="Monto"
+                                       class="form-label fw-bold">
+                                </label>
+
+
+                                <div class="input-group">
+
+
+                                    <span class="input-group-text">
+                                        $
+                                    </span>
+
+
+                                    <input asp-for="Monto"
+                                           class="form-control"
+                                           type="number"
+                                           step="0.01" />
+
+
+                                </div>
+
+
+                                <span asp-validation-for="Monto"
+                                      class="text-danger">
+                                </span>
+
+
+                            </div>
+
+
                         </div>
 
-                        <div class="col-md-6 form-group mb-3">
-                            <label asp-for="Categoria" class="control-label fw-bold"></label>
-                            <select asp-for="Categoria" class="form-select" asp-items="Html.GetEnumSelectList<CampoVerde.Models.CategoriaGasto>()">
-                                <option value="">-- Seleccione categoría --</option>
+
+
+
+
+
+                        <div class="row">
+
+
+
+                            <div class="col-md-6 mb-3">
+
+
+                                <label asp-for="Fecha"
+                                       class="form-label fw-bold">
+                                </label>
+
+
+                                <input asp-for="Fecha"
+                                       type="date"
+                                       class="form-control" />
+
+
+                                <span asp-validation-for="Fecha"
+                                      class="text-danger">
+                                </span>
+
+
+                            </div>
+
+
+
+
+
+
+                            <div class="col-md-6 mb-3">
+
+
+                                <label asp-for="Categoria"
+                                       class="form-label fw-bold">
+                                </label>
+
+
+
+                                <select asp-for="Categoria"
+                                        class="form-select"
+                                        asp-items="Html.GetEnumSelectList<CategoriaGasto>()">
+
+
+                                    <option value="">
+                                        -- Seleccionar categoría --
+                                    </option>
+
+
+                                </select>
+
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+
+
+
+                        <div class="mb-3">
+
+
+                            <label asp-for="IdAnimal"
+                                   class="form-label fw-bold">
+
+                                Animal relacionado
+
+                            </label>
+
+
+
+                            <select asp-for="IdAnimal"
+                                    class="form-select"
+                                    asp-items="ViewBag.IdAnimal">
+
+
+                                <option value="">
+                                    -- Sin animal asociado --
+                                </option>
+
+
                             </select>
-                            <span asp-validation-for="Categoria" class="text-danger"></span>
+
+
                         </div>
-                    </div>
 
-                    <div class="form-group mb-3">
-                        <label asp-for="IdAnimal" class="control-label fw-bold">Animal relacionado</label>
-                        <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal">
-                            <option value="">-- Sin animal relacionado --</option>
-                        </select>
-                    </div>
 
-                    <div class="form-group mb-4">
-                        <label asp-for="Notas" class="control-label fw-bold"></label>
-                        <textarea asp-for="Notas" class="form-control" rows="3"></textarea>
-                    </div>
 
-                    <div class="d-flex justify-content-between">
-                        <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
-                        <button type="submit" class="btn btn-campo-verde px-4">Guardar Cambios</button>
-                    </div>
-                </form>
+
+
+
+
+                        <div class="mb-4">
+
+
+                            <label asp-for="Notas"
+                                   class="form-label fw-bold">
+                            </label>
+
+
+                            <textarea asp-for="Notas"
+                                      class="form-control"
+                                      rows="4">
+                        </textarea>
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <div class="d-flex justify-content-between">
+
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary btn-volver">
+
+
+                                <i class="bi bi-arrow-left"></i>
+
+                                Volver
+
+
+                            </a>
+
+
+
+
+                            <button type="submit"
+                                    class="btn btn-verde">
+
+
+                                <i class="bi bi-save"></i>
+
+                                Guardar Cambios
+
+
+                            </button>
+
+
+
+                        </div>
+
+
+
+                    </form>
+
+
+                }
+
+
             </div>
+
+
         </div>
+
+
     </div>
+
+
 </div>
 
+
+
+
 @section Scripts {
+
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
 }

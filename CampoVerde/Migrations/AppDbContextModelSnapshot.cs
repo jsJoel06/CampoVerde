@@ -36,6 +36,9 @@ namespace CampoVerde.Migrations
                     b.Property<int>("Categoria")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("CostoUnitario")
                         .HasColumnType("decimal(18,2)");
 
@@ -55,6 +58,8 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("AlimentosBovinos");
                 });
 
@@ -65,6 +70,9 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdAnimal"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer");
@@ -96,7 +104,58 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdAnimal");
 
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("Animales");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Cliente", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Activo")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Direccion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("FechaContratacion")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("FechaRegistro")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("FechaVencimiento")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Nombre")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("NombreEmpresa")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Plan")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Telefono")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Clientes");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Gasto", b =>
@@ -108,6 +167,9 @@ namespace CampoVerde.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdGasto"));
 
                     b.Property<int>("Categoria")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ClienteId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Concepto")
@@ -129,6 +191,8 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdGasto");
 
+                    b.HasIndex("ClienteId");
+
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Gastos");
@@ -141,6 +205,9 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdIngreso"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Concepto")
                         .IsRequired()
@@ -160,6 +227,8 @@ namespace CampoVerde.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("IdIngreso");
+
+                    b.HasIndex("ClienteId");
 
                     b.HasIndex("IdAnimal");
 
@@ -197,6 +266,9 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdParto"));
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("CodigoCria")
                         .IsRequired()
                         .HasColumnType("text");
@@ -226,6 +298,8 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdParto");
 
+                    b.HasIndex("ClienteId");
+
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Partos");
@@ -239,6 +313,9 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("text");
@@ -247,6 +324,8 @@ namespace CampoVerde.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ClienteId");
 
                     b.ToTable("Potreros");
                 });
@@ -258,6 +337,9 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdProduccion"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("IdAnimal")
                         .HasColumnType("integer");
@@ -276,6 +358,8 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdProduccion");
 
+                    b.HasIndex("ClienteId");
+
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Producciones");
@@ -288,6 +372,9 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTarea"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
 
                     b.Property<bool>("Completada")
                         .HasColumnType("boolean");
@@ -318,9 +405,50 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdTarea");
 
+                    b.HasIndex("ClienteId");
+
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Tareas");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.TransaccionAnimal", b =>
+                {
+                    b.Property<int>("IdTransaccion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTransaccion"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("IdAnimal")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Notas")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Tercero")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
+                    b.HasKey("IdTransaccion");
+
+                    b.HasIndex("ClienteId");
+
+                    b.HasIndex("IdAnimal");
+
+                    b.ToTable("TransaccionAnimal");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Usuario", b =>
@@ -331,15 +459,27 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdUsuario"));
 
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("FechaRegistro")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FotoPerfil")
+                        .HasColumnType("text");
 
                     b.Property<int>("Rol")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("UltimoAcceso")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("email")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("estadoActivo")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("nombre")
                         .IsRequired()
@@ -355,6 +495,8 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdUsuario");
 
+                    b.HasIndex("ClienteId");
+
                     b.ToTable("Usuarios");
                 });
 
@@ -365,6 +507,9 @@ namespace CampoVerde.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdVacuna"));
+
+                    b.Property<int?>("ClienteId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("IdAnimal")
                         .HasColumnType("integer");
@@ -387,31 +532,67 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdVacuna");
 
+                    b.HasIndex("ClienteId");
+
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Vacunas");
                 });
 
+            modelBuilder.Entity("CampoVerde.Models.AlimentoBovino", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany()
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Animal", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Animales")
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
+                });
+
             modelBuilder.Entity("CampoVerde.Models.Gasto", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Gastos")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal");
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Ingreso", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Ingresos")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal");
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Parto", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Partos")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal")
@@ -419,10 +600,25 @@ namespace CampoVerde.Migrations
                         .IsRequired();
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Potrero", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Potreros")
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Produccion", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Producciones")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal")
@@ -430,10 +626,16 @@ namespace CampoVerde.Migrations
                         .IsRequired();
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Tarea", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Tareas")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal")
@@ -441,10 +643,42 @@ namespace CampoVerde.Migrations
                         .IsRequired();
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.TransaccionAnimal", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("TransaccionesAnimales")
+                        .HasForeignKey("ClienteId");
+
+                    b.HasOne("CampoVerde.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("IdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Usuario", b =>
+                {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Usuarios")
+                        .HasForeignKey("ClienteId");
+
+                    b.Navigation("Cliente");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Vacuna", b =>
                 {
+                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
+                        .WithMany("Vacunas")
+                        .HasForeignKey("ClienteId");
+
                     b.HasOne("CampoVerde.Models.Animal", "Animal")
                         .WithMany()
                         .HasForeignKey("IdAnimal")
@@ -452,6 +686,31 @@ namespace CampoVerde.Migrations
                         .IsRequired();
 
                     b.Navigation("Animal");
+
+                    b.Navigation("Cliente");
+                });
+
+            modelBuilder.Entity("CampoVerde.Models.Cliente", b =>
+                {
+                    b.Navigation("Animales");
+
+                    b.Navigation("Gastos");
+
+                    b.Navigation("Ingresos");
+
+                    b.Navigation("Partos");
+
+                    b.Navigation("Potreros");
+
+                    b.Navigation("Producciones");
+
+                    b.Navigation("Tareas");
+
+                    b.Navigation("TransaccionesAnimales");
+
+                    b.Navigation("Usuarios");
+
+                    b.Navigation("Vacunas");
                 });
 #pragma warning restore 612, 618
         }

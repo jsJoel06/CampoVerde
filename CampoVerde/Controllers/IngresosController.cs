@@ -18,22 +18,35 @@ namespace CampoVerde.Controllers
         // GET: Ingresos
         public async Task<IActionResult> Index()
         {
-            var ingresos = await _context.Ingresos
-                .Include(i => i.Animal)
-                .ToListAsync();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            return View(ingresos);
+            IQueryable<Ingreso> consulta = _context.Ingresos
+                .Include(i => i.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(i => i.ClienteId == clienteId);
+            }
+
+            return View(await consulta.ToListAsync());
         }
 
         // GET: Ingresos/AddForm
         public IActionResult AddForm(int? id)
         {
-            var listaAnimales = _context.Animales
-                .OrderBy(a => a.nombre)
-                .Select(a => new { a.IdAnimal, a.nombre })
-                .ToList();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            ViewBag.Animales = new SelectList(listaAnimales, "IdAnimal", "nombre");
+            IQueryable<Animal> animales = _context.Animales.OrderBy(a => a.nombre);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId)
+                                   .OrderBy(a => a.nombre);
+            }
+
+            ViewBag.Animales = new SelectList(animales.ToList(), "IdAnimal", "nombre");
 
             if (id == null)
             {
@@ -43,13 +56,21 @@ namespace CampoVerde.Controllers
                 });
             }
 
-            var ingreso = _context.Ingresos.Find(id);
+            IQueryable<Ingreso> consulta = _context.Ingresos;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(i => i.ClienteId == clienteId);
+            }
+
+            var ingreso = consulta.FirstOrDefault(i => i.IdIngreso == id);
 
             if (ingreso == null)
                 return NotFound();
 
             return View(ingreso);
         }
+
 
         // POST: Guardar (Crear o Editar)
         [HttpPost]
@@ -60,8 +81,21 @@ namespace CampoVerde.Controllers
 
             ingreso.Fecha = DateTime.UtcNow;
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            var rol = HttpContext.Session.GetString("Rol");
+
+            if (clienteId == null)
+                return Unauthorized();
+
+            IQueryable<Animal> animales = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
             ViewBag.Animales = new SelectList(
-                _context.Animales.ToList(),
+                animales.ToList(),
                 "IdAnimal",
                 "nombre",
                 ingreso.IdAnimal);
@@ -75,7 +109,9 @@ namespace CampoVerde.Controllers
             {
                 if (ingreso.IdIngreso == 0)
                 {
-                    // Crear
+                    // Asignar el cliente del usuario logueado
+                    ingreso.ClienteId = clienteId.Value;
+
                     _context.Ingresos.Add(ingreso);
 
                     _context.Notificaciones.Add(new Notificacion
@@ -87,13 +123,27 @@ namespace CampoVerde.Controllers
                 }
                 else
                 {
-                    // Editar
-                    var ingresoExistente = await _context.Ingresos.FindAsync(ingreso.IdIngreso);
+                    IQueryable<Ingreso> consulta = _context.Ingresos;
+
+                    if (rol != "SUPER_ADMINISTRADOR")
+                    {
+                        consulta = consulta.Where(i => i.ClienteId == clienteId);
+                    }
+
+                    var ingresoExistente = await consulta
+                        .FirstOrDefaultAsync(i => i.IdIngreso == ingreso.IdIngreso);
 
                     if (ingresoExistente == null)
                         return NotFound();
 
-                    _context.Entry(ingresoExistente).CurrentValues.SetValues(ingreso);
+                    ingresoExistente.Monto = ingreso.Monto;
+                    ingresoExistente.Concepto = ingreso.Concepto;
+                    ingresoExistente.Fecha = ingreso.Fecha;
+                    ingresoExistente.Notas = ingreso.Notas;
+                    ingresoExistente.IdAnimal = ingreso.IdAnimal;
+
+                    // Mantener el ClienteId original
+                    ingresoExistente.ClienteId = ingresoExistente.ClienteId;
 
                     _context.Notificaciones.Add(new Notificacion
                     {
@@ -119,24 +169,35 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var ingreso = await _context.Ingresos.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            if (ingreso != null)
+            IQueryable<Ingreso> consulta = _context.Ingresos;
+
+            if (rol != "SUPER_ADMINISTRADOR")
             {
-                _context.Notificaciones.Add(new Notificacion
-                {
-                    Mensaje = $"Se eliminó el ingreso: {ingreso.Concepto}",
-                    Fecha = DateTime.UtcNow,
-                    Leida = false
-                });
-
-                _context.Ingresos.Remove(ingreso);
-
-                await _context.SaveChangesAsync();
+                consulta = consulta.Where(i => i.ClienteId == clienteId);
             }
+
+            var ingreso = await consulta.FirstOrDefaultAsync(i => i.IdIngreso == id);
+
+            if (ingreso == null)
+                return NotFound();
+
+            _context.Notificaciones.Add(new Notificacion
+            {
+                Mensaje = $"Se eliminó el ingreso: {ingreso.Concepto}",
+                Fecha = DateTime.UtcNow,
+                Leida = false
+            });
+
+            _context.Ingresos.Remove(ingreso);
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: Details
         public async Task<IActionResult> Details(int? id)
@@ -144,9 +205,18 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var ingreso = await _context.Ingresos
-                .Include(i => i.Animal)
-                .FirstOrDefaultAsync(i => i.IdIngreso == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Ingreso> consulta = _context.Ingresos
+                .Include(i => i.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(i => i.ClienteId == clienteId);
+            }
+
+            var ingreso = await consulta.FirstOrDefaultAsync(i => i.IdIngreso == id);
 
             if (ingreso == null)
                 return NotFound();
@@ -154,16 +224,29 @@ namespace CampoVerde.Controllers
             return View(ingreso);
         }
 
+
         // GET: Historial
         public async Task<IActionResult> Historial(int idAnimal)
         {
-            var historial = await _context.Ingresos
-                .Where(i => i.IdAnimal == idAnimal)
-                .OrderByDescending(i => i.Fecha)
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Ingreso> consulta = _context.Ingresos
                 .Include(i => i.Animal)
+                .Where(i => i.IdAnimal == idAnimal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(i => i.ClienteId == clienteId);
+            }
+
+            var historial = await consulta
+                .OrderByDescending(i => i.Fecha)
                 .ToListAsync();
 
-            var animal = await _context.Animales.FindAsync(idAnimal);
+            var animal = await _context.Animales
+                .FirstOrDefaultAsync(a => a.IdAnimal == idAnimal &&
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId));
 
             ViewBag.AnimalNombre = animal?.nombre ?? "Desconocido";
 

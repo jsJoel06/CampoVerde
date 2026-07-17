@@ -17,17 +17,37 @@ public class MapaController : Controller
     // DASHBOARD
     public async Task<IActionResult> Index()
     {
-        var potreros = await _context.Potreros.ToListAsync();
-        return View(potreros);
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+        IQueryable<Potrero> consulta = _context.Potreros;
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(p => p.ClienteId == clienteId);
+        }
+
+        return View(await consulta.ToListAsync());
     }
+
 
     // FORM CREATE/EDIT
     public async Task<IActionResult> AddForm(int? id)
     {
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
         if (id == null)
             return View(new Potrero());
 
-        var potrero = await _context.Potreros.FindAsync(id);
+        IQueryable<Potrero> consulta = _context.Potreros;
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(p => p.ClienteId == clienteId);
+        }
+
+        var potrero = await consulta.FirstOrDefaultAsync(p => p.Id == id);
 
         if (potrero == null)
         {
@@ -49,6 +69,12 @@ public class MapaController : Controller
     {
         if (!ModelState.IsValid)
             return View("AddForm", potrero);
+
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+        var rol = HttpContext.Session.GetString("Rol");
+
+        if (clienteId == null)
+            return Unauthorized();
 
         var carpeta = Path.Combine(_env.WebRootPath, "uploads");
 
@@ -73,8 +99,14 @@ public class MapaController : Controller
             }
         }
 
-        var existente = await _context.Potreros
-            .FirstOrDefaultAsync(x => x.Id == potrero.Id);
+        IQueryable<Potrero> consulta = _context.Potreros;
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(p => p.ClienteId == clienteId);
+        }
+
+        var existente = await consulta.FirstOrDefaultAsync(x => x.Id == potrero.Id);
 
         if (existente == null)
         {
@@ -82,12 +114,12 @@ public class MapaController : Controller
             {
                 Id = potrero.Id,
                 Nombre = potrero.Nombre,
-                RutasFotos = string.Join(";", fotosNuevas)
+                RutasFotos = string.Join(";", fotosNuevas),
+                ClienteId = clienteId.Value
             };
 
             _context.Potreros.Add(existente);
 
-            // Notificación de creación
             _context.Notificaciones.Add(new Notificacion
             {
                 Mensaje = $"Se registró un nuevo potrero: {existente.Nombre}",
@@ -109,7 +141,6 @@ public class MapaController : Controller
 
             _context.Potreros.Update(existente);
 
-            // Notificación de edición
             _context.Notificaciones.Add(new Notificacion
             {
                 Mensaje = $"Se actualizó el potrero: {existente.Nombre}",

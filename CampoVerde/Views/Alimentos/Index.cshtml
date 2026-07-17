@@ -1,7 +1,15 @@
 ﻿@model IEnumerable<CampoVerde.Models.AlimentoBovino>
+@using CampoVerde.Models
 
 @{
     ViewData["Title"] = "Inventario de Alimentos";
+
+    var rol = Context.Session.GetString("Rol");
+
+    bool puedeEditar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.OPERARIO.ToString();
 
     var total = Model.Count();
     var stockBajo = Model.Count(x => x.CantidadDisponible <= x.NivelAlerta);
@@ -100,6 +108,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
+
             <h2 class="page-title">
                 🌿 Inventario de Alimentos
             </h2>
@@ -107,6 +116,7 @@
             <p class="text-muted">
                 Administración del inventario de alimentos para el ganado.
             </p>
+
         </div>
 
         <div>
@@ -116,10 +126,13 @@
                 Historial
             </a>
 
-            <a asp-action="AddForm" class="btn btn-verde">
-                <i class="bi bi-plus-circle-fill"></i>
-                Nuevo Alimento
-            </a>
+            @if (puedeEditar)
+            {
+                <a asp-action="AddForm" class="btn btn-verde">
+                    <i class="bi bi-plus-circle-fill"></i>
+                    Nuevo Alimento
+                </a>
+            }
 
         </div>
 
@@ -284,21 +297,27 @@
 
                                 <a asp-action="Details"
                                    asp-route-id="@item.Id"
-                                   class="btn btn-outline-info btn-sm">
+                                   class="btn btn-outline-info btn-sm"
+                                   title="Ver">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
 
-                                <a asp-action="AddForm"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-outline-success btn-sm">
-                                    <i class="bi bi-pencil-fill"></i>
-                                </a>
+                                @if (puedeEditar)
+                                {
+                                    <a asp-action="AddForm"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-outline-success btn-sm"
+                                       title="Editar">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
 
-                                <a asp-action="Delete"
-                                   asp-route-id="@item.Id"
-                                   class="btn btn-outline-danger btn-sm">
-                                    <i class="bi bi-trash-fill"></i>
-                                </a>
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.Id"
+                                       class="btn btn-outline-danger btn-sm"
+                                       title="Eliminar">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </a>
+                                }
 
                             </td>
 

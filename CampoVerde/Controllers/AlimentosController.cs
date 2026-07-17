@@ -2,7 +2,7 @@
 using CampoVerde.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
+
 
 public class AlimentosController : Controller
 {
@@ -16,9 +16,30 @@ public class AlimentosController : Controller
     // LISTADO
     public async Task<IActionResult> Index()
     {
-        var lista = await _context.AlimentosBovinos.AsNoTracking().ToListAsync();
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+
+        if (rol == "SUPER_ADMINISTRADOR")
+        {
+            var todos = await _context.AlimentosBovinos
+                .Include(a => a.Cliente)
+                .AsNoTracking()
+                .ToListAsync();
+
+            return View(todos);
+        }
+
+
+        var lista = await _context.AlimentosBovinos
+            .Where(a => a.ClienteId == clienteId)
+            .AsNoTracking()
+            .ToListAsync();
+
+
         return View(lista);
     }
+
 
     // GET: AddForm
     public async Task<IActionResult> AddForm(int? id)
@@ -47,7 +68,20 @@ public class AlimentosController : Controller
             try
             {
                 if (alimento.Id == 0)
+
                 {
+
+                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                    if (clienteId == null || clienteId == 0)
+                    {
+                        ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
+                        return View(alimento);
+                    }
+
+
+                    alimento.ClienteId = clienteId.Value;
+
                     // Crear alimento
                     _context.AlimentosBovinos.Add(alimento);
 
@@ -61,6 +95,18 @@ public class AlimentosController : Controller
                 }
                 else
                 {
+
+                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                    if (clienteId == null || clienteId == 0)
+                    {
+                        ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
+                        return View(alimento);
+                    }
+
+
+                    alimento.ClienteId = clienteId.Value;
+
                     // Editar alimento
                     _context.AlimentosBovinos.Update(alimento);
 
@@ -95,9 +141,15 @@ public class AlimentosController : Controller
         if (id == null)
             return NotFound();
 
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+        var rol = HttpContext.Session.GetString("Rol");
+
+
         var alimento = await _context.AlimentosBovinos
-            .AsNoTracking()
-            .FirstOrDefaultAsync(a => a.Id == id);
+            .FirstOrDefaultAsync(a =>
+                a.Id == id &&
+                (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+            );
 
         if (alimento == null)
             return NotFound();
@@ -110,10 +162,18 @@ public class AlimentosController : Controller
     // ==========================
     public async Task<IActionResult> Historial()
     {
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+        var rol = HttpContext.Session.GetString("Rol");
+
+
         var historial = await _context.AlimentosBovinos
-            .AsNoTracking()
+            .Where(a =>
+                rol == "SUPER_ADMINISTRADOR" ||
+                a.ClienteId == clienteId
+            )
             .OrderByDescending(a => a.Id)
             .ToListAsync();
+
 
         return View(historial);
     }
@@ -141,7 +201,15 @@ public class AlimentosController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
-        var alimento = await _context.AlimentosBovinos.FindAsync(id);
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+        var rol = HttpContext.Session.GetString("Rol");
+
+
+        var alimento = await _context.AlimentosBovinos
+            .FirstOrDefaultAsync(a =>
+                a.Id == id &&
+                (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+            );
 
         if (alimento != null)
         {

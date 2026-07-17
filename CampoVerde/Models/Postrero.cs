@@ -7,13 +7,36 @@ namespace CampoVerde.Models
     {
         [Key]
         public int Id { get; set; }
+
+
+        [Required]
         public string Nombre { get; set; }
 
-        // Almacenamos los nombres/rutas de los archivos: "foto1.jpg;foto2.jpg;..."
+
+
+
+        // RELACIÓN CON CLIENTE (FINCA)
+
+        public int? ClienteId { get; set; }
+
+        [ForeignKey("ClienteId")]
+        public virtual Cliente? Cliente { get; set; }
+
+
+
+        // Fotos
+
+        // Almacenamos:
+        // "foto1.jpg;foto2.jpg"
+
         public string? RutasFotos { get; set; }
 
-        // Propiedad auxiliar para el formulario (no se guarda en BD)
+
+
+        // No se guarda en BD
+
         [NotMapped]
         public List<IFormFile>? ArchivosFotos { get; set; }
+
     }
 }

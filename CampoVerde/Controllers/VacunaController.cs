@@ -1,9 +1,17 @@
 ﻿using CampoVerde.Data;
 using CampoVerde.Models;
+using CampoVerde.Seguridad;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+
+[AuthorizeRole(
+    Permisos.SuperAdministrador,
+    Permisos.Administrador,
+    Permisos.Veterinario,
+    Permisos.Operario
+    )]
 public class VacunaController : Controller
 {
     private readonly AppDbContext _context;
@@ -16,8 +24,23 @@ public class VacunaController : Controller
     // GET: VACUNAS
     public async Task<IActionResult> Index()
     {
-        return View(await _context.Vacunas.ToListAsync());
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+        if (rol == "SUPER_ADMINISTRADOR")
+        {
+            return View(await _context.Vacunas
+                .Include(v => v.Animal)
+                .Include(v => v.Cliente)
+                .ToListAsync());
+        }
+
+        return View(await _context.Vacunas
+            .Include(v => v.Animal)
+            .Where(v => v.ClienteId == clienteId)
+            .ToListAsync());
     }
+
 
     // GET: VACUNAS/Details/5
     public async Task<IActionResult> Details(int? id)
@@ -25,8 +48,18 @@ public class VacunaController : Controller
         if (id == null)
             return NotFound();
 
-        var vacuna = await _context.Vacunas
-            .FirstOrDefaultAsync(m => m.IdVacuna == id);
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+        IQueryable<Vacuna> consulta = _context.Vacunas
+            .Include(v => v.Animal);
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(v => v.ClienteId == clienteId);
+        }
+
+        var vacuna = await consulta.FirstOrDefaultAsync(v => v.IdVacuna == id);
 
         if (vacuna == null)
             return NotFound();
@@ -37,9 +70,27 @@ public class VacunaController : Controller
     // GET: VACUNAS/Create
     public IActionResult Create()
     {
-        ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre");
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+        if (rol == "SUPER_ADMINISTRADOR")
+        {
+            ViewBag.IdAnimal = new SelectList(
+                _context.Animales,
+                "IdAnimal",
+                "nombre");
+        }
+        else
+        {
+            ViewBag.IdAnimal = new SelectList(
+                _context.Animales.Where(a => a.ClienteId == clienteId),
+                "IdAnimal",
+                "nombre");
+        }
+
         return View();
     }
+
 
     // POST: VACUNAS/Create
     [HttpPost]
@@ -48,6 +99,15 @@ public class VacunaController : Controller
     {
         if (ModelState.IsValid)
         {
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId == null)
+            {
+                return Unauthorized();
+            }
+
+            vacuna.ClienteId = clienteId.Value;
+
             vacuna.fechaAplicacion = DateTime.SpecifyKind(
                 vacuna.fechaAplicacion,
                 DateTimeKind.Utc);
@@ -84,16 +144,28 @@ public class VacunaController : Controller
         if (id == null)
             return NotFound();
 
+
         var vacuna = await _context.Vacunas.FindAsync(id);
 
-        if (vacuna == null)
-            return NotFound();
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-        ViewBag.IdAnimal = new SelectList(
-            _context.Animales,
-            "IdAnimal",
-            "nombre",
-            vacuna.IdAnimal);
+        if (rol == "SUPER_ADMINISTRADOR")
+        {
+            ViewBag.IdAnimal = new SelectList(
+                _context.Animales,
+                "IdAnimal",
+                "nombre",
+                vacuna.IdAnimal);
+        }
+        else
+        {
+            ViewBag.IdAnimal = new SelectList(
+                _context.Animales.Where(a => a.ClienteId == clienteId),
+                "IdAnimal",
+                "nombre",
+                vacuna.IdAnimal);
+        }
 
         return View(vacuna);
     }
@@ -112,6 +184,9 @@ public class VacunaController : Controller
 
         vacuna.fechaProximaAplicacion =
             vacuna.fechaAplicacion.AddMonths(vacuna.frecuenciaMeses);
+
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+        vacuna.ClienteId = clienteId.Value;
 
         if (ModelState.IsValid)
         {
@@ -169,12 +244,24 @@ public class VacunaController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? idvacuna)
     {
-        var vacuna = await _context.Vacunas.FindAsync(idvacuna);
+        if (idvacuna == null)
+            return NotFound();
+
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+        IQueryable<Vacuna> consulta = _context.Vacunas;
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(v => v.ClienteId == clienteId);
+        }
+
+        var vacuna = await consulta.FirstOrDefaultAsync(v => v.IdVacuna == idvacuna);
 
         if (vacuna == null)
             return NotFound();
 
-        // Notificación
         _context.Notificaciones.Add(new Notificacion
         {
             Mensaje = $"Se eliminó la vacuna: {vacuna.nombreVacuna}",
@@ -200,11 +287,18 @@ public class VacunaController : Controller
         if (idAnimal == null)
             return NotFound();
 
-        var vacunas = _context.Vacunas
-            .Where(v => v.IdAnimal == idAnimal)
-            .ToList();
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-        return View(vacunas);
+        var vacunas = _context.Vacunas
+            .Where(v => v.IdAnimal == idAnimal);
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            vacunas = vacunas.Where(v => v.ClienteId == clienteId);
+        }
+
+        return View(vacunas.ToList());
     }
 
     // PRÓXIMAS VACUNAS
@@ -212,12 +306,20 @@ public class VacunaController : Controller
     {
         DateTime hoy = DateTime.Today;
 
-        var proximas = _context.Vacunas
-            .Where(v => v.fechaProximaAplicacion >= hoy &&
-                        v.fechaProximaAplicacion <= hoy.AddDays(30))
-            .OrderBy(v => v.fechaProximaAplicacion)
-            .ToList();
+        var rol = HttpContext.Session.GetString("Rol");
+        var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-        return View(proximas);
+        var consulta = _context.Vacunas.Where(v =>
+            v.fechaProximaAplicacion >= hoy &&
+            v.fechaProximaAplicacion <= hoy.AddDays(30));
+
+        if (rol != "SUPER_ADMINISTRADOR")
+        {
+            consulta = consulta.Where(v => v.ClienteId == clienteId);
+        }
+
+        return View(consulta
+            .OrderBy(v => v.fechaProximaAplicacion)
+            .ToList());
     }
 }

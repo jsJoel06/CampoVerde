@@ -1,11 +1,18 @@
 ﻿using CampoVerde.Data; 
 using CampoVerde.Models;
+using CampoVerde.Seguridad;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace CampoVerde.Controllers
 {
+
+    [AuthorizeRole(
+    Permisos.SuperAdministrador,
+    Permisos.Administrador,
+    Permisos.Operario)]
     public class ProduccionController : Controller
     {
         private readonly AppDbContext _context;
@@ -18,9 +25,18 @@ namespace CampoVerde.Controllers
         // GET: Produccion
         public async Task<IActionResult> Index()
         {
-            var producciones = await _context.Producciones
-                .Include(p => p.Animal)
-                .ToListAsync();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Produccion> consulta = _context.Producciones
+                .Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var producciones = await consulta.ToListAsync();
 
             var hoy = DateTime.Today;
             var manana = hoy.AddDays(1);
@@ -32,9 +48,9 @@ namespace CampoVerde.Controllers
                 ? producciones.Average(p => p.cantidadLeche)
                 : 0;
 
-            // 🔥 PRODUCCIÓN DEL DÍA (ARREGLADA)
             ViewBag.ProduccionHoy = producciones
-                .Where(p => p.fechaProduccion >= hoy && p.fechaProduccion < manana)
+                .Where(p => p.fechaProduccion >= hoy &&
+                            p.fechaProduccion < manana)
                 .Sum(p => p.cantidadLeche);
 
             return View(producciones);
@@ -43,8 +59,24 @@ namespace CampoVerde.Controllers
         // GET: Produccion/Create
         public IActionResult Create()
         {
-            // Cargamos los animales en el ViewBag para el SelectList
-            ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre");
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales,
+                    "IdAnimal",
+                    "nombre");
+            }
+            else
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales.Where(a => a.ClienteId == clienteId),
+                    "IdAnimal",
+                    "nombre");
+            }
+
             return View();
         }
 
@@ -54,6 +86,16 @@ namespace CampoVerde.Controllers
         {
             if (ModelState.IsValid)
             {
+
+                var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                if (clienteId == null)
+                {
+                    ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
+                    return View(produccion);
+                }
+
+                produccion.ClienteId = clienteId.Value;
                 try
                 {
                     // Asignar la fecha y hora actual
@@ -75,6 +117,7 @@ namespace CampoVerde.Controllers
             return View(produccion);
         }
 
+
         // GET: Produccion/Edit/
         public async Task<IActionResult> Edit(int? id)
         {
@@ -83,16 +126,29 @@ namespace CampoVerde.Controllers
 
             var produccion = await _context.Producciones.FindAsync(id);
 
-            if (produccion == null)
-                return NotFound();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            ViewBag.IdAnimal = new SelectList(
-                _context.Animales,
-                "IdAnimal",
-                "nombre",
-                produccion.IdAnimal);
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales,
+                    "IdAnimal",
+                    "nombre",
+                    produccion.IdAnimal);
+            }
+            else
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales.Where(a => a.ClienteId == clienteId),
+                    "IdAnimal",
+                    "nombre",
+                    produccion.IdAnimal);
+            }
 
             return View(produccion);
+
+
         }
 
 
@@ -108,6 +164,13 @@ namespace CampoVerde.Controllers
             {
                 try
                 {
+                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                    if (clienteId != null)
+                    {
+                        produccion.ClienteId = clienteId.Value;
+                    }
+
                     _context.Update(produccion);
                     await _context.SaveChangesAsync();
 
@@ -136,9 +199,18 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var produccion = await _context.Producciones
-                .Include(p => p.Animal)
-                .FirstOrDefaultAsync(p => p.IdProduccion == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Produccion> consulta = _context.Producciones
+                .Include(p => p.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
+
+            var produccion = await consulta.FirstOrDefaultAsync(p => p.IdProduccion == id);
 
             if (produccion == null)
                 return NotFound();
@@ -150,13 +222,24 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var produccion = await _context.Producciones.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            if (produccion != null)
+            IQueryable<Produccion> consulta = _context.Producciones;
+
+            if (rol != "SUPER_ADMINISTRADOR")
             {
-                _context.Producciones.Remove(produccion);
-                await _context.SaveChangesAsync();
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
             }
+
+            var produccion = await consulta.FirstOrDefaultAsync(p => p.IdProduccion == id);
+
+            if (produccion == null)
+                return NotFound();
+
+            _context.Producciones.Remove(produccion);
+
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
@@ -164,9 +247,17 @@ namespace CampoVerde.Controllers
 
         public async Task<IActionResult> Historial(int? idAnimal)
         {
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
             var consulta = _context.Producciones
                 .Include(p => p.Animal)
                 .AsQueryable();
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(p => p.ClienteId == clienteId);
+            }
 
             if (idAnimal.HasValue)
             {
@@ -177,5 +268,6 @@ namespace CampoVerde.Controllers
                 .OrderByDescending(p => p.fechaProduccion)
                 .ToListAsync());
         }
+
     }
 }

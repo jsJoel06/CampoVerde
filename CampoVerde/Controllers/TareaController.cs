@@ -18,19 +18,48 @@ namespace CampoVerde.Controllers
         // GET: Tarea/Index
         public async Task<IActionResult> Index()
         {
-            var tareas = await _context.Tareas
-                .Include(t => t.Animal)
-                .ToListAsync();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            return View(tareas);
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                return View(await _context.Tareas
+                    .Include(t => t.Animal)
+                    .Include(t => t.Cliente)
+                    .ToListAsync());
+            }
+
+            return View(await _context.Tareas
+                .Include(t => t.Animal)
+                .Where(t => t.ClienteId == clienteId)
+                .ToListAsync());
         }
+
 
         // GET: Tarea/Create
         public IActionResult Create()
         {
-            ViewBag.IdAnimal = new SelectList(_context.Animales, "IdAnimal", "nombre");
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales,
+                    "IdAnimal",
+                    "nombre");
+            }
+            else
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales.Where(a => a.ClienteId == clienteId),
+                    "IdAnimal",
+                    "nombre");
+            }
+
             return View();
         }
+
 
         // POST: Tarea/Create
         [HttpPost]
@@ -41,12 +70,21 @@ namespace CampoVerde.Controllers
 
             if (ModelState.IsValid)
             {
+                var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+                if (clienteId == null)
+                {
+                    ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
+                    return View(tarea);
+                }
+
+                tarea.ClienteId = clienteId.Value;
+
                 tarea.FechaVencimiento =
                     DateTime.SpecifyKind(tarea.FechaVencimiento, DateTimeKind.Utc);
 
                 _context.Tareas.Add(tarea);
 
-                // Notificación
                 _context.Notificaciones.Add(new Notificacion
                 {
                     Mensaje = $"Se registró una nueva tarea: {tarea.Descripcion}",
@@ -72,6 +110,26 @@ namespace CampoVerde.Controllers
         public IActionResult Edit(int id)
         {
             var tarea = _context.Tareas.Find(id);
+
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales,
+                    "IdAnimal",
+                    "nombre",
+                    tarea.IdAnimal);
+            }
+            else
+            {
+                ViewBag.IdAnimal = new SelectList(
+                    _context.Animales.Where(a => a.ClienteId == clienteId),
+                    "IdAnimal",
+                    "nombre",
+                    tarea.IdAnimal);
+            }
 
             if (tarea == null)
                 return NotFound();
@@ -124,6 +182,13 @@ namespace CampoVerde.Controllers
             tareaDb.Encargado = tarea.Encargado ?? tareaDb.Encargado ?? "";
             tareaDb.Notas = tarea.Notas ?? tareaDb.Notas ?? "";
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            if (clienteId != null)
+            {
+                tareaDb.ClienteId = clienteId.Value;
+            }
+
             // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
@@ -143,9 +208,18 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var tarea = await _context.Tareas
-                .Include(t => t.Animal)
-                .FirstOrDefaultAsync(t => t.IdTarea == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Tarea> consulta = _context.Tareas
+                .Include(t => t.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(t => t.ClienteId == clienteId);
+            }
+
+            var tarea = await consulta.FirstOrDefaultAsync(t => t.IdTarea == id);
 
             if (tarea == null)
                 return NotFound();
@@ -159,12 +233,21 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var tarea = await _context.Tareas.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Tarea> consulta = _context.Tareas;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(t => t.ClienteId == clienteId);
+            }
+
+            var tarea = await consulta.FirstOrDefaultAsync(t => t.IdTarea == id);
 
             if (tarea == null)
                 return NotFound();
 
-            // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
                 Mensaje = $"Se eliminó la tarea: {tarea.Descripcion}",

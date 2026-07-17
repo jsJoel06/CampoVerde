@@ -1,137 +1,404 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var rol = HttpContextAccessor.HttpContext.Session.GetString("Rol");
+
+    bool esSuperAdmin = rol == "SUPER_ADMINISTRADOR";
+    bool esAdmin = rol == "ADMINISTRADOR";
+    bool esVeterinario = rol == "VETERINARIO";
+    bool esOperario = rol == "OPERARIO";
+    bool esGanadero = rol == "GANADERO";
+
+    var nombre = HttpContextAccessor.HttpContext.Session.GetString("Nombre")
+                 ?? "Usuario";
+
+    var foto = HttpContextAccessor.HttpContext.Session.GetString("FotoPerfil");
+}
+
+<!DOCTYPE html>
 <html lang="es">
+
 <head>
+
     <meta charset="utf-8" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@($"{ViewData["Title"]} - CampoVerde")</title>
+
+    <title>@ViewData["Title"] - CampoVerde</title>
+
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="icon" type="image/jpg" href="~/img/imgs.jpg" asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+
     <style>
+
             body {
-                background-color: #f8f9fa;
-                font-family: 'Segoe UI', sans-serif;
+                background: #f4f7f2;
+                font-family: 'Segoe UI',sans-serif;
             }
+
 
             .navbar {
-                background: #fff;
-                border-bottom: 2px solid #e9ecef;
+                background: white;
+                border-bottom: 2px solid #dfe8dc;
+                box-shadow: 0 5px 20px rgba(0,0,0,.05);
             }
 
-            .nav-link {
-                color: #495057 !important;
-                font-weight: 500;
-            }
-
-                .nav-link:hover {
-                    color: #2e7d32 !important;
-                }
 
             .brand-text {
-                font-size: 20px;
-                font-weight: bold;
-                line-height: 1;
+                font-size: 22px;
+                font-weight: 800;
             }
+
 
                 .brand-text span {
                     color: #2e7d32;
                 }
 
-            /* Estilos Notificaciones (Mantenidos para el ViewComponent) */
-            .nav-notif {
-                position: relative;
+
+            .nav-link {
+                font-weight: 600;
+                color: #495057 !important;
             }
 
-            .punto-verde {
-                position: absolute;
-                top: 5px;
-                right: 2px;
-                width: 10px;
-                height: 10px;
-                background-color: #2ec4b6;
-                border: 2px solid #fff;
+
+                .nav-link:hover {
+                    color: #2e7d32 !important;
+                }
+
+
+
+            .avatar {
+                width: 35px;
+                height: 35px;
                 border-radius: 50%;
+                overflow: hidden;
+                border: 2px solid #d4e0d4;
             }
 
-            .dropdown-menu-notif {
-                width: 300px;
-                border-radius: 20px;
-                padding: 15px;
+
+                .avatar img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+
+            .badge-role {
+                font-size: .7rem;
+            }
+
+
+            .dropdown-menu {
+                border-radius: 18px;
                 border: 1px solid #d4e0d4;
-                box-shadow: 0 10px 30px rgba(74, 124, 74, 0.15);
+                box-shadow: 0 10px 25px rgba(0,0,0,.1);
             }
 
-            .notif-item {
-                font-size: 0.85em;
-                color: #2d3a2d;
-                padding: 10px;
-                border-bottom: 1px solid #f0f0f0;
-            }
-
-                .notif-item:hover {
-                    background-color: #fdfdf5;
-                }
-
-            @@media (max-width: 991px) {
-                .navbar-collapse {
-                    background: #fff;
-                    padding: 15px;
-                    border-radius: 15px;
-                    margin-top: 10px;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                }
-            }
     </style>
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-lg navbar-light mb-4">
-            <div class="container-fluid">
-                <div class="d-flex align-items-center">
-                    <img src="~/img/vaca.jpg" alt="Logo" class="me-3" style="width: 45px; height: 45px; object-fit: cover; border-radius: 50%;">
-                    <a class="navbar-brand text-dark d-flex flex-column" asp-controller="Home" asp-action="Index" style="text-decoration: none;">
-                        <div class="brand-text">Campo<span>Verde</span></div>
-                    </a>
-                </div>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse">
+
+</head>
+
+
+<body>
+
+
+    <header>
+
+
+        <nav class="navbar navbar-expand-lg">
+
+
+            <div class="container-fluid">
+
+
+                <a class="navbar-brand d-flex align-items-center"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+
+                    <img src="~/img/vaca.jpg"
+                         style="width:45px;height:45px;border-radius:50%;object-fit:cover"
+                         class="me-3">
+
+
+                    <div class="brand-text">
+                        Campo<span>Verde</span>
+                    </div>
+
+
+                </a>
+
+
+
+                <button class="navbar-toggler"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#menu">
+
                     <span class="navbar-toggler-icon"></span>
+
                 </button>
 
-                <div class="navbar-collapse collapse">
-                    <ul class="navbar-nav ms-lg-5">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Animal" asp-action="Index">Mis Animales</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Vacuna" asp-action="Index">Vacunas</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Alimentos" asp-action="Index">Inventario</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Privacy">Reportes</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Dashboard">Dashboard</a></li>
-                    </ul>
 
-                    <ul class="navbar-nav ms-auto align-items-center">
-                        <!-- Componente de Notificaciones Automático -->
-                        @await Component.InvokeAsync("Notificaciones")
+
+                <div class="collapse navbar-collapse"
+                     id="menu">
+
+
+
+                    <ul class="navbar-nav ms-lg-4">
+
 
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Usuario" asp-action="Perfil" title="Mi Perfil">
-                                <i class="fa-solid fa-user-circle fa-lg"></i>
+
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+
+                                <i class="fa fa-home"></i>
+                                Inicio
+
                             </a>
+
                         </li>
+
+
+
+                        @if (esSuperAdmin || esAdmin || esGanadero)
+                        {
+
+                            <li class="nav-item">
+
+                                <a class="nav-link"
+                                   asp-controller="Animal"
+                                   asp-action="Index">
+
+                                    <i class="fa fa-cow"></i>
+                                    Animales
+
+                                </a>
+
+                            </li>
+
+                        }
+
+
+
+                        @if (esSuperAdmin || esAdmin || esVeterinario)
+                        {
+
+                            <li class="nav-item">
+
+                                <a class="nav-link"
+                                   asp-controller="Vacuna"
+                                   asp-action="Index">
+
+                                    <i class="fa fa-syringe"></i>
+                                    Vacunas
+
+                                </a>
+
+                            </li>
+
+                        }
+
+
+
+                        @if (esSuperAdmin || esAdmin || esGanadero)
+                        {
+
+                            <li class="nav-item">
+
+                                <a class="nav-link"
+                                   asp-controller="Alimentos"
+                                   asp-action="Index">
+
+                                    <i class="fa fa-box"></i>
+                                    Inventario
+
+                                </a>
+
+                            </li>
+
+                        }
+
+
+
+                        @if (esSuperAdmin || esAdmin)
+                        {
+
+                            <li class="nav-item">
+
+                                <a class="nav-link"
+                                   asp-controller="Usuario"
+                                   asp-action="Index">
+
+                                    <i class="fa fa-users"></i>
+                                    Usuarios
+
+                                </a>
+
+                            </li>
+
+                        }
+
+
+
+                        <li class="nav-item">
+
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Dashboard">
+
+                                <i class="fa fa-chart-line"></i>
+                                Dashboard
+
+                            </a>
+
+                        </li>
+
+
                     </ul>
+
+
+
+
+
+                    <ul class="navbar-nav ms-auto align-items-center">
+
+
+                        <li class="nav-item dropdown">
+
+
+                            <a class="nav-link dropdown-toggle d-flex align-items-center"
+                               data-bs-toggle="dropdown">
+
+
+                                <div class="avatar me-2">
+
+
+                                    @if (!string.IsNullOrEmpty(foto))
+                                    {
+
+                                        <img src="~/uploads/@foto" />
+
+                                    }
+                                    else
+                                    {
+
+                                        <i class="fa fa-user text-secondary m-auto"></i>
+
+                                    }
+
+
+                                </div>
+
+
+                                <div>
+
+                                    <div class="fw-bold">
+                                        @nombre
+                                    </div>
+
+
+                                    <span class="badge bg-success badge-role">
+                                        @rol
+                                    </span>
+
+
+                                </div>
+
+
+                            </a>
+
+
+
+                            <ul class="dropdown-menu dropdown-menu-end">
+
+
+                                <li>
+
+                                    <a class="dropdown-item"
+                                       asp-controller="Usuario"
+                                       asp-action="Perfil">
+
+                                        <i class="fa fa-user"></i>
+                                        Mi Perfil
+
+                                    </a>
+
+                                </li>
+
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+
+                                <li>
+
+                                    <a asp-controller="Auth"
+                                       asp-action="Logout"
+                                       class="btn btn-danger">
+                                        Cerrar sesión
+                                    </a>
+
+
+                                </li>
+
+
+                            </ul>
+
+
+                        </li>
+
+
+                    </ul>
+
+
+
                 </div>
+
+
             </div>
+
+
         </nav>
+
+
     </header>
 
+
+
     <div class="container">
-        <main role="main" class="pb-3">
+
+        <main class="pb-3">
+
             @RenderBody()
+
         </main>
+
     </div>
 
+
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
     @await RenderSectionAsync("Scripts", required: false)
+
+
 </body>
+
 </html>

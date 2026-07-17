@@ -1,11 +1,15 @@
 ﻿using CampoVerde.Data;
 using CampoVerde.Models;
+using CampoVerde.Seguridad;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace CampoVerde.Controllers
 {
+    [AuthorizeRole(
+    Permisos.SuperAdministrador,
+    Permisos.Administrador)]
     public class GastoController : Controller
     {
         private readonly AppDbContext _context;
@@ -18,19 +22,43 @@ namespace CampoVerde.Controllers
         // LISTADO
         public async Task<IActionResult> Index()
         {
-            var gastos = await _context.Gastos
-                .Include(g => g.Animal)
-                .ToListAsync();
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            return View(gastos);
+            IQueryable<Gasto> consulta = _context.Gastos
+                .Include(g => g.Animal);
+
+
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+            }
+
+            return View(await consulta.ToListAsync());
         }
 
         // CREATE (GET)
         public IActionResult Create()
         {
-            ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre");
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Animal> animales = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
+            ViewData["IdAnimal"] = new SelectList(
+                animales.ToList(),
+                "IdAnimal",
+                "nombre");
+
             return View();
         }
+
 
         // CREATE (POST)
         [HttpPost]
@@ -41,11 +69,20 @@ namespace CampoVerde.Controllers
 
             gasto.Fecha = DateTime.UtcNow;
 
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Animal> animales = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Gastos.Add(gasto);
 
-                // Notificación
                 _context.Notificaciones.Add(new Notificacion
                 {
                     Mensaje = $"Se registró un nuevo gasto: {gasto.Concepto}",
@@ -58,7 +95,12 @@ namespace CampoVerde.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre", gasto.IdAnimal);
+            ViewData["IdAnimal"] = new SelectList(
+                animales.ToList(),
+                "IdAnimal",
+                "nombre",
+                gasto.IdAnimal);
+
             return View(gasto);
         }
 
@@ -68,12 +110,33 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var gasto = await _context.Gastos.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Gasto> consulta = _context.Gastos;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+            }
+
+            var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
 
             if (gasto == null)
                 return NotFound();
 
-            ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre", gasto.IdAnimal);
+            IQueryable<Animal> animales = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
+            ViewData["IdAnimal"] = new SelectList(
+                animales.ToList(),
+                "IdAnimal",
+                "nombre",
+                gasto.IdAnimal);
 
             return View(gasto);
         }
@@ -88,23 +151,44 @@ namespace CampoVerde.Controllers
 
             ModelState.Remove("Animal");
 
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Animal> animales = _context.Animales;
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                animales = animales.Where(a => a.ClienteId == clienteId);
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var gastoExistente = await _context.Gastos.FindAsync(id);
+                    IQueryable<Gasto> consulta = _context.Gastos
+                        .Include(g => g.Animal);
+
+                    if (rol != "SUPER_ADMINISTRADOR")
+                    {
+                        consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                    }
+
+                    var gastoExistente = await consulta
+                        .FirstOrDefaultAsync(g => g.IdGasto == id);
 
                     if (gastoExistente == null)
                         return NotFound();
 
-                    gastoExistente.Fecha = DateTime.SpecifyKind(gasto.Fecha, DateTimeKind.Utc);
+                    gastoExistente.Fecha = DateTime.SpecifyKind(
+                        gasto.Fecha,
+                        DateTimeKind.Utc);
+
                     gastoExistente.Concepto = gasto.Concepto;
                     gastoExistente.Monto = gasto.Monto;
                     gastoExistente.Categoria = gasto.Categoria;
                     gastoExistente.IdAnimal = gasto.IdAnimal;
                     gastoExistente.Notas = gasto.Notas;
 
-                    // Notificación
                     _context.Notificaciones.Add(new Notificacion
                     {
                         Mensaje = $"Se actualizó el gasto: {gastoExistente.Concepto}",
@@ -123,7 +207,12 @@ namespace CampoVerde.Controllers
                 }
             }
 
-            ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre", gasto.IdAnimal);
+            ViewData["IdAnimal"] = new SelectList(
+                animales.ToList(),
+                "IdAnimal",
+                "nombre",
+                gasto.IdAnimal);
+
             return View(gasto);
         }
 
@@ -133,9 +222,18 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var gasto = await _context.Gastos
-                .Include(g => g.Animal)
-                .FirstOrDefaultAsync(g => g.IdGasto == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Gasto> consulta = _context.Gastos
+                .Include(g => g.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+            }
+
+            var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
 
             if (gasto == null)
                 return NotFound();
@@ -149,9 +247,18 @@ namespace CampoVerde.Controllers
             if (id == null)
                 return NotFound();
 
-            var gasto = await _context.Gastos
-                .Include(g => g.Animal)
-                .FirstOrDefaultAsync(g => g.IdGasto == id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Gasto> consulta = _context.Gastos
+                .Include(g => g.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+            }
+
+            var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
 
             if (gasto == null)
                 return NotFound();
@@ -164,12 +271,22 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var gasto = await _context.Gastos.FindAsync(id);
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            IQueryable<Gasto> consulta = _context.Gastos
+                .Include(g => g.Animal);
+
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+            }
+
+            var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
 
             if (gasto == null)
                 return NotFound();
 
-            // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
                 Mensaje = $"Se eliminó el gasto: {gasto.Concepto}",

@@ -1,107 +1,356 @@
 ﻿@model CampoVerde.Models.Gasto
+@using CampoVerde.Models
 
 @{
     ViewData["Title"] = "Detalles del Gasto";
+
+    var rol = Context.Session.GetString("Rol");
+
+    bool puedeEditar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
 }
 
+
 <style>
-    /* Diseño Minimalista Campo Verde */
-    .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid #e0e8e0;
+
+    body {
+        background-color: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+
+    .card-ganaderia {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.12);
+        padding: 40px;
+    }
+
+
+    .icon-box {
+        width: 70px;
+        height: 70px;
         border-radius: 25px;
-        padding: 2rem;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-    }
-
-    .header-icon {
-        background-color: #d1e0d1;
+        background: #d4e0d4;
         color: #1a3c1a;
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
         display: flex;
-        align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
-        margin: 0 auto 1rem;
+        align-items: center;
+        font-size: 30px;
     }
 
-    .info-group {
-        border-bottom: 1px solid #f0f0f0;
-        padding: 1rem 0;
+
+    h2 {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
     }
 
-    .info-label {
-        color: #889988;
-        font-size: 0.75rem;
+
+    .info-card {
+        background: white;
+        border-radius: 20px;
+        padding: 20px;
+        border: 1px solid #e1e8df;
+    }
+
+
+    .label {
+        color: #7a907a;
+        font-size: .75rem;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        font-weight: bold;
     }
 
-    .info-value {
-        color: #2d3a2d;
-        font-weight: 500;
-        font-size: 1.05rem;
-        margin-top: 2px;
-    }
 
-    .btn-custom {
-        transition: all 0.3s ease;
-        border-radius: 12px;
+    .valor {
+        color: #1a3c1a;
+        font-size: 1.1rem;
         font-weight: 600;
     }
+
+
+    .btn-verde {
+        background: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+
+    .btn-outline {
+        border-radius: 50px;
+        padding: 12px 30px;
+    }
+
 </style>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="glass-card text-center">
-                <div class="header-icon">
-                    <i class="bi bi-wallet2"></i>
-                </div>
-                <h4 class="mb-4" style="color: #1a3c1a;">Detalles del Gasto</h4>
 
-                <div class="text-start">
-                    <div class="info-group">
-                        <span class="info-label">Concepto</span>
-                        <div class="info-value">@Model.Concepto</div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-6 info-group">
-                            <span class="info-label">Monto</span>
-                            <div class="info-value text-success">$@Model.Monto.ToString("N2")</div>
-                        </div>
-                        <div class="col-6 info-group">
-                            <span class="info-label">Fecha</span>
-                            <div class="info-value">@Model.Fecha.ToString("dd/MM/yyyy")</div>
-                        </div>
-                    </div>
+<div class="container py-5">
 
-                    <div class="info-group">
-                        <span class="info-label">Categoría</span>
-                        <div class="info-value">@Model.Categoria</div>
-                    </div>
 
-                    <div class="info-group">
-                        <span class="info-label">Animal relacionado</span>
-                        <div class="info-value">
-                            @(Model.Animal?.nombre ?? "Sin animal asociado")
-                        </div>
-                    </div>
+    <div class="card-ganaderia">
 
-                    <div class="info-group border-0">
-                        <span class="info-label">Notas</span>
-                        <div class="info-value">@(string.IsNullOrEmpty(Model.Notas) ? "-" : Model.Notas)</div>
-                    </div>
-                </div>
 
-                <div class="d-grid gap-2 mt-4">
-                    <a asp-action="Edit" asp-route-id="@Model?.IdGasto" class="btn btn-outline-success btn-custom">Editar</a>
-                    <a asp-action="Index" class="btn btn-light btn-custom">Volver al listado</a>
-                </div>
+        <div class="d-flex align-items-center mb-4">
+
+
+            <div class="icon-box me-3">
+
+                <i class="fa-solid fa-wallet"></i>
+
             </div>
+
+
+            <div>
+
+                <h2 class="mb-1">
+                    Detalles del Gasto
+                </h2>
+
+                <p class="text-muted mb-0">
+                    Información completa del registro financiero
+                </p>
+
+            </div>
+
+
         </div>
+
+
+
+        <hr />
+
+
+
+        <div class="row g-4">
+
+
+            <div class="col-md-6">
+
+                <div class="info-card">
+
+                    <div class="label">
+                        Concepto
+                    </div>
+
+                    <div class="valor">
+                        @Model.Concepto
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+            <div class="col-md-6">
+
+                <div class="info-card">
+
+                    <div class="label">
+                        Monto
+                    </div>
+
+                    <div class="valor text-danger">
+
+                        @Model.Monto.ToString("C2")
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="col-md-6">
+
+                <div class="info-card">
+
+                    <div class="label">
+                        Fecha
+                    </div>
+
+                    <div class="valor">
+
+                        @Model.Fecha.ToString("dd/MM/yyyy")
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <div class="col-md-6">
+
+                <div class="info-card">
+
+                    <div class="label">
+                        Categoría
+                    </div>
+
+                    <div class="valor">
+
+                        <span class="badge bg-success">
+
+                            @Model.Categoria
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+
+
+            <div class="col-md-6">
+
+                <div class="info-card">
+
+
+                    <div class="label">
+                        Animal Asociado
+                    </div>
+
+
+                    <div class="valor">
+
+                        @(Model.Animal?.nombre ?? "Sin animal asociado")
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+
+            <div class="col-md-6">
+
+
+                <div class="info-card">
+
+
+                    <div class="label">
+                        Id Gasto
+                    </div>
+
+
+                    <div class="valor">
+
+                        #@Model.IdGasto
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+
+            <div class="col-12">
+
+
+                <div class="info-card">
+
+
+                    <div class="label">
+                        Notas
+                    </div>
+
+
+                    <div class="valor">
+
+                        @(string.IsNullOrEmpty(Model.Notas)
+                        ? "Sin notas registradas"
+                        : Model.Notas)
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+
+        <div class="mt-5 d-flex justify-content-end gap-3">
+
+
+            @if (puedeEditar)
+            {
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.IdGasto"
+                   class="btn btn-verde">
+
+                    <i class="fa-solid fa-pen me-2"></i>
+
+                    Editar
+
+                </a>
+
+            }
+
+
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary btn-outline">
+
+                <i class="fa-solid fa-arrow-left me-2"></i>
+
+                Volver
+
+            </a>
+
+
+
+        </div>
+
+
+
     </div>
+
+
 </div>

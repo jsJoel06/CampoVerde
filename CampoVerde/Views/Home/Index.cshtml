@@ -1,212 +1,1581 @@
-﻿
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     ViewData["Title"] = "Panel Principal - Ganadería Campo Verde";
 
+
+    var rol = HttpContextAccessor.HttpContext.Session.GetString("Rol");
+
+    var nombre = HttpContextAccessor.HttpContext.Session
+                  .GetString("Nombre")
+                  ?.Split(' ')[0] ?? "Usuario";
+
+
+    bool esSuperAdmin = rol == "SUPER_ADMINISTRADOR";
+    bool esAdmin = rol == "ADMINISTRADOR";
+    bool esVeterinario = rol == "VETERINARIO";
+    bool esGanadero = rol == "GANADERO";
+
+
     var lista = ViewBag.Potreros as List<CampoVerde.Models.Potrero>
-               ?? new List<CampoVerde.Models.Potrero>();
+                ?? new List<CampoVerde.Models.Potrero>();
 
 }
 
 
-
 <style>
-    body { background-color: #eaf2e9; }
-    
-    .card-dashboard {
-        background-color: #fdfdf5;
-        border: 1px solid #d4e0d4;
-        border-radius: 25px;
-        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.05);
-        padding: 30px;
-        transition: transform 0.3s;
+
+    body {
+        background: #eaf2e9;
     }
 
-    .card-dashboard:hover { transform: translateY(-5px); }
+
+    .card-dashboard {
+        background: #fdfdf5;
+        border: 1px solid #d4e0d4;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(74,124,74,.08);
+        padding: 30px;
+        transition: .3s;
+    }
+
+
+        .card-dashboard:hover {
+            transform: translateY(-5px);
+        }
+
+
 
     .icon-box {
-        background-color: #d4e0d4;
+        background: #d4e0d4;
         color: #1a3c1a;
-        padding: 15px;
-        border-radius: 20px;
         width: 55px;
         height: 55px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.4rem;
     }
 
+
+
     .btn-campo-dark {
-        background-color: #1a3c1a;
+        background: #1a3c1a;
         color: white;
         border-radius: 50px;
         padding: 12px 30px;
         font-weight: 600;
-        transition: 0.3s;
     }
 
-    .btn-campo-dark:hover { background-color: #3d663d; color: white; }
+
+
+        .btn-campo-dark:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+
+    .role-badge {
+        background: #2e7d32;
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+    }
+
 </style>
 
+
+
 <div class="container py-5">
+
+
     <div class="mb-5">
 
 
-        <h2 class="fw-bold" style="color: #1a3c1a;">Bienvenido, Joel</h2>
-        <p style="color: #3d663d;">Panel central de gestión para Ganadería Campo Verde</p>
+        <h2 class="fw-bold"
+            style="color:#1a3c1a">
+
+
+            <i class="fa-solid fa-leaf"></i>
+
+            Bienvenido, @nombre
+
+
+        </h2>
+
+
+
+        <p style="color:#3d663d">
+
+
+            Rol actual:
+
+            <span class="role-badge">
+
+                @rol
+
+            </span>
+
+
+        </p>
+
+
+
+        <p class="text-muted">
+
+            Panel central de gestión para Ganadería Campo Verde
+
+        </p>
+
+
     </div>
 
+
+
+
     <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="card-dashboard h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-secondary small text-uppercase fw-bold">Inventario</h5>
-                    <div class="icon-box"><i class="fa-solid fa-cow"></i></div>
-                </div>
-                <h3 class="mt-3 mb-0" style="color: #1a3c1a;">@ViewBag.TotalReses <span class="fs-6 text-muted">reses</span></h3>
-                <p class="text-success small mt-2 mb-0"><i class="fa-solid fa-check-circle me-1"></i> Sistema operativo</p>
-            </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="card-dashboard h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="text-secondary small text-uppercase fw-bold">Clima</h5>
-                    <i id="icono-clima" class="fa-solid fa-spinner text-brand fs-4"></i>
-                </div>
-                <div class="mt-3">
-                    <h3 id="ciudad" class="fs-5 mb-0" style="color: #1a3c1a;">Consultando...</h3>
-                    <p id="temperatura" class="text-muted small mb-0"></p>
-                </div>
-            </div>
-        </div>
 
-        <div class="col-md-4">
-            <div class="card-dashboard h-100">
-                <h5 class="text-secondary small text-uppercase fw-bold">Operaciones</h5>
-                <p class="mt-3 mb-0 fw-bold" style="color: #1a3c1a;">Próxima vacunación</p>
 
-                @if (ViewBag.ProximaVacuna != null)
-                {
-                    <!-- Mostramos el nombre de la vacuna y la fecha -->
-                    <p class="mb-0 text-success fw-bold">@ViewBag.ProximaVacuna.nombreVacuna</p>
-                    <small class="text-secondary">
-                        Fecha: @ViewBag.ProximaVacuna.fechaProximaAplicacion.ToString("dd 'de' MMMM")
-                    </small>
-                }
-                else
-                {
-                    <small class="text-muted">No hay próximas programadas</small>
-                }
-            </div>
-        </div>
+        @if (esSuperAdmin || esAdmin || esGanadero)
+        {
 
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="card-dashboard">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h5 class="mb-0 fw-bold" style="color: #1a3c1a;">Gestión de Inventario</h5>
-                    <a asp-controller="Animal" asp-action="Create" class="btn btn-campo-dark">
-                        <i class="fa-solid fa-plus me-2"></i> Registrar Res
-                    </a>
-                </div>
+            <div class="col-md-4">
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <a asp-controller="Animal" asp-action="Index" class="text-decoration-none">
-                            <div class="p-3 border rounded-4 d-flex align-items-center" style="border-color: #d4e0d4 !important; transition: 0.3s;">
-                                <div class="icon-box me-3"><i class="fa-solid fa-list-ul"></i></div>
-                                <div>
-                                    <h6 class="mb-0" style="color: #1a3c1a;">Ver Inventario</h6>
-                                    <small class="text-muted">Lista completa de animales</small>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="col-md-6">
-                        <a asp-controller="Home" asp-action="Dashboard" class="text-decoration-none">
-                        <div class="p-3 border rounded-4 d-flex align-items-center opacity-50">
-                            <div class="icon-box me-3"><i class="fa-solid fa-chart-line"></i></div>
-                            <div>
-                                <h6 class="mb-0" style="color: #1a3c1a;">Reportes</h6>
-                                <small class="text-muted">Ver Dashboard</small>
-                            </div>
+
+                <div class="card-dashboard h-100">
+
+
+                    <div class="d-flex justify-content-between">
+
+
+                        <h6 class="text-muted">
+                            INVENTARIO
+                        </h6>
+
+
+                        <div class="icon-box">
+
+                            <i class="fa-solid fa-cow"></i>
+
                         </div>
-                        </a>
+
+
                     </div>
+
+
+
+                    <h2 class="mt-3"
+                        style="color:#1a3c1a">
+
+
+                        @ViewBag.TotalReses
+
+
+                        <small class="fs-6 text-muted">
+
+                            reses
+
+                        </small>
+
+
+                    </h2>
+
+
+
+                    <p class="text-success">
+
+                        <i class="fa-solid fa-check-circle"></i>
+
+                        Sistema operativo
+
+                    </p>
+
+
                 </div>
+
+
             </div>
+
+
+        }
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="card-dashboard h-100">
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <h6 class="text-muted">
+
+                        CLIMA
+
+                    </h6>
+
+
+                    <i id="icono-clima"
+                       class="fa-solid fa-spinner fs-4">
+
+                    </i>
+
+
+                </div>
+
+
+
+                <h5 id="ciudad"
+                    class="mt-3"
+                    style="color:#1a3c1a">
+
+                    Consultando...
+
+                </h5>
+
+
+                <p id="temperatura"
+                   class="text-muted">
+
+                </p>
+
+
+            </div>
+
+
         </div>
+
+
+
+
+
+        @if (esSuperAdmin || esAdmin || esVeterinario)
+        {
+
+
+            <div class="col-md-4">
+
+
+                <div class="card-dashboard h-100">
+
+
+                    <div class="d-flex justify-content-between">
+
+
+                        <h6 class="text-muted">
+
+                            VACUNAS
+
+                        </h6>
+
+
+                        <div class="icon-box">
+
+                            <i class="fa-solid fa-syringe"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <h2 class="mt-3"
+                        style="color:#1a3c1a">
+
+                        @ViewBag.VacunasPendientes
+
+                    </h2>
+
+
+
+                    <p class="text-muted">
+
+                        Próximas aplicaciones
+
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+    </div>
+    <!-- =========================
+     MODULOS PRINCIPALES
+========================= -->
+
+
+    <div class="row g-4 mb-4">
+
+
+
+        @if (esSuperAdmin || esAdmin || esGanadero)
+        {
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card-dashboard h-100">
+
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+
+                        <h5 class="fw-bold"
+                            style="color:#1a3c1a">
+
+                            <i class="fa-solid fa-tractor"></i>
+
+                            Gestión Ganadera
+
+                        </h5>
+
+
+                        <a asp-controller="Animal"
+                           asp-action="Create"
+                           class="btn btn-campo-dark">
+
+
+                            <i class="fa-solid fa-plus"></i>
+
+                            Registrar Animal
+
+
+                        </a>
+
+
+                    </div>
+
+
+
+
+                    <div class="row g-3">
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Animal"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-cow"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Animales
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Ver inventario ganadero
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Produccion"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-bottle-droplet"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Producción
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Control de leche
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Tarea"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-list-check"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Tareas
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Labores pendientes
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Vacuna"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-syringe"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Vacunas
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Control sanitario
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+        <!-- =========================
+     ADMINISTRACION
+========================= -->
+        @if (esSuperAdmin)
+        {
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card-dashboard h-100">
+
+
+                    <h5 class="fw-bold mb-4"
+                        style="color:#1a3c1a">
+
+
+                        <i class="fa-solid fa-user-shield"></i>
+
+                        Administración del Sistema
+
+
+                    </h5>
+
+
+
+
+                    <div class="row g-3">
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Usuario"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-users"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Usuarios
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Gestionar accesos
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Cliente"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-building"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Clientes
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Empresas registradas
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Licencia"
+                               asp-action="Index"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-key"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Licencias
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Control del sistema
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+                        <div class="col-md-6">
+
+
+                            <a asp-controller="Home"
+                               asp-action="Dashboard"
+                               class="text-decoration-none">
+
+
+                                <div class="p-3 border rounded-4 d-flex align-items-center">
+
+
+                                    <div class="icon-box me-3">
+
+                                        <i class="fa-solid fa-chart-line"></i>
+
+                                    </div>
+
+
+                                    <div>
+
+
+                                        <h6 style="color:#1a3c1a">
+
+                                            Reportes
+
+                                        </h6>
+
+
+                                        <small class="text-muted">
+
+                                            Indicadores generales
+
+                                        </small>
+
+
+                                    </div>
+
+
+                                </div>
+
+
+                            </a>
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+    </div>
+    <!-- =========================
+     INFORMACION DEL GANADO
+========================= -->
+
+
+    <div class="row g-4 mb-4">
+
+
+        @if (esSuperAdmin || esAdmin || esGanadero)
+        {
+
+
+            <div class="col-lg-4">
+
+
+                <div class="card-dashboard h-100">
+
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+                        <h5 class="fw-bold"
+                            style="color:#1a3c1a">
+
+
+                            🐄 Estado del Ganado
+
+
+                        </h5>
+
+
+                        <div class="icon-box">
+
+                            <i class="fa-solid fa-heart-pulse"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                    <div class="d-flex justify-content-between mb-3">
+
+
+                        <span class="text-muted">
+
+                            Animales activos
+
+                        </span>
+
+
+                        <strong style="color:#1a3c1a">
+
+                            @ViewBag.AnimalesActivos
+
+                        </strong>
+
+
+                    </div>
+
+
+
+
+                    <div class="d-flex justify-content-between mb-3">
+
+
+                        <span class="text-muted">
+
+                            Animales enfermos
+
+                        </span>
+
+
+                        <strong class="text-danger">
+
+                            @ViewBag.AnimalesEnfermos
+
+                        </strong>
+
+
+                    </div>
+
+
+
+
+
+                    <div class="d-flex justify-content-between">
+
+
+                        <span class="text-muted">
+
+                            En observación
+
+                        </span>
+
+
+                        <strong class="text-warning">
+
+                            @ViewBag.AnimalesObservacion
+
+                        </strong>
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+
+
+        @if (esSuperAdmin || esAdmin || esVeterinario)
+        {
+
+
+            <div class="col-lg-4">
+
+
+                <div class="card-dashboard h-100">
+
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+                        <h5 class="fw-bold"
+                            style="color:#1a3c1a">
+
+
+                            ⚠ Alertas
+
+
+                        </h5>
+
+
+                        <div class="icon-box">
+
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+                    <div class="d-flex justify-content-between mb-3">
+
+
+                        <span>
+
+                            Stock bajo
+
+                        </span>
+
+
+                        <span class="badge bg-danger">
+
+                            @ViewBag.StockBajo
+
+                        </span>
+
+
+                    </div>
+
+
+
+
+                    <div class="d-flex justify-content-between">
+
+
+                        <span>
+
+                            Próximos partos
+
+                        </span>
+
+
+                        <span class="badge bg-success">
+
+                            @ViewBag.ProximosPartos
+
+                        </span>
+
+
+                    </div>
+
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
 
 
 
         <div class="col-lg-4">
+
+
             <div class="card-dashboard h-100">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold m-0" style="color:#1a3c1a;">🌿 Mapa del Predio</h5>
-                    <a asp-controller="Mapa" asp-action="Index" class="btn btn-sm btn-outline-success">
-                        <i class="fa-solid fa-plus"></i>
-                    </a>
-                </div>
+
+
+                <h5 class="fw-bold mb-3"
+                    style="color:#1a3c1a">
+
+
+                    🌿 Mapa del Predio
+
+
+                </h5>
+
+
+
 
                 <div class="row g-2">
+
+
                     @if (lista.Any())
                     {
-                        @foreach (var potrero in lista.Take(4)) // Mostramos los primeros 4 lotes
+
+
+                        @foreach (var potrero in lista.Take(4))
                         {
+
+
                             <div class="col-6">
+
+
                                 <div class="position-relative">
+
+
+
                                     @{
-                                        var primeraFoto = potrero.RutasFotos?.Split(';').FirstOrDefault();
+
+                                        var foto = potrero.RutasFotos?
+                                        .Split(';')
+                                        .FirstOrDefault();
+
                                     }
 
-                                    @if (!string.IsNullOrEmpty(primeraFoto))
+
+
+                                    @if (!string.IsNullOrEmpty(foto))
                                     {
-                                        <img src="~/uploads/@primeraFoto" class="img-fluid rounded-3 shadow-sm" style="height:80px;width:100%;object-fit:cover;" />
+
+                                        <img src="~/uploads/@foto"
+                                             class="img-fluid rounded-3"
+                                             style="height:90px;
+                                        width:100%;
+                                        object-fit:cover;" />
+
                                     }
                                     else
                                     {
-                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height:80px;">
+
+                                        <div class="bg-light rounded-3
+                                            d-flex
+                                            align-items-center
+                                            justify-content-center"
+                                             style="height:90px">
+
+
                                             <i class="fa-solid fa-image text-muted"></i>
+
+
                                         </div>
+
                                     }
 
-                                    <div class="position-absolute bottom-0 w-100 p-1 text-center"
-                                         style="background: rgba(26, 60, 26, 0.7); border-radius: 0 0 6px 6px;">
-                                        <small class="text-white fw-bold" style="font-size: 0.7rem;">@potrero.Nombre</small>
+
+
+                                    <div class="position-absolute bottom-0 w-100 text-center"
+                                         style="
+                                        background:rgba(26,60,26,.75);
+                                        border-radius:0 0 8px 8px;">
+
+
+                                        <small class="text-white fw-bold">
+
+                                            @potrero.Nombre
+
+                                        </small>
+
+
                                     </div>
+
+
+
                                 </div>
+
+
                             </div>
+
+
+
                         }
+
+
+
                     }
                     else
                     {
-                        <div class="col-12 text-center py-4 border border-dashed rounded-4">
-                            <p class="text-muted small">No hay lotes mapeados aún.</p>
+
+
+                        <div class="text-center text-muted">
+
+                            No hay potreros registrados
+
                         </div>
+
+
                     }
+
+
+
                 </div>
+
+
+
+
+                <div class="mt-3 text-center">
+
+
+                    <a asp-controller="Mapa"
+                       asp-action="Index"
+                       class="btn btn-outline-success rounded-pill">
+
+
+                        <i class="fa-solid fa-map"></i>
+
+                        Ver mapa completo
+
+
+                    </a>
+
+
+                </div>
+
+
+
             </div>
+
+
         </div>
 
 
-    </div>
-</div>
 
-<script>
-    async function obtenerClima() {
-        try {
-            const res = await fetch('https://wttr.in/Santo_Domingo?format=j1');
-            const data = await res.json();
-            const cond = data.current_condition[0];
-            
-            document.getElementById('ciudad').innerText = "Santo Domingo";
-            document.getElementById('temperatura').innerText = `${cond.temp_C}°C - ${cond.weatherDesc[0].value}`;
-            
-            const icon = document.getElementById('icono-clima');
-            icon.className = `fa-solid ${cond.weatherDesc[0].value.includes("Sun") ? 'fa-sun' : 'fa-cloud'} text-brand fs-4`;
-        } catch (e) { console.error("Error clima:", e); }
-    }
-    obtenerClima();
-</script>
+
+    </div>
+    <!-- =========================
+     ULTIMOS REGISTROS
+========================= -->
+
+
+    <div class="row g-4 mb-5">
+
+
+        @if (esSuperAdmin || esAdmin || esGanadero)
+        {
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card-dashboard">
+
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+                        <h5 class="fw-bold"
+                            style="color:#1a3c1a">
+
+
+                            🐄 Últimos Animales
+
+
+                        </h5>
+
+
+                        <a asp-controller="Animal"
+                           asp-action="Index"
+                           class="btn btn-sm btn-outline-success rounded-pill">
+
+
+                            Ver todos
+
+
+                        </a>
+
+
+                    </div>
+
+
+
+
+                    @if (ViewBag.UltimosAnimales != null)
+                    {
+
+
+                        <table class="table align-middle">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Código</th>
+
+                                    <th>Nombre</th>
+
+                                    <th>Estado</th>
+
+                                </tr>
+
+                            </thead>
+
+
+
+                            <tbody>
+
+
+                                @foreach (var animal in ViewBag.UltimosAnimales)
+                                {
+
+
+                                    <tr>
+
+
+                                        <td class="fw-bold">
+
+                                            @animal.codigo
+
+                                        </td>
+
+
+                                        <td>
+
+                                            @animal.nombre
+
+                                        </td>
+
+
+                                        <td>
+
+
+                                            @if (animal.Estado == EstadoAnimal.ENFERMO)
+                                            {
+
+                                                <span class="badge bg-danger">
+
+                                                    Enfermo
+
+                                                </span>
+
+                                            }
+                                            else if (animal.Estado == EstadoAnimal.OBSERVACION)
+                                            {
+
+                                                <span class="badge bg-warning text-dark">
+
+                                                    Observación
+
+                                                </span>
+
+                                            }
+                                            else
+                                            {
+
+                                                <span class="badge bg-success">
+
+                                                    Activo
+
+                                                </span>
+
+                                            }
+
+
+                                        </td>
+
+
+                                    </tr>
+
+
+                                }
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+                    }
+                    else
+                    {
+
+
+                        <p class="text-muted">
+
+                            No hay animales registrados
+
+                        </p>
+
+
+                    }
+
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+
+
+
+        @if (esSuperAdmin || esAdmin || esVeterinario)
+        {
+
+
+            <div class="col-lg-6">
+
+
+                <div class="card-dashboard">
+
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+
+
+                        <h5 class="fw-bold"
+                            style="color:#1a3c1a">
+
+
+                            🐮 Próximos Partos
+
+
+                        </h5>
+
+
+                        <a asp-controller="Parto"
+                           asp-action="Index"
+                           class="btn btn-sm btn-outline-success rounded-pill">
+
+
+                            Ver partos
+
+
+                        </a>
+
+
+                    </div>
+
+
+
+
+
+                    @if (ViewBag.ListaPartos != null)
+                    {
+
+
+                        <table class="table">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>Animal</th>
+
+                                    <th>Fecha</th>
+
+                                </tr>
+
+                            </thead>
+
+
+
+                            <tbody>
+
+
+
+                                @foreach (var parto in ViewBag.ListaPartos)
+                                {
+
+
+                                    <tr>
+
+
+                                        <td>
+
+                                            @parto.Animal?.nombre
+
+                                        </td>
+
+
+                                        <td>
+
+                                            @parto.FechaParto.ToString("dd/MM/yyyy")
+
+                                        </td>
+
+
+                                    </tr>
+
+
+                                }
+
+
+
+                            </tbody>
+
+
+                        </table>
+
+
+
+                    }
+                    else
+                    {
+
+
+                        <p class="text-muted">
+
+                            No hay partos próximos
+
+                        </p>
+
+
+                    }
+
+
+
+                </div>
+
+
+            </div>
+
+
+        }
+
+
+
+    </div>
+
+
+
+
+
+
+    <!-- =========================
+     CLIMA
+========================= -->
+
+
+    <script>
+
+
+            async function obtenerClima(){
+
+
+            try{
+
+
+            const respuesta = await fetch(
+            'https://wttr.in/Santo_Domingo?format=j1'
+            );
+
+
+
+            const datos = await respuesta.json();
+
+
+
+            const clima =
+            datos.current_condition[0];
+
+
+
+            document.getElementById("ciudad")
+            .innerText =
+            "Santo Domingo";
+
+
+
+            document.getElementById("temperatura")
+            .innerText =
+            `${clima.temp_C}°C - ${clima.weatherDesc[0].value}`;
+
+
+
+            const icono =
+            document.getElementById("icono-clima");
+
+
+
+            if(clima.weatherDesc[0]
+            .value.includes("Sunny"))
+            {
+
+            icono.className =
+            "fa-solid fa-sun text-warning fs-4";
+
+            }
+            else
+            {
+
+            icono.className =
+            "fa-solid fa-cloud text-secondary fs-4";
+
+            }
+
+
+
+            }
+            catch(error)
+            {
+
+            console.log(
+            "Error obteniendo clima",
+            error
+            );
+
+
+            }
+
+
+
+            }
+
+
+
+            obtenerClima();
+
+
+    </script>
+
+
+
+</div>

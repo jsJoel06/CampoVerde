@@ -1,0 +1,50 @@
+﻿@model CampoVerde.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card card-ganaderia border-0 p-5 shadow-sm">
+                <h2 class="fw-bold mb-4">Editar Perfil</h2>
+
+                <form asp-action="EditarPerfil" method="post" enctype="multipart/form-data">
+                    <input type="hidden" asp-for="IdUsuario" />
+
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <img src="@(!string.IsNullOrEmpty(Model.FotoPerfil) ? "/uploads/" + Model.FotoPerfil : "/images/default-avatar.png")"
+                                     alt="Foto" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #4a7c4a;">
+                            </div>
+                            <div class="mb-3">
+                                <label class="btn btn-sm btn-outline-success">
+                                    Cambiar Foto <input type="file" name="archivoFoto" class="d-none" accept="image/*" />
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label asp-for="nombre" class="form-label">Nombre Completo</label>
+                                <input asp-for="nombre" class="form-control rounded-pill" required />
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="email" class="form-label">Correo Electrónico</label>
+                                <input asp-for="email" class="form-control rounded-pill" type="email" required />
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-verde px-5">Guardar Cambios</button>
+                                <a href="/Usuario/Perfil" class="btn btn-outline-secondary px-5 rounded-pill">Cancelar</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

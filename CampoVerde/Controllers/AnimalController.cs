@@ -18,14 +18,27 @@ namespace CampoVerde.Controllers
         // GET: Animal
         public async Task<IActionResult> Index()
         {
-            var animals = await _context.Animales.ToListAsync();
-            return View(animals);
-        }
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-        // GET: Animal/Create
-        public IActionResult Create()
-        {
-            return View();
+
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                var todosLosAnimales = await _context.Animales
+                    .Include(a => a.Cliente)
+                    .ToListAsync();
+
+                return View(todosLosAnimales);
+            }
+
+
+            var animalesCliente = await _context.Animales
+                .Include(a => a.Cliente)
+                .Where(a => a.ClienteId == clienteId)
+                .ToListAsync();
+
+
+            return View(animalesCliente);
         }
 
         // POST: Animal/Create
@@ -35,39 +48,85 @@ namespace CampoVerde.Controllers
         {
             if (ModelState.IsValid)
             {
-                // 1. Manejo de la imagen
+
+                // 1. Obtener cliente del usuario logueado
+                var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+
+                if (clienteId == null || clienteId == 0)
+                {
+                    ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
+                    return View(animal);
+                }
+
+
+                // Asignar dueño del animal
+                animal.ClienteId = clienteId.Value;
+
+
+
+                // 2. Manejo de imagen
                 if (imagenArchivo != null && imagenArchivo.Length > 0)
                 {
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
-                    string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
+                    string fileName = Guid.NewGuid().ToString()
+                        + Path.GetExtension(imagenArchivo.FileName);
+
+
+                    string path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot/images/ganado",
+                        fileName
+                    );
+
 
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
                         await imagenArchivo.CopyToAsync(stream);
                     }
+
+
                     animal.imagen = "/images/ganado/" + fileName;
                 }
 
-                // 2. Configuración de fecha
-                if (animal.fechaNacimiento.HasValue)
-                    animal.fechaNacimiento = DateTime.SpecifyKind(animal.fechaNacimiento.Value, DateTimeKind.Utc);
 
-                // 3. Guardar en base de datos
+
+                // 3. Fecha UTC
+                if (animal.fechaNacimiento.HasValue)
+                {
+                    animal.fechaNacimiento =
+                        DateTime.SpecifyKind(
+                            animal.fechaNacimiento.Value,
+                            DateTimeKind.Utc
+                        );
+                }
+
+
+
+                // 4. Guardar animal
                 _context.Add(animal);
 
-                // --- INICIO DE NOTIFICACIÓN AUTOMÁTICA ---
+
+
+                // 5. Notificación
                 var nuevaNotif = new CampoVerde.Models.Notificacion
                 {
                     Mensaje = $"Se ha registrado un nuevo animal: {animal.nombre}",
                     Fecha = DateTime.UtcNow,
                     Leida = false
                 };
+
+
                 _context.Add(nuevaNotif);
-                // --- FIN DE NOTIFICACIÓN ---
+
+
 
                 await _context.SaveChangesAsync();
+
+
                 return RedirectToAction(nameof(Index));
             }
+
+
             return View(animal);
         }
 
@@ -75,12 +134,26 @@ namespace CampoVerde.Controllers
         // GET: Animal/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            var animal = await _context.Animales.FindAsync(id);
-            if (animal == null) return NotFound();
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            var rol = HttpContext.Session.GetString("Rol");
+
+
+            var animal = await _context.Animales
+                .FirstOrDefaultAsync(a =>
+                    a.IdAnimal == id &&
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                );
+
+
+            if (animal == null)
+                return NotFound();
+
+
             return View(animal);
         }
 
-        // POST: Animal/Edit/5
+        
+
         // POST: Animal/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -93,10 +166,16 @@ namespace CampoVerde.Controllers
             {
                 try
                 {
-                    // Obtener el registro actual
+                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
+                    var rol = HttpContext.Session.GetString("Rol");
+
+
                     var animalExistente = await _context.Animales
                         .AsNoTracking()
-                        .FirstOrDefaultAsync(a => a.IdAnimal == id);
+                        .FirstOrDefaultAsync(a =>
+                            a.IdAnimal == id &&
+                            (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                        );
 
                     if (animalExistente == null)
                         return NotFound();
@@ -156,7 +235,16 @@ namespace CampoVerde.Controllers
         // GET: Animal/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            var animal = await _context.Animales.FindAsync(id);
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            var rol = HttpContext.Session.GetString("Rol");
+
+
+            var animal = await _context.Animales
+                .FirstOrDefaultAsync(a =>
+                    a.IdAnimal == id &&
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                );
+
             if (animal == null) return NotFound();
             return View(animal);
         }
@@ -168,7 +256,15 @@ namespace CampoVerde.Controllers
         {
             try
             {
-                var animal = await _context.Animales.FindAsync(id);
+                var clienteId = HttpContext.Session.GetInt32("ClienteId");
+                var rol = HttpContext.Session.GetString("Rol");
+
+
+                var animal = await _context.Animales
+                    .FirstOrDefaultAsync(a =>
+                        a.IdAnimal == id &&
+                        (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                    );
 
                 if (animal == null)
                     return NotFound();
@@ -198,7 +294,16 @@ namespace CampoVerde.Controllers
         {
             if (id == null) return NotFound();
 
-            var animal = await _context.Animales.FirstOrDefaultAsync(m => m.IdAnimal == id);
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+            var rol = HttpContext.Session.GetString("Rol");
+
+
+            var animal = await _context.Animales
+                .FirstOrDefaultAsync(a =>
+                    a.IdAnimal == id &&
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                );
+
             if (animal == null) return NotFound();
 
             // Generar el código QR

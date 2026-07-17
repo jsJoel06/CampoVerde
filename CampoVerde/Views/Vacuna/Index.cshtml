@@ -1,7 +1,21 @@
 @model IEnumerable<CampoVerde.Models.Vacuna>
+@using CampoVerde.Models
 
 @{
     ViewData["Title"] = "Control de Vacunas";
+
+    var rol = Context.Session.GetString("Rol");
+
+    bool puedeCrear =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.VETERINARIO.ToString();
+
+    bool puedeEditar = puedeCrear;
+
+    bool puedeEliminar =
+        rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
+        rol == EstadoRol.ADMINISTRADOR.ToString();
 }
 
 <style>
@@ -12,13 +26,13 @@
     .card-ganaderia {
         background-color: #fdfdf5;
         border-radius: 30px;
-        box-shadow: 0 10px 30px rgba(74, 124, 74, 0.1);
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
         padding: 20px;
         border: 1px solid #d4e0d4;
     }
 
     h2 {
-        font-family: 'Georgia', serif;
+        font-family: Georgia, serif;
         color: #1a3c1a;
         font-weight: 700;
     }
@@ -29,25 +43,25 @@
     }
 
     .badge-vencido {
-        background-color: #a94442;
+        background: #a94442;
         color: white;
     }
 
     .badge-ok {
-        background-color: #4a7c44;
+        background: #4a7c44;
         color: white;
     }
 
     .btn-campo-verde {
-        background: linear-gradient(135deg, #5c9a5c, #3d663d);
+        background: linear-gradient(135deg,#5c9a5c,#3d663d);
         color: white;
         border-radius: 50px;
         padding: 10px 20px;
         font-weight: bold;
     }
 
-    /* Ajustes Responsivos */
-    @@media (max-width: 768px) {
+    @@media(max-width:768px) {
+
         .hide-mobile {
             display: none !important;
         }
@@ -60,67 +74,138 @@
         .btn-campo-verde span {
             display: none;
         }
-        /* Oculta texto del botón en móvil */
     }
 </style>
 
 <div class="container mt-4">
+
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-shield-check"></i> Vacunas</h2>
-        <a asp-action="Create" class="btn btn-campo-verde">
-            <i class="bi bi-plus-lg"></i> <span class="hide-mobile">Registrar Nueva</span>
-        </a>
+
+        <h2>
+            <i class="bi bi-shield-check"></i>
+            Vacunas
+        </h2>
+
+        @if (puedeCrear)
+        {
+            <a asp-action="Create" class="btn btn-campo-verde">
+                <i class="bi bi-plus-lg"></i>
+                <span class="hide-mobile">Registrar Nueva</span>
+            </a>
+        }
+
     </div>
 
     <div class="card-ganaderia">
+
         <div class="table-responsive">
+
             <table class="table table-hover align-middle mb-0">
+
                 <thead>
                     <tr>
                         <th class="ps-4">ID</th>
                         <th>Vacuna</th>
                         <th class="hide-mobile">Frecuencia</th>
-                        <th>Próxima Dosis</th>
+                        <th>Próxima dosis</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
+
                 <tbody>
+
                     @foreach (var item in Model)
                     {
-                        var fechaHoy = DateTime.Today;
-                        var fechaProxima = item.fechaProximaAplicacion != DateTime.MinValue
-                                            ? item.fechaProximaAplicacion.ToShortDateString()
-                                            : "N/A";
+                        var hoy = DateTime.Today;
 
-                        var estaVencida = item.fechaProximaAplicacion < fechaHoy && item.fechaProximaAplicacion != DateTime.MinValue;
-                        var claseFila = estaVencida ? "table-danger" : "";
-                        var colorBadge = estaVencida ? "badge-vencido" : "badge-ok";
+                        var vencida = item.fechaProximaAplicacion != DateTime.MinValue &&
+                                      item.fechaProximaAplicacion < hoy;
 
-                        <tr class="@claseFila">
+                        <tr class="@(vencida ? "table-danger" : "")">
+
                             <td class="ps-4">
-                                <span class="badge rounded-pill bg-secondary">#@item.IdAnimal</span>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-dark">@item.nombreVacuna</div>
-                                <small class="text-muted hide-mobile">@item.observaciones</small>
-                            </td>
-                            <td class="hide-mobile"><span class="text-secondary">@item.frecuenciaMeses meses</span></td>
-                            <td>
-                                <span class="badge @colorBadge rounded-pill px-3 py-2">
-                                    @fechaProxima
+                                <span class="badge rounded-pill bg-secondary">
+                                    #@item.IdAnimal
                                 </span>
                             </td>
-                            <td class="text-center">
-                                <div class="btn-group btn-group-sm">
-                                    <a asp-action="Details" asp-route-id="@item.IdVacuna" class="btn btn-outline-success"><i class="fa-solid fa-eye"></i></a>
-                                    <a asp-action="Edit" asp-route-id="@item.IdVacuna" class="btn btn-outline-primary"><i class="fa-solid fa-pen"></i></a>
-                                    <a asp-action="Delete" asp-route-id="@item.IdVacuna" class="btn btn-outline-danger"><i class="fa-solid fa-trash"></i></a>
+
+                            <td>
+                                <div class="fw-bold">
+                                    @item.nombreVacuna
                                 </div>
+
+                                <small class="text-muted hide-mobile">
+                                    @item.observaciones
+                                </small>
                             </td>
+
+                            <td class="hide-mobile">
+                                @item.frecuenciaMeses meses
+                            </td>
+
+                            <td>
+
+                                <span class="badge @(vencida ? "badge-vencido" : "badge-ok") rounded-pill px-3 py-2">
+
+                                    @(item.fechaProximaAplicacion == DateTime.MinValue
+                                        ? "N/A"
+                                        : item.fechaProximaAplicacion.ToString("dd/MM/yyyy"))
+
+                                </span>
+
+                            </td>
+
+                            <td class="text-center">
+
+                                <div class="btn-group btn-group-sm">
+
+                                    <!-- TODOS -->
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdVacuna"
+                                       class="btn btn-outline-success"
+                                       title="Detalles">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </a>
+
+                                    @if (puedeEditar)
+                                    {
+                                        <a asp-action="Edit"
+                                           asp-route-id="@item.IdVacuna"
+                                           class="btn btn-outline-primary"
+                                           title="Editar">
+
+                                            <i class="fa-solid fa-pen"></i>
+
+                                        </a>
+                                    }
+
+                                    @if (puedeEliminar)
+                                    {
+                                        <a asp-action="Delete"
+                                           asp-route-id="@item.IdVacuna"
+                                           class="btn btn-outline-danger"
+                                           title="Eliminar">
+
+                                            <i class="fa-solid fa-trash"></i>
+
+                                        </a>
+                                    }
+
+                                </div>
+
+                            </td>
+
                         </tr>
                     }
+
                 </tbody>
+
             </table>
+
         </div>
+
     </div>
+
 </div>
