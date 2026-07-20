@@ -20,5 +20,7 @@ namespace CampoVerde.Data
 
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
+
+        public DbSet<ResumenFinanciero> ResumenesFinancieros { get; set; }
     }
 }

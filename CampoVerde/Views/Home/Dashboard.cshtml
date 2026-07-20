@@ -1,4 +1,5 @@
 ﻿@using CampoVerde.Models
+@using System.Text.Json
 
 @{
     ViewData["Title"] = "Dashboard - Campo Verde";
@@ -789,84 +790,36 @@
 
 
     <!-- JAVASCRIPT CHARTS -->
-
-
     <script>
+        const labels = @Html.Raw(JsonSerializer.Serialize((object)ViewBag.Labels));
+        const datos = @Html.Raw(JsonSerializer.Serialize((object)ViewBag.Litros));
 
-
-        // Producción leche
-
-        new Chart(
-        document.getElementById('produccionChart'),
-        {
-
-        type:'line',
-
-        data:{
-
-        labels:[
-
-        'Lun',
-        'Mar',
-        'Mié',
-        'Jue',
-        'Vie',
-        'Sáb',
-        'Dom'
-
-        ],
-
-
-        datasets:[{
-
-        label:'Litros de leche',
-
-        data:[
-
-        10,
-        20,
-        35,
-        30,
-        45,
-        50,
-        60
-
-        ],
-
-
-        borderWidth:3,
-
-        tension:.4,
-
-        fill:true,
-
-        backgroundColor:'rgba(67,160,71,.15)',
-
-        borderColor:'#2e7d32'
-
-
+        new Chart(document.getElementById('produccionChart'), {
+        type: 'line',
+        data: {
+        labels: labels,
+        datasets: [{
+        label: 'Litros de leche',
+        data: datos,
+        borderWidth: 3,
+        tension: 0.4,
+        fill: true,
+        backgroundColor: 'rgba(67,160,71,.15)',
+        borderColor: '#2e7d32'
         }]
-
-
         },
-
-
-        options:{
-
-        responsive:true
-
+        options: {
+        responsive: true
         }
-
-
         });
+    </script>
 
 
 
+        
 
-
+        <script>
         // Estado animales
-
-
         new Chart(
 
         document.getElementById('estadoChart'),
@@ -1111,100 +1064,53 @@
         <!-- PROXIMOS PARTOS -->
 
 
-        <div class="col-lg-6">
+        <div class="col-lg-3 col-md-6">
+
+            <div class="card border-0 shadow-sm p-4 h-100">
+
+                <div class="d-flex align-items-center justify-content-between">
 
 
-            <div class="chart-card p-4">
+                    <div>
+
+                        <span class="text-muted fw-semibold">
+                            Ganancia del mes
+                        </span>
 
 
-                <h5 class="fw-bold text-success mb-4">
+                        <h3 class="fw-bold text-success mt-2 mb-1">
+
+                            RD$
+                            @(ViewBag.GananciaMes != null
+                                ? ViewBag.GananciaMes.ToString("N2")
+                                : "0.00")
+
+                        </h3>
 
 
-                    <i class="fa-solid fa-baby"></i>
+                        <small class="text-success">
+
+                            <i class="fa-solid fa-arrow-trend-up"></i>
+                            Ingresos - Gastos
+
+                        </small>
 
 
-                    Próximos Partos
-
-
-                </h5>
-
-
-
-                <div class="list-group">
-
-
-                    @if (ViewBag.ListaPartos != null)
-                    {
-
-                        foreach (var parto in ViewBag.ListaPartos)
-                        {
-
-
-                            <div class="list-group-item d-flex justify-content-between">
-
-
-                                <div>
-
-
-                                    <strong>
-
-                                        🐄 @parto.Animal.nombre
-
-                                    </strong>
-
-
-                                    <br />
-
-
-                                    <small class="text-muted">
-
-                                        Fecha estimada:
-
-                                        @parto.FechaParto.ToString("dd/MM/yyyy")
-
-                                    </small>
-
-
-                                </div>
+                    </div>
 
 
 
-                                <span class="badge bg-warning text-dark">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3">
 
+                        <i class="fa-solid fa-sack-dollar text-success fs-2"></i>
 
-                                    Próximo
-
-
-                                </span>
-
-
-                            </div>
-
-
-                        }
-
-
-                    }
-                    else
-                    {
-
-
-                        <div class="text-center text-muted">
-
-                            No hay partos próximos.
-
-                        </div>
-
-
-                    }
-
+                    </div>
 
 
                 </div>
 
 
             </div>
-
 
         </div>
 

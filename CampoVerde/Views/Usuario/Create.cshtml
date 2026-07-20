@@ -2,24 +2,19 @@
 
 @{
     ViewData["Title"] = "Crear Usuario";
-
     var rolActual = Context.Session.GetString("Rol");
 }
 
-
 <style>
-
     body {
         background: #eaf2e9;
         font-family: 'Segoe UI',sans-serif;
     }
 
-
     .usuario-container {
         max-width: 1000px;
         margin: auto;
     }
-
 
     .card-usuario {
         background: #fdfdf5;
@@ -29,470 +24,214 @@
         overflow: hidden;
     }
 
-
-
     .card-header-usuario {
-        background: linear-gradient( 135deg, #1a3c1a, #4a7c4a );
+        background: linear-gradient(135deg,#1a3c1a,#4a7c4a);
         color: white;
         padding: 25px;
     }
 
+    .icon-title {
+        width: 50px;
+        height: 50px;
+        background: #d4e0d4;
+        color: #1a3c1a;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-
-        .card-header-usuario h3 {
-            font-family: Georgia,serif;
-            font-weight: 700;
-        }
-
-
-
-
-    .form-control,
-    .form-select {
+    .form-control, .form-select {
         border-radius: 15px;
         padding: 12px;
         border: 1px solid #c8d9c8;
     }
-
-
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #4a7c4a;
-            box-shadow: 0 0 0 .2rem rgba(74,124,74,.25);
-        }
-
-
-
 
     .form-label {
         font-weight: 600;
         color: #1a3c1a;
     }
 
-
-
-
-    .icon-title {
-        width: 50px;
-        height: 50px;
-        background: #d4e0d4;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .seccion-title {
         color: #1a3c1a;
-        font-size: 20px;
+        font-weight: 700;
+        border-bottom: 2px solid #d4e0d4;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
     }
 
-
-
-
     .btn-guardar {
-        background: linear-gradient( 135deg, #4a7c4a, #346334 );
+        background: linear-gradient(135deg,#4a7c4a,#346334);
         color: white;
+        border: none;
         border-radius: 50px;
         padding: 12px 35px;
         font-weight: bold;
-        border: none;
-        transition: .3s;
     }
-
-
-
-        .btn-guardar:hover {
-            transform: translateY(-3px);
-            color: white;
-        }
-
-
 
     .btn-cancelar {
         border-radius: 50px;
         padding: 12px 30px;
     }
-
-
-
-
-    .seccion-title {
-        color: #1a3c1a;
-        font-weight: 700;
-        margin-bottom: 20px;
-        border-bottom: 2px solid #d4e0d4;
-        padding-bottom: 10px;
-    }
-
 </style>
-
-
 
 
 <div class="container py-5 usuario-container">
 
-
     <div class="card-usuario">
 
-
-
         <div class="card-header-usuario">
-
-
             <div class="d-flex align-items-center">
 
-
                 <div class="icon-title me-3">
-
                     <i class="fa-solid fa-user-plus"></i>
-
                 </div>
-
 
                 <div>
-
-
-                    <h3 class="mb-0">
-
-                        Crear Usuario
-
-                    </h3>
-
-
-                    <small>
-
-                        Gestión de accesos Campo Verde
-
-                    </small>
-
-
+                    <h3 class="mb-0">Crear Usuario</h3>
+                    <small>Gestión de accesos Campo Verde</small>
                 </div>
 
-
             </div>
-
-
         </div>
-
-
-
 
 
         <div class="card-body p-5">
 
+            <form asp-action="Create" method="post">
 
-            <form asp-action="Create"
-                  method="post">
-
-
-
-                <div asp-validation-summary="ModelOnly"
-                     class="text-danger mb-3"></div>
-
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
 
                 <h5 class="seccion-title">
-
-                    <i class="fa-solid fa-user"></i>
-
+                    <i class="fa-solid fa-user me-2"></i>
                     Información Personal
-
                 </h5>
-
 
 
                 <div class="row">
 
-
-
                     <div class="col-md-6 mb-3">
-
-
-                        <label asp-for="nombre"
-                               class="form-label">
-
-                            Nombre completo
-
-                        </label>
-
-
-                        <input asp-for="nombre"
-                               class="form-control"
-                               placeholder="Ej: Juan Pérez" />
-
-
-                        <span asp-validation-for="nombre"
-                              class="text-danger"></span>
-
-
+                        <label asp-for="nombre" class="form-label">Nombre completo</label>
+                        <input asp-for="nombre" class="form-control" placeholder="Ej: Juan Pérez" />
+                        <span asp-validation-for="nombre" class="text-danger"></span>
                     </div>
 
 
-
-
-
                     <div class="col-md-6 mb-3">
-
-
-                        <label asp-for="email"
-                               class="form-label">
-
-                            Correo electrónico
-
-                        </label>
-
-
-                        <input asp-for="email"
-                               class="form-control"
-                               placeholder="correo@email.com" />
-
-
-                        <span asp-validation-for="email"
-                              class="text-danger"></span>
-
-
+                        <label asp-for="email" class="form-label">Correo electrónico</label>
+                        <input asp-for="email" class="form-control" placeholder="correo@email.com" />
+                        <span asp-validation-for="email" class="text-danger"></span>
                     </div>
 
 
-
-
-
                     <div class="col-md-6 mb-3">
-
-
-                        <label asp-for="telefono"
-                               class="form-label">
-
-                            Teléfono
-
-                        </label>
-
-
-                        <input asp-for="telefono"
-                               class="form-control"
-                               placeholder="809-000-0000" />
-
-
+                        <label asp-for="telefono" class="form-label">Teléfono</label>
+                        <input asp-for="telefono" class="form-control" placeholder="809-000-0000" />
                     </div>
 
 
-
-
-
                     <div class="col-md-6 mb-3">
-
-
-                        <label asp-for="password"
-                               class="form-label">
-
-                            Contraseña
-
-                        </label>
-
-
-                        <input asp-for="password"
-                               type="password"
-                               class="form-control"
-                               placeholder="********" />
-
-
-                        <span asp-validation-for="password"
-                              class="text-danger"></span>
-
-
+                        <label asp-for="password" class="form-label">Contraseña</label>
+                        <input asp-for="password" type="password" class="form-control" placeholder="********" />
                     </div>
-
-
 
                 </div>
 
 
 
+                @if (rolActual == "SUPER_ADMINISTRADOR")
+                {
+                    <h5 class="seccion-title mt-4">
+                        <i class="fa-solid fa-building me-2"></i>
+                        Cliente asignado
+                    </h5>
+
+                    <div class="mb-4">
+                        <label asp-for="ClienteId" class="form-label">
+                            Finca o empresa
+                        </label>
+
+                        <select asp-for="ClienteId" asp-items="ViewBag.Clientes" class="form-select">
+                            <option value="">Seleccionar cliente</option>
+                        </select>
+
+                        <span asp-validation-for="ClienteId" class="text-danger"></span>
+                    </div>
+                }
 
 
 
                 <h5 class="seccion-title mt-4">
-
-                    <i class="fa-solid fa-shield-halved"></i>
-
+                    <i class="fa-solid fa-shield-halved me-2"></i>
                     Permisos y Estado
-
                 </h5>
-
-
-
 
 
                 <div class="row">
 
-
-
                     <div class="col-md-6 mb-3">
+                        <label asp-for="Rol" class="form-label">Rol del usuario</label>
 
-
-                        <label asp-for="Rol"
-                               class="form-label">
-
-                            Rol del usuario
-
-                        </label>
-
-
-
-                        <select asp-for="Rol"
-                                class="form-select">
-
-
+                        <select asp-for="Rol" class="form-select">
 
                             @if (rolActual == "SUPER_ADMINISTRADOR")
                             {
-
-
-                                <option value="SUPER_ADMINISTRADOR">
-                                    Super Administrador
-                                </option>
-
-
-                                <option value="ADMINISTRADOR">
-                                    Administrador
-                                </option>
-
-
-                                <option value="VETERINARIO">
-                                    Veterinario
-                                </option>
-
-
-                                <option value="OPERARIO">
-                                    Operario
-                                </option>
-
-
+                                <option value="ADMINISTRADOR">Administrador</option>
+                                <option value="VETERINARIO">Veterinario</option>
+                                <option value="OPERARIO">Operario</option>
                             }
-
-
-
                             else if (rolActual == "ADMINISTRADOR")
                             {
-
-
-                                <option value="VETERINARIO">
-                                    Veterinario
-                                </option>
-
-
-                                <option value="OPERARIO">
-                                    Operario
-                                </option>
-
-
+                                <option value="VETERINARIO">Veterinario</option>
+                                <option value="OPERARIO">Operario</option>
                             }
 
-
-
                         </select>
-
-
                     </div>
-
-
-
 
 
                     <div class="col-md-6 mb-3">
+                        <label asp-for="estadoActivo" class="form-label">Estado</label>
 
-
-                        <label asp-for="estadoActivo"
-                               class="form-label">
-
-                            Estado
-
-                        </label>
-
-
-                        <select asp-for="estadoActivo"
-                                class="form-select">
-
-
-                            <option value="true">
-
-                                Activo
-
-                            </option>
-
-
-                            <option value="false">
-
-                                Inactivo
-
-                            </option>
-
-
+                        <select asp-for="estadoActivo" class="form-select">
+                            <option value="true">Activo</option>
+                            <option value="false">Inactivo</option>
                         </select>
-
 
                     </div>
 
-
-
                 </div>
 
 
 
+                <div class="mt-4 d-flex gap-3">
 
-
-                <div class="mt-5 d-flex gap-3">
-
-
-                    <button type="submit"
-                            class="btn-guardar">
-
-
-                        <i class="fa-solid fa-save"></i>
-
+                    <button type="submit" class="btn-guardar">
+                        <i class="fa-solid fa-save me-2"></i>
                         Guardar Usuario
-
-
                     </button>
 
 
-
-                    <a asp-action="Perfil"
-                       class="btn btn-secondary btn-cancelar">
-
-
-                        <i class="fa-solid fa-arrow-left"></i>
-
+                    <a asp-action="Index" class="btn btn-secondary btn-cancelar">
+                        <i class="fa-solid fa-arrow-left me-2"></i>
                         Cancelar
-
-
                     </a>
 
-
-
                 </div>
-
-
 
 
             </form>
 
-
         </div>
 
-
-
     </div>
-
 
 </div>
 
 
-
-
 @section Scripts {
-
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
 }

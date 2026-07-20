@@ -6,38 +6,125 @@
 
     var rol = Context.Session.GetString("Rol");
 
+
     bool puedeCrear =
         rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
         rol == EstadoRol.ADMINISTRADOR.ToString() ||
         rol == EstadoRol.OPERARIO.ToString();
+
 
     bool puedeEditar =
         rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
         rol == EstadoRol.ADMINISTRADOR.ToString() ||
         rol == EstadoRol.VETERINARIO.ToString();
 
+
     bool puedeEliminar =
         rol == EstadoRol.SUPER_ADMINISTRADOR.ToString() ||
         rol == EstadoRol.ADMINISTRADOR.ToString();
 
-    var totalLeche = Model.Sum(x => x.cantidadLeche);
+
+
+    // ==========================
+    // FECHAS
+    // ==========================
+
+    var hoy = DateTime.Today;
+
+
+    var inicioSemana = hoy.AddDays(
+        -(int)hoy.DayOfWeek + 1
+    );
+
+
+    var inicioMes = new DateTime(
+        hoy.Year,
+        hoy.Month,
+        1
+    );
+
+
+
+    // ==========================
+    // PRODUCCIÓN
+    // ==========================
+
+
+    // Total histórico
+
+    var totalLeche = Model
+        .Sum(x => x.cantidadLeche);
+
+
+
+    // Producción del día
+
+    var produccionDia = Model
+        .Where(x =>
+            x.fechaProduccion.Date == hoy)
+        .Sum(x => x.cantidadLeche);
+
+
+
+    // Producción semanal
+
+    var produccionSemana = Model
+        .Where(x =>
+            x.fechaProduccion.Date >= inicioSemana &&
+            x.fechaProduccion.Date <= hoy)
+        .Sum(x => x.cantidadLeche);
+
+
+
+
+    // Producción mensual
+
+    var produccionMes = Model
+        .Where(x =>
+            x.fechaProduccion.Month == hoy.Month &&
+            x.fechaProduccion.Year == hoy.Year)
+        .Sum(x => x.cantidadLeche);
+
+
+
+
+
+    // Cantidad de registros
 
     var totalRegistros = Model.Count();
+
+
+
+
+
+    // Promedio por registro
 
     var promedioLeche =
         totalRegistros > 0
         ? totalLeche / totalRegistros
         : 0;
 
-    var produccionHoy = Model
-        .Where(x => x.fechaProduccion.Date == DateTime.Today)
-        .Sum(x => x.cantidadLeche);
+
+
+
+    // Animales productivos
 
     var totalAnimales = Model
         .Select(x => x.IdAnimal)
         .Distinct()
         .Count();
+
+
+
+    // Última producción registrada
+
+    var ultimaProduccion = Model
+        .OrderByDescending(x => x.fechaProduccion)
+        .FirstOrDefault();
+
 }
+
+
 
 <style>
 
@@ -163,9 +250,63 @@
 
     </div>
 
+    <!-- FILTROS -->
+
+    <div class="d-flex justify-content-center gap-3 mb-5">
+
+
+        <a asp-action="Index"
+           asp-route-filtro="hoy"
+           class="btn btn-success">
+
+            <i class="bi bi-calendar-day"></i>
+            Hoy
+
+        </a>
+
+
+
+        <a asp-action="Index"
+           asp-route-filtro="semana"
+           class="btn btn-success">
+
+            <i class="bi bi-calendar-week"></i>
+            Semana
+
+        </a>
+
+
+
+        <a asp-action="Index"
+           asp-route-filtro="mes"
+           class="btn btn-success">
+
+            <i class="bi bi-calendar-month"></i>
+            Mes
+
+        </a>
+
+
+
+        <a asp-action="Index"
+           asp-route-filtro="total"
+           class="btn btn-outline-success">
+
+            <i class="bi bi-list"></i>
+            Todo
+
+        </a>
+
+
+    </div>
+
+
+
+
     <!-- ESTADÍSTICAS -->
 
     <div class="row g-4 mb-5">
+
 
         <div class="col-md-6 col-lg-3">
 
@@ -176,15 +317,11 @@
                     <i class="bi bi-droplet-half display-4"></i>
 
                     <h5 class="mt-3">
-
-                        Total de Leche
-
+                        Producción
                     </h5>
 
                     <h2>
-
-                        @totalLeche.ToString("N1") L
-
+                        @ViewBag.TotalProduccion.ToString("N1") L
                     </h2>
 
                 </div>
@@ -192,6 +329,9 @@
             </div>
 
         </div>
+
+
+
 
         <div class="col-md-6 col-lg-3">
 
@@ -202,15 +342,11 @@
                     <i class="bi bi-journal-check display-4"></i>
 
                     <h5 class="mt-3">
-
                         Registros
-
                     </h5>
 
                     <h2>
-
-                        @totalRegistros
-
+                        @ViewBag.TotalRegistros
                     </h2>
 
                 </div>
@@ -218,6 +354,9 @@
             </div>
 
         </div>
+
+
+
 
         <div class="col-md-6 col-lg-3">
 
@@ -228,15 +367,11 @@
                     <i class="bi bi-graph-up-arrow display-4"></i>
 
                     <h5 class="mt-3">
-
                         Promedio
-
                     </h5>
 
                     <h2>
-
-                        @promedioLeche.ToString("N1") L
-
+                        @ViewBag.Promedio.ToString("N1") L
                     </h2>
 
                 </div>
@@ -244,6 +379,9 @@
             </div>
 
         </div>
+
+
+
 
         <div class="col-md-6 col-lg-3">
 
@@ -254,15 +392,11 @@
                     <i class="bi bi-cow display-4"></i>
 
                     <h5 class="mt-3">
-
                         Animales
-
                     </h5>
 
                     <h2>
-
-                        @totalAnimales
-
+                        @ViewBag.TotalAnimales
                     </h2>
 
                 </div>
@@ -271,67 +405,6 @@
 
         </div>
 
-    </div>
-
-    <!-- RESUMEN -->
-
-    <div class="card card-resumen mb-5">
-
-        <div class="card-body">
-
-            <div class="row text-center">
-
-                <div class="col-md-4">
-
-                    <h5 class="text-success">
-
-                        Producción Hoy
-
-                    </h5>
-
-                    <h2>
-
-                        @produccionHoy.ToString("N1") L
-
-                    </h2>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <h5 class="text-success">
-
-                        Promedio Diario
-
-                    </h5>
-
-                    <h2>
-
-                        @promedioLeche.ToString("N1") L
-
-                    </h2>
-
-                </div>
-
-                <div class="col-md-4">
-
-                    <h5 class="text-success">
-
-                        Animales Productivos
-
-                    </h5>
-
-                    <h2>
-
-                        @totalAnimales
-
-                    </h2>
-
-                </div>
-
-            </div>
-
-        </div>
 
     </div>
 

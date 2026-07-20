@@ -41,6 +41,10 @@ namespace CampoVerde.Controllers
 
             IQueryable<Potrero> potreros = _context.Potreros;
 
+            IQueryable<Produccion> producciones = _context.Producciones
+          .Include(p => p.Animal);
+
+
 
 
             if (rol != "SUPER_ADMINISTRADOR")
@@ -69,6 +73,9 @@ namespace CampoVerde.Controllers
 
                 potreros = potreros
                     .Where(p => p.ClienteId == clienteId);
+
+                producciones = producciones
+                       .Where(p => p.ClienteId == clienteId);
 
             }
 
@@ -197,14 +204,62 @@ namespace CampoVerde.Controllers
                 .Take(5)
                 .ToListAsync();
 
+
             // =========================
             // PARTOS
             // =========================
 
-            ViewBag.ProximosPartos = 0;
+            var listaPartos = await _context.Partos
+                .Include(p => p.Animal)
+                .Where(p => p.FechaParto.Date >= DateTime.UtcNow.Date)
+                .OrderBy(p => p.FechaParto)
+                .Take(5)
+                .ToListAsync();
+
+            ViewBag.ListaPartos = listaPartos;
+            ViewBag.ProximosPartos = listaPartos.Count;
+
+            // =========================
+            // PRODUCCIÓN DE LECHE (ÚLTIMOS 7 DÍAS)
+            // =========================
 
 
-            ViewBag.ListaPartos = new List<Parto>();
+
+            var hoy = DateTime.UtcNow.Date;
+            var inicio = hoy.AddDays(-6);
+
+            var registrosProduccion = await producciones
+                .Where(p => p.fechaProduccion >= inicio &&
+                            p.fechaProduccion < hoy.AddDays(1))
+                .ToListAsync();
+
+            var labels = new List<string>();
+            var litros = new List<double>();
+
+            for (int i = 0; i < 7; i++)
+            {
+                var fecha = inicio.AddDays(i);
+
+                labels.Add(fecha.ToString("ddd"));
+
+                litros.Add(
+                    registrosProduccion
+                        .Where(p => p.fechaProduccion.Date == fecha)
+                        .Sum(p => p.cantidadLeche)
+                );
+            }
+
+            ViewBag.Labels = labels;
+            ViewBag.Litros = litros;
+
+            // Producción total de hoy
+            ViewBag.ProduccionHoy = registrosProduccion
+                .Where(p => p.fechaProduccion.Date == hoy)
+                .Sum(p => p.cantidadLeche);
+
+            // Producción total de la semana
+            ViewBag.ProduccionSemana = registrosProduccion
+                .Sum(p => p.cantidadLeche);
 
 
             return View();
@@ -313,6 +368,42 @@ namespace CampoVerde.Controllers
                     p.Animal.ClienteId == clienteId);
 
             }
+
+            // =========================
+            // RESUMEN FINANCIERO
+            // =========================
+
+            var fechaActual = DateTime.UtcNow;
+
+
+            var clienteIdSesion = HttpContext.Session.GetInt32("ClienteId");
+
+
+            var ingresosMes = await _context.Ingresos
+                .Where(i =>
+                    i.Animal.ClienteId == clienteIdSesion &&
+                    i.Fecha.Month == fechaActual.Month &&
+                    i.Fecha.Year == fechaActual.Year
+                )
+                .SumAsync(i => (decimal?)i.Monto) ?? 0;
+
+
+
+            var gastosMes = await _context.Gastos
+                .Where(g =>
+                    g.Animal.ClienteId == clienteIdSesion &&
+                    g.Fecha.Month == fechaActual.Month &&
+                    g.Fecha.Year == fechaActual.Year
+                )
+                .SumAsync(g => (decimal?)g.Monto) ?? 0;
+
+
+
+            ViewBag.IngresosMes = ingresosMes;
+
+            ViewBag.GastosMes = gastosMes;
+
+            ViewBag.GananciaMes = ingresosMes - gastosMes;
 
 
 
@@ -468,6 +559,7 @@ namespace CampoVerde.Controllers
                 a.IdAnimal)
                 .Take(5)
                 .ToListAsync();
+
 
 
 

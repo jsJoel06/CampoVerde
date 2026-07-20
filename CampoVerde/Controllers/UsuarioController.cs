@@ -154,7 +154,6 @@ namespace CampoVerde.Controllers
 
             return View(usuario);
         }
-
         // GET: Usuario/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
@@ -163,6 +162,14 @@ namespace CampoVerde.Controllers
 
             if (usuario == null)
                 return NotFound();
+
+
+            ViewBag.Clientes = new SelectList(
+                _context.Clientes,
+                "Id",
+                "NombreEmpresa",
+                usuario.ClienteId
+            );
 
 
             return View(usuario);
@@ -175,9 +182,12 @@ namespace CampoVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Usuario usuario)
         {
-
             if (id != usuario.IdUsuario)
                 return NotFound();
+
+
+            // La contraseña no es obligatoria al editar
+            ModelState.Remove("password");
 
 
             var usuarioBD = await _context.Usuarios
@@ -193,24 +203,28 @@ namespace CampoVerde.Controllers
 
 
 
-            // Evitar que un administrador cree super administradores
-            if (rolActual != "ADMINISTRADOR")
+            // ADMINISTRADOR no puede cambiar roles administrativos
+            if (rolActual == EstadoRol.ADMINISTRADOR.ToString())
             {
 
-                if (usuario.Rol == EstadoRol.ADMINISTRADOR)
+                if (usuario.Rol == EstadoRol.SUPER_ADMINISTRADOR ||
+                    usuario.Rol == EstadoRol.ADMINISTRADOR)
                 {
                     ModelState.AddModelError("Rol",
-                    "No tienes permisos para asignar este rol.");
+                        "No tienes permisos para asignar este rol.");
                 }
+
+
+                // Mantener cliente actual
+                usuario.ClienteId = usuarioBD.ClienteId;
 
             }
 
 
 
+
             if (ModelState.IsValid)
             {
-
-                // Actualizar datos básicos
 
                 usuarioBD.nombre = usuario.nombre;
 
@@ -224,15 +238,19 @@ namespace CampoVerde.Controllers
 
 
 
-                // Mantener contraseña actual
-                // si no se cambia
-
-                if (!string.IsNullOrEmpty(usuario.password))
+                // Solo SUPER_ADMINISTRADOR puede cambiar finca/cliente
+                if (rolActual == EstadoRol.SUPER_ADMINISTRADOR.ToString())
                 {
+                    usuarioBD.ClienteId = usuario.ClienteId;
+                }
 
+
+
+                // Cambiar contraseña solo si escribe una nueva
+                if (!string.IsNullOrWhiteSpace(usuario.password))
+                {
                     usuarioBD.password =
                         BCrypt.Net.BCrypt.HashPassword(usuario.password);
-
                 }
 
 
@@ -241,10 +259,7 @@ namespace CampoVerde.Controllers
 
 
 
-                _context.Update(usuarioBD);
-
                 await _context.SaveChangesAsync();
-
 
 
                 return RedirectToAction(nameof(Index));
@@ -253,8 +268,24 @@ namespace CampoVerde.Controllers
 
 
 
-            return View(usuario);
+            // Mostrar errores para detectar problemas
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                Console.WriteLine(error.ErrorMessage);
+            }
 
+
+
+            // Recargar clientes si falla
+            ViewBag.Clientes = new SelectList(
+                _context.Clientes,
+                "Id",
+                "NombreEmpresa",
+                usuario.ClienteId
+            );
+
+
+            return View(usuario);
         }
 
         // GET: Usuario/Delete/5

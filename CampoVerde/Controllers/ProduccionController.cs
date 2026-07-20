@@ -23,38 +23,132 @@ namespace CampoVerde.Controllers
         }
 
         // GET: Produccion
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filtro = "total")
         {
             var rol = HttpContext.Session.GetString("Rol");
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
+
             IQueryable<Produccion> consulta = _context.Producciones
                 .Include(p => p.Animal);
 
+
+
+            // FILTRO POR CLIENTE
+
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(p => p.ClienteId == clienteId);
+                consulta = consulta
+                    .Where(p => p.ClienteId == clienteId);
             }
 
-            var producciones = await consulta.ToListAsync();
 
-            var hoy = DateTime.Today;
-            var manana = hoy.AddDays(1);
 
-            ViewBag.TotalProduccion = producciones.Sum(p => p.cantidadLeche);
-            ViewBag.TotalRegistros = producciones.Count;
+            var hoy = DateTime.UtcNow.Date;
 
-            ViewBag.Promedio = producciones.Any()
+
+
+            // =========================
+            // FILTROS DE PRODUCCIÓN
+            // =========================
+
+            switch (filtro)
+            {
+
+                case "hoy":
+
+                    consulta = consulta.Where(p =>
+                        p.fechaProduccion.Date == hoy);
+
+                    break;
+
+
+
+                case "semana":
+
+                    var inicioSemana = hoy.AddDays(
+                        -(int)hoy.DayOfWeek + 1
+                    );
+
+
+                    consulta = consulta.Where(p =>
+                        p.fechaProduccion.Date >= inicioSemana &&
+                        p.fechaProduccion.Date <= hoy);
+
+                    break;
+
+
+
+                case "mes":
+
+                    consulta = consulta.Where(p =>
+                        p.fechaProduccion.Month == hoy.Month &&
+                        p.fechaProduccion.Year == hoy.Year);
+
+                    break;
+
+
+
+                case "total":
+
+                default:
+
+                    break;
+
+            }
+
+
+
+            var producciones = await consulta
+                .OrderByDescending(p => p.fechaProduccion)
+                .ToListAsync();
+
+
+
+            // =========================
+            // ESTADÍSTICAS
+            // =========================
+
+
+            ViewBag.FiltroActual = filtro;
+
+
+            ViewBag.TotalProduccion =
+                producciones.Sum(p => p.cantidadLeche);
+
+
+
+            ViewBag.TotalRegistros =
+                producciones.Count;
+
+
+
+            ViewBag.Promedio =
+                producciones.Any()
                 ? producciones.Average(p => p.cantidadLeche)
                 : 0;
 
-            ViewBag.ProduccionHoy = producciones
-                .Where(p => p.fechaProduccion >= hoy &&
-                            p.fechaProduccion < manana)
+
+
+            ViewBag.ProduccionHoy =
+                producciones
+                .Where(p =>
+                    p.fechaProduccion.Date == hoy)
                 .Sum(p => p.cantidadLeche);
+
+
+
+            ViewBag.TotalAnimales =
+                producciones
+                .Select(p => p.IdAnimal)
+                .Distinct()
+                .Count();
+
+
 
             return View(producciones);
         }
+
 
         // GET: Produccion/Create
         public IActionResult Create()

@@ -75,11 +75,22 @@ namespace CampoVerde.Controllers
 
 
             // NUEVO: Guardar la empresa/finca del usuario
+            // Guardar el ClienteId en sesión
+            if (usuario.Rol == EstadoRol.SUPER_ADMINISTRADOR)
+            {
+                // El Super Administrador no pertenece a ningún cliente
+                HttpContext.Session.SetInt32("ClienteId", 0);
+            }
+            else
+            {
+                if (!usuario.ClienteId.HasValue)
+                {
+                    ViewBag.Error = "Este usuario no tiene un cliente asignado.";
+                    return View();
+                }
 
-            HttpContext.Session.SetInt32(
-                "ClienteId",
-                usuario.ClienteId ?? 0
-            );
+                HttpContext.Session.SetInt32("ClienteId", usuario.ClienteId.Value);
+            }
 
 
 

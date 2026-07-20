@@ -1,0 +1,270 @@
+﻿@model IEnumerable<CampoVerde.Models.ResumenFinanciero>
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Resumen Financiero";
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+
+    .card-finanzas {
+
+        background:white;
+        border-radius:18px;
+        padding:25px;
+        box-shadow:0 5px 20px rgba(0,0,0,.08);
+
+    }
+
+
+    .titulo {
+
+        color:#2e7d32;
+        font-weight:700;
+
+    }
+
+
+    .ganancia {
+
+        color:#2e7d32;
+        font-weight:bold;
+
+    }
+
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="card-finanzas mb-4">
+
+
+        <div class="d-flex justify-content-between align-items-center">
+
+
+            <div>
+
+                <h2 class="titulo">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Resumen Financiero
+
+                </h2>
+
+
+                <p class="text-muted mb-0">
+
+                    Control mensual de ingresos, gastos y ganancias.
+
+                </p>
+
+
+            </div>
+
+
+
+            <form asp-action="GenerarResumen" method="post">
+
+
+                <button class="btn btn-success btn-lg">
+
+                    <i class="fa-solid fa-calculator"></i>
+
+                    Generar resumen mensual
+
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+    @if(TempData["Mensaje"] != null)
+    {
+
+        <div class="alert alert-success">
+
+            @TempData["Mensaje"]
+
+        </div>
+
+    }
+
+
+
+
+
+
+    <!-- TABLA -->
+
+
+    <div class="card-finanzas">
+
+
+        <div class="table-responsive">
+
+
+            <table class="table table-hover align-middle">
+
+
+                <thead class="table-success">
+
+
+                    <tr>
+
+
+                        <th>
+                            Mes
+                        </th>
+
+
+                        <th>
+                            Año
+                        </th>
+
+
+                        <th>
+                            Total Ingresos
+                        </th>
+
+
+                        <th>
+                            Total Gastos
+                        </th>
+
+
+                        <th>
+                            Ganancia
+                        </th>
+
+
+                        <th>
+                            Fecha Generación
+                        </th>
+
+
+                    </tr>
+
+
+                </thead>
+
+
+
+                <tbody>
+
+
+                @if(Model != null && Model.Any())
+                {
+
+
+                    foreach(var resumen in Model)
+                    {
+
+
+                        <tr>
+
+                                <td>
+                                    @CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(resumen.Mes)
+                                </td>
+
+
+
+                            <td>
+
+                                @resumen.Año
+
+                            </td>
+
+
+
+                            <td class="text-success fw-bold">
+
+                                RD$ @resumen.TotalIngresos.ToString("N2")
+
+                            </td>
+
+
+
+
+                            <td class="text-danger fw-bold">
+
+                                RD$ @resumen.TotalGastos.ToString("N2")
+
+                            </td>
+
+
+
+
+                            <td class="ganancia">
+
+                                RD$ @resumen.Ganancia.ToString("N2")
+
+                            </td>
+
+
+                                <td>
+                                    @resumen.FechaGeneracion.ToString("dd/MM/yyyy")
+                                </td>
+
+                        </tr>
+
+
+                    }
+
+
+                }
+                else
+                {
+
+
+                    <tr>
+
+                        <td colspan="6"
+                            class="text-center text-muted py-4">
+
+
+                            No existen resúmenes financieros.
+
+
+                        </td>
+
+                    </tr>
+
+
+                }
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

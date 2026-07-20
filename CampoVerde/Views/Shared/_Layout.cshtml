@@ -4,11 +4,10 @@
 @{
     var rol = HttpContextAccessor.HttpContext.Session.GetString("Rol");
 
-    bool esSuperAdmin = rol == "SUPER_ADMINISTRADOR";
-    bool esAdmin = rol == "ADMINISTRADOR";
-    bool esVeterinario = rol == "VETERINARIO";
-    bool esOperario = rol == "OPERARIO";
-    bool esGanadero = rol == "GANADERO";
+    bool esSuperAdmin = rol == EstadoRol.SUPER_ADMINISTRADOR.ToString();
+    bool esAdmin = rol == EstadoRol.ADMINISTRADOR.ToString();
+    bool esVeterinario = rol == EstadoRol.VETERINARIO.ToString();
+    bool esOperario = rol == EstadoRol.OPERARIO.ToString();
 
     var nombre = HttpContextAccessor.HttpContext.Session.GetString("Nombre")
                  ?? "Usuario";
@@ -172,7 +171,7 @@
 
 
 
-                        @if (esSuperAdmin || esAdmin || esGanadero)
+                        @if (esSuperAdmin || esAdmin || esOperario)
                         {
 
                             <li class="nav-item">
@@ -212,7 +211,7 @@
 
 
 
-                        @if (esSuperAdmin || esAdmin || esGanadero)
+                        @if (esSuperAdmin || esAdmin || esOperario)
                         {
 
                             <li class="nav-item">
@@ -321,48 +320,90 @@
 
 
 
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2" style="min-width:280px;">
 
+                                <!-- Información del usuario -->
+                                <li class="px-3 py-2">
 
+                                    <div class="d-flex align-items-center">
+
+                                        <div class="avatar me-3">
+
+                                            @if (!string.IsNullOrEmpty(foto))
+                                            {
+                                                <img src="~/uploads/@foto" class="rounded-circle" width="50" height="50" style="object-fit:cover;" />
+                                            }
+                                            else
+                                            {
+                                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center"
+                                                     style="width:50px;height:50px;">
+                                                    <i class="fa fa-user text-white"></i>
+                                                </div>
+                                            }
+
+                                        </div>
+
+                                        <div>
+
+                                            <h6 class="mb-0 fw-bold">@nombre</h6>
+
+                                            <small class="text-muted">@rol</small>
+
+                                        </div>
+
+                                    </div>
+
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- Perfil -->
                                 <li>
 
-                                    <a class="dropdown-item"
+                                    <a class="dropdown-item py-2 rounded-3"
                                        asp-controller="Usuario"
                                        asp-action="Perfil">
 
-                                        <i class="fa fa-user"></i>
+                                        <i class="fa-solid fa-user me-2 text-success"></i>
                                         Mi Perfil
 
                                     </a>
 
                                 </li>
 
+                              
 
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-
-
+                                <!-- Dashboard -->
                                 <li>
 
-                                    <a asp-controller="Auth"
-                                       asp-action="Logout"
-                                       class="btn btn-danger">
-                                        Cerrar sesión
+                                    <a class="dropdown-item py-2 rounded-3"
+                                       asp-controller="Home"
+                                       asp-action="Dashboard">
+
+                                        <i class="fa-solid fa-chart-line me-2 text-warning"></i>
+                                        Dashboard
+
                                     </a>
 
+                                </li>
+
+                                <li><hr class="dropdown-divider"></li>
+
+                                <!-- Cerrar sesión -->
+                                <li>
+
+                                    <a class="dropdown-item py-2 rounded-3 text-danger"
+                                       asp-controller="Auth"
+                                       asp-action="Logout">
+
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                                        Cerrar sesión
+
+                                    </a>
 
                                 </li>
 
-
                             </ul>
-
-
-                        </li>
-
-
-                    </ul>
-
 
 
                 </div>

@@ -261,5 +261,40 @@ namespace CampoVerde.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+        
+
+        // GET: Tarea/Completar/5
+        [HttpGet]
+        public async Task<IActionResult> Completar(int id)
+        {
+            var tarea = await _context.Tareas
+                .Include(t => t.Animal)
+                .FirstOrDefaultAsync(t => t.IdTarea == id);
+
+            if (tarea == null)
+                return NotFound();
+
+            return View(tarea);
+        }
+
+        // POST: Tarea/Completar/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [ActionName("Completar")]
+        public async Task<IActionResult> CompletarConfirmado(int id)
+        {
+            var tarea = await _context.Tareas.FindAsync(id);
+
+            if (tarea == null)
+                return NotFound();
+
+            tarea.Completada = true;
+
+            _context.Update(tarea);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
     }
 }

@@ -40,95 +40,109 @@ namespace CampoVerde.Controllers
 
             return View(animalesCliente);
         }
+        // GET: Animal/Create
+        [HttpGet]
+        public async Task<IActionResult> Create(int? id)
+        {
+            if (id == null)
+            {
+                return View(new Animal());
+            }
 
-        // POST: Animal/Create
+            var rol = HttpContext.Session.GetString("Rol");
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            Animal? animal;
+
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                animal = await _context.Animales
+                    .FirstOrDefaultAsync(a => a.IdAnimal == id);
+            }
+            else
+            {
+                animal = await _context.Animales
+                    .FirstOrDefaultAsync(a =>
+                        a.IdAnimal == id &&
+                        a.ClienteId == clienteId);
+            }
+
+            if (animal == null)
+                return NotFound();
+
+            return View(animal);
+        }
+
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Animal animal, IFormFile? imagenArchivo)
         {
-            if (ModelState.IsValid)
+            ModelState.Remove("Cliente");
+            ModelState.Remove("ClienteId");
+
+            var clienteIds = HttpContext.Session.GetInt32("ClienteId");
+
+            Console.WriteLine("ClienteId de la sesión: " + clienteIds);
+
+
+            if (!ModelState.IsValid)
             {
-
-                // 1. Obtener cliente del usuario logueado
-                var clienteId = HttpContext.Session.GetInt32("ClienteId");
-
-
-                if (clienteId == null || clienteId == 0)
+                foreach (var item in ModelState)
                 {
-                    ModelState.AddModelError("", "El usuario no tiene un cliente asignado.");
-                    return View(animal);
-                }
-
-
-                // Asignar dueño del animal
-                animal.ClienteId = clienteId.Value;
-
-
-
-                // 2. Manejo de imagen
-                if (imagenArchivo != null && imagenArchivo.Length > 0)
-                {
-                    string fileName = Guid.NewGuid().ToString()
-                        + Path.GetExtension(imagenArchivo.FileName);
-
-
-                    string path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot/images/ganado",
-                        fileName
-                    );
-
-
-                    using (var stream = new FileStream(path, FileMode.Create))
+                    foreach (var error in item.Value.Errors)
                     {
-                        await imagenArchivo.CopyToAsync(stream);
+                        Console.WriteLine($"{item.Key}: {error.ErrorMessage}");
                     }
-
-
-                    animal.imagen = "/images/ganado/" + fileName;
                 }
 
-
-
-                // 3. Fecha UTC
-                if (animal.fechaNacimiento.HasValue)
-                {
-                    animal.fechaNacimiento =
-                        DateTime.SpecifyKind(
-                            animal.fechaNacimiento.Value,
-                            DateTimeKind.Utc
-                        );
-                }
-
-
-
-                // 4. Guardar animal
-                _context.Add(animal);
-
-
-
-                // 5. Notificación
-                var nuevaNotif = new CampoVerde.Models.Notificacion
-                {
-                    Mensaje = $"Se ha registrado un nuevo animal: {animal.nombre}",
-                    Fecha = DateTime.UtcNow,
-                    Leida = false
-                };
-
-
-                _context.Add(nuevaNotif);
-
-
-
-                await _context.SaveChangesAsync();
-
-
-                return RedirectToAction(nameof(Index));
+                return View(animal);
             }
 
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            return View(animal);
+            if (clienteId == null)
+            {
+                ModelState.AddModelError("", "No existe ClienteId en sesión.");
+                return View(animal);
+            }
+
+            animal.ClienteId = clienteId.Value;
+
+            if (imagenArchivo != null && imagenArchivo.Length > 0)
+            {
+                var carpeta = Path.Combine(
+                    Directory.GetCurrentDirectory(),
+                    "wwwroot/images/ganado");
+
+                Directory.CreateDirectory(carpeta);
+
+                var nombre = Guid.NewGuid() +
+                             Path.GetExtension(imagenArchivo.FileName);
+
+                using var stream = new FileStream(
+                    Path.Combine(carpeta, nombre),
+                    FileMode.Create);
+
+                await imagenArchivo.CopyToAsync(stream);
+
+                animal.imagen = "/images/ganado/" + nombre;
+            }
+
+            if (animal.fechaNacimiento.HasValue)
+            {
+                animal.fechaNacimiento = DateTime.SpecifyKind(
+                    animal.fechaNacimiento.Value,
+                    DateTimeKind.Utc);
+            }
+
+            _context.Animales.Add(animal);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
         }
+        
 
 
         // GET: Animal/Edit/5
