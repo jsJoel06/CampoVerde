@@ -363,5 +363,21 @@ namespace CampoVerde.Controllers
                 .ToListAsync());
         }
 
+        // GET: Produccion/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var produccion = await _context.Producciones
+                .Include(p => p.Animal)
+                .FirstOrDefaultAsync(p => p.IdProduccion == id);
+
+            if (produccion == null)
+                return NotFound();
+
+            return View(produccion);
+        }
+
     }
 }

@@ -1,0 +1,271 @@
+﻿@model CampoVerde.Models.Produccion
+
+@{
+    ViewData["Title"] = "Detalles de Producción";
+}
+
+
+<style>
+
+    .card-produccion {
+        border-radius: 18px;
+        overflow: hidden;
+    }
+
+    .header-produccion {
+        background: linear-gradient(135deg, #198754, #28a745);
+        padding: 25px;
+    }
+
+    .info-box {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        height: 100%;
+        border-left: 5px solid #198754;
+    }
+
+    .info-title {
+        font-size: 14px;
+        color: #6c757d;
+        text-transform: uppercase;
+        font-weight: 700;
+    }
+
+    .info-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: #212529;
+    }
+
+    .litros-card {
+        background: #e8f5e9;
+        border-radius: 15px;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .litros-number {
+        font-size: 42px;
+        font-weight: bold;
+        color: #198754;
+    }
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <div class="card shadow border-0 card-produccion">
+
+
+        <!-- HEADER -->
+
+        <div class="header-produccion text-white">
+
+
+            <div class="d-flex align-items-center">
+
+                <div class="me-3">
+                    <i class="bi bi-droplet-fill fs-1"></i>
+                </div>
+
+
+                <div>
+
+                    <h3 class="mb-1 fw-bold">
+                        Detalle de Producción
+                    </h3>
+
+                    <p class="mb-0">
+                        Registro de producción de leche
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+        <div class="card-body p-4">
+
+
+            <div class="row g-4">
+
+
+
+                <!-- ANIMAL -->
+
+                <div class="col-md-6">
+
+                    <div class="info-box">
+
+
+                        <div class="info-title">
+                            <i class="bi bi-cow"></i>
+                            Animal
+                        </div>
+
+
+                        <div class="info-value">
+
+                            @(Model.Animal?.nombre ?? "Sin nombre")
+
+                        </div>
+
+
+                        <small class="text-muted">
+
+                            Código:
+                            @(Model.Animal?.codigo ?? "No registrado")
+
+                        </small>
+
+
+                    </div>
+
+                </div>
+
+
+
+
+                <!-- FECHA -->
+
+                <div class="col-md-6">
+
+                    <div class="info-box">
+
+
+                        <div class="info-title">
+
+                            <i class="bi bi-calendar-event"></i>
+                            Fecha producción
+
+                        </div>
+
+
+                        <div class="info-value">
+
+                            @Model.fechaProduccion.ToString("dd/MM/yyyy")
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- LITROS -->
+
+                <div class="col-md-6">
+
+
+                    <div class="litros-card">
+
+
+                        <i class="bi bi-droplet-fill text-success fs-2"></i>
+
+
+                        <div class="litros-number">
+
+                            @Model.cantidadLeche
+
+                        </div>
+
+
+                        <span class="fw-bold">
+                            Litros de leche
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+                <!-- OBSERVACIÓN -->
+
+                <div class="col-md-6">
+
+
+                    <div class="info-box">
+
+
+                        <div class="info-title">
+
+                            <i class="bi bi-chat-left-text"></i>
+                            Observación
+
+                        </div>
+
+
+
+                        <p class="mt-3 mb-0">
+
+                            @(string.IsNullOrEmpty(Model.observaciones)
+                                ? "Sin observaciones"
+                                : Model.observaciones)
+
+                        </p>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+            <div class="mt-4 d-flex justify-content-between">
+
+
+                <a asp-action="Index"
+                   class="btn btn-secondary px-4">
+
+                    <i class="bi bi-arrow-left"></i>
+                    Volver
+
+                </a>
+
+
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.IdProduccion"
+                   class="btn btn-success px-4">
+
+                    <i class="bi bi-pencil"></i>
+                    Editar
+
+                </a>
+
+
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

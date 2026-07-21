@@ -520,7 +520,7 @@ namespace CampoVerde.Controllers
             // QR
             // ==========================
 
-            string urlDetalle = $"https://campoverde.onrender.com/Animal/Details/{animal.IdAnimal}";
+            string urlDetalle = $"https://campoverde.onrender.com/Animal/PublicDetails/{animal.IdAnimal}";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrData = qrGenerator.CreateQrCode(urlDetalle, QRCodeGenerator.ECCLevel.Q);
@@ -531,6 +531,81 @@ namespace CampoVerde.Controllers
 
             ViewBag.QrCodeUri =
                 $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
+
+            return View(animal);
+        }
+
+        // GET: Animal/PublicDetails/5
+        [HttpGet]
+        public async Task<IActionResult> PublicDetails(int id)
+        {
+            var animal = await _context.Animales
+                .Include(a => a.Cliente)
+                .FirstOrDefaultAsync(a => a.IdAnimal == id);
+
+            if (animal == null)
+                return NotFound();
+
+            // Última vacuna
+            var ultimaVacuna = await _context.Vacunas
+                .Where(v => v.IdAnimal == animal.IdAnimal)
+                .OrderByDescending(v => v.fechaAplicacion)
+                .FirstOrDefaultAsync();
+
+            ViewBag.UltimaVacuna = ultimaVacuna;
+            ViewBag.Vacunado = ultimaVacuna != null;
+
+
+            // Última producción
+            var ultimaProduccion = await _context.Producciones
+                .Where(p => p.IdAnimal == animal.IdAnimal)
+                .OrderByDescending(p => p.fechaProduccion)
+                .FirstOrDefaultAsync();
+
+            ViewBag.UltimaProduccion = ultimaProduccion;
+
+
+            // Total vacunas
+            ViewBag.TotalVacunas = await _context.Vacunas
+                .CountAsync(v => v.IdAnimal == animal.IdAnimal);
+
+
+            // Total producciones
+            ViewBag.TotalProducciones = await _context.Producciones
+                .CountAsync(p => p.IdAnimal == animal.IdAnimal);
+
+
+            // Total leche
+            ViewBag.TotalLeche = await _context.Producciones
+                .Where(p => p.IdAnimal == animal.IdAnimal)
+                .SumAsync(p => (double?)p.cantidadLeche) ?? 0;
+
+
+            // Edad
+            if (animal.fechaNacimiento.HasValue)
+            {
+                DateTime nacimiento = animal.fechaNacimiento.Value;
+                DateTime hoy = DateTime.Today;
+
+                int años = hoy.Year - nacimiento.Year;
+                int meses = hoy.Month - nacimiento.Month;
+
+                if (hoy.Day < nacimiento.Day)
+                    meses--;
+
+                if (meses < 0)
+                {
+                    años--;
+                    meses += 12;
+                }
+
+                ViewBag.EdadAnimal = $"{años} años y {meses} meses";
+            }
+            else
+            {
+                ViewBag.EdadAnimal = "Fecha no registrada";
+            }
+
 
             return View(animal);
         }

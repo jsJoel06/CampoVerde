@@ -1,0 +1,406 @@
+﻿@model CampoVerde.Models.Animal
+
+@{
+    ViewData["Title"] = "Detalle del Ejemplar";
+}
+
+<style>
+
+    body {
+        background-color: #eaf2e9;
+    }
+
+    .card-detail {
+        background-color: #fdfdf5;
+        border-radius: 30px;
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
+    }
+
+    .header-detail {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+    .label-detail {
+        color: #3d663d;
+        font-size: .8rem;
+        text-transform: uppercase;
+        letter-spacing: .15em;
+        font-weight: 800;
+        margin-bottom: 5px;
+    }
+
+    .value-detail {
+        color: #2d4d2d;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+
+    .qr-box {
+        background: white;
+        padding: 15px;
+        border-radius: 20px;
+        border: 2px dashed #a3bfa3;
+        display: inline-block;
+    }
+
+
+    .badge-estado {
+        background: #d1e0d1 !important;
+        color: #1a3c1a !important;
+        font-weight: 600;
+    }
+
+
+    .btn-custom-dark {
+        background: #2d4d2d;
+        color: white;
+        border-radius: 50px;
+        padding: 10px 30px;
+    }
+
+
+        .btn-custom-dark:hover {
+            background: #1a3c1a;
+            color: white;
+        }
+
+
+    .img-animal {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 20px;
+    }
+
+</style>
+
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+
+        <div class="col-md-10">
+
+
+            <div class="card card-detail">
+
+
+                <!-- CABECERA -->
+
+                <div class="d-flex justify-content-between align-items-start mb-4">
+
+                    <div>
+
+                        <h2 class="header-detail">
+                            🐄 Ficha de @Model.nombre
+                        </h2>
+
+                        <span class="text-muted">
+
+                            ID Sistema: @Model.IdAnimal
+
+                        </span>
+
+                    </div>
+
+
+                    <span class="badge badge-estado rounded-pill p-2 px-3">
+
+                        Estado: @Model.Estado
+
+                    </span>
+
+
+                </div>
+
+
+
+
+                <div class="row">
+
+
+                    <!-- IMAGEN -->
+
+                    <div class="col-md-4 text-center">
+
+
+                        @if (!string.IsNullOrEmpty(Model.imagen))
+                        {
+
+                            <img src="@Model.imagen"
+                                 class="img-animal" />
+
+                        }
+                        else
+                        {
+
+                            <div class="bg-light rounded-4 d-flex align-items-center justify-content-center"
+                                 style="height:250px">
+
+                                <i class="fa-solid fa-cow fa-4x text-success"></i>
+
+                            </div>
+
+                        }
+
+
+
+                        <div class="qr-box mt-4 shadow-sm">
+
+
+                            <img src="@ViewBag.QrCodeUri"
+                                 style="width:120px;height:120px;" />
+
+
+                        </div>
+
+
+                        <p class="small text-muted">
+
+                            Ficha digital
+
+                        </p>
+
+
+                    </div>
+
+
+
+
+
+                    <!-- DATOS -->
+
+                    <div class="col-md-8 ps-md-5">
+
+
+                        <div class="row">
+
+
+                            <div class="col-md-6">
+
+
+                                <div class="label-detail">
+                                    Código Arete
+                                </div>
+
+                                <div class="value-detail">
+                                    @Model.codigo
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Raza
+                                </div>
+
+                                <div class="value-detail">
+                                    @Model.raza
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Peso Actual
+                                </div>
+
+                                <div class="value-detail">
+
+                                    @Model.pesoActual.ToString("F1") kg
+
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Edad
+                                </div>
+
+                                <div class="value-detail">
+
+                                    @(ViewBag.EdadAnimal ?? "No registrada")
+
+                                </div>
+
+
+
+                            </div>
+
+
+
+
+
+                            <div class="col-md-6">
+
+
+                                <div class="label-detail">
+                                    Lote / Potrero
+                                </div>
+
+                                <div class="value-detail">
+
+                                    @Model.lote
+
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Nacimiento
+                                </div>
+
+                                <div class="value-detail">
+
+                                    @(Model.fechaNacimiento?.ToString("dd/MM/yyyy")
+                                    ?? "No registrada")
+
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Identificador
+                                </div>
+
+                                <div class="value-detail">
+
+                                    #@Model.IdAnimal
+
+                                </div>
+
+
+
+                                <div class="label-detail">
+                                    Vacunación
+                                </div>
+
+
+                                <div class="value-detail">
+
+
+                                    @if ((bool?)(ViewBag.Vacunado) == true)
+                                    {
+
+                                        <span class="badge bg-success">
+
+                                            <i class="fa-solid fa-syringe"></i>
+
+                                            Vacunado
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-danger">
+
+                                            Sin vacunas
+
+                                        </span>
+
+                                    }
+
+
+                                </div>
+
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+                        @if (ViewBag.UltimaVacuna != null)
+                        {
+
+                            <hr />
+
+
+                            <div>
+
+                                <div class="label-detail">
+
+                                    Última Vacuna
+
+                                </div>
+
+
+                                <div class="value-detail">
+
+                                    @ViewBag.UltimaVacuna.nombreVacuna
+
+                                    <br />
+
+                                    <small class="text-muted">
+
+                                        Aplicada:
+                                        @ViewBag.UltimaVacuna.fechaAplicacion.ToString("dd/MM/yyyy")
+
+                                    </small>
+
+
+                                </div>
+
+
+                            </div>
+
+
+                        }
+
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+                <!-- BOTONES -->
+
+
+                <div class="mt-4 d-flex gap-2">
+
+
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.IdAnimal"
+                       class="btn btn-custom-dark">
+
+                        <i class="fa-solid fa-pen"></i>
+
+                        Editar datos
+
+                    </a>
+
+
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-success rounded-pill px-4">
+
+                        Volver
+
+                    </a>
+
+
+                </div>
+
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
