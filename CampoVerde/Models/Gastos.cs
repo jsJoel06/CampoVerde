@@ -45,7 +45,7 @@ namespace CampoVerde.Models
 
 
         [ForeignKey("IdAnimal")]
-        public virtual Animal Animal { get; set; }
+        public virtual Animal? Animal { get; set; }
 
     }
 }

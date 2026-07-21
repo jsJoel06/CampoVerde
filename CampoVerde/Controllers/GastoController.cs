@@ -32,7 +32,7 @@ namespace CampoVerde.Controllers
 
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                consulta = consulta.Where(g => g.ClienteId == clienteId);
             }
 
             return View(await consulta.ToListAsync());
@@ -117,7 +117,7 @@ namespace CampoVerde.Controllers
 
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                consulta = consulta.Where(g => g.ClienteId == clienteId);
             }
 
             var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
@@ -170,7 +170,7 @@ namespace CampoVerde.Controllers
 
                     if (rol != "SUPER_ADMINISTRADOR")
                     {
-                        consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                        consulta = consulta.Where(g => g.ClienteId == clienteId);
                     }
 
                     var gastoExistente = await consulta
@@ -230,7 +230,7 @@ namespace CampoVerde.Controllers
 
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                consulta = consulta.Where(g => g.ClienteId == clienteId);
             }
 
             var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
@@ -255,7 +255,7 @@ namespace CampoVerde.Controllers
 
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                consulta = consulta.Where(g => g.ClienteId == clienteId);
             }
 
             var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);
@@ -279,7 +279,7 @@ namespace CampoVerde.Controllers
 
             if (rol != "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.Animal.ClienteId == clienteId);
+                consulta = consulta.Where(g => g.ClienteId == clienteId);
             }
 
             var gasto = await consulta.FirstOrDefaultAsync(g => g.IdGasto == id);

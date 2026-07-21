@@ -1,0 +1,395 @@
+﻿@model CampoVerde.Models.TransaccionAnimal
+
+@{
+    ViewData["Title"] = "Detalle de Transacción";
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+
+    .card-detail {
+        background: #fdfdf5;
+        border-radius: 30px;
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
+    }
+
+
+    .title {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+
+    .label-detail {
+        color: #3d663d;
+        font-size: .8rem;
+        text-transform: uppercase;
+        font-weight: 800;
+        letter-spacing: .12em;
+    }
+
+
+    .value-detail {
+        color: #2d4d2d;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
+
+
+    .icon-box {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: #dcebd8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: auto;
+    }
+
+
+    .btn-verde {
+        background: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 30px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <div class="row justify-content-center">
+
+
+        <div class="col-md-9">
+
+
+            <div class="card-detail">
+
+
+                <!-- ENCABEZADO -->
+
+
+                <div class="text-center mb-5">
+
+
+                    <div class="icon-box">
+
+
+                        @if (Model.Tipo == TipoTransaccion.Venta)
+                        {
+                            <i class="fa-solid fa-arrow-trend-up fa-3x text-success"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-cart-shopping fa-3x text-danger"></i>
+                        }
+
+
+                    </div>
+
+
+                    <h2 class="title mt-4">
+
+                        Detalle de Transacción
+
+                    </h2>
+
+
+                    @if (Model.Tipo == TipoTransaccion.Venta)
+                    {
+
+                        <span class="badge bg-success fs-6 px-4 py-2 rounded-pill">
+
+                            Venta
+
+                        </span>
+
+                    }
+                    else
+                    {
+
+                        <span class="badge bg-danger fs-6 px-4 py-2 rounded-pill">
+
+                            Compra
+
+                        </span>
+
+                    }
+
+
+                </div>
+
+
+
+
+
+
+                <div class="row">
+
+
+                    <!-- ANIMAL -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Animal
+
+                        </div>
+
+
+                        <div class="value-detail">
+
+                            🐄 @(Model.Animal?.nombre ?? "Sin asignar")
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+                    <!-- CODIGO -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Código Animal
+
+                        </div>
+
+
+                        <div class="value-detail">
+
+                            @(Model.Animal?.codigo ?? "-")
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- MONTO -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Monto
+
+                        </div>
+
+
+                        <div class="value-detail text-success">
+
+                            RD$ @Model.Monto.ToString("N2")
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <!-- FECHA -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Fecha
+
+                        </div>
+
+
+                        <div class="value-detail">
+
+                            @Model.Fecha.ToString("dd/MM/yyyy HH:mm")
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+                    <!-- TERCERO -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Tercero
+
+                        </div>
+
+
+                        <div class="value-detail">
+
+                            @Model.Tercero
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <!-- FINCA -->
+
+
+                    <div class="col-md-6">
+
+
+                        <div class="label-detail">
+
+                            Cliente / Finca
+
+                        </div>
+
+
+                        <div class="value-detail">
+
+                            @(Model.Cliente?.NombreEmpresa ?? "No asignado")
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+                </div>
+
+
+
+
+
+                <hr />
+
+
+
+
+
+                <div class="mb-4">
+
+
+                    <div class="label-detail">
+
+                        Notas
+
+                    </div>
+
+
+                    <p class="value-detail">
+
+                        @(Model.Notas ?? "Sin observaciones")
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary rounded-pill px-4">
+
+                        Volver
+
+                    </a>
+
+
+
+                    <a asp-action="Edit"
+                       asp-route-id="@Model.IdTransaccion"
+                       class="btn btn-verde">
+
+                        <i class="bi bi-pencil-square me-2"></i>
+
+                        Editar
+
+                    </a>
+
+
+                </div>
+
+
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

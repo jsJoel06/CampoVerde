@@ -3,6 +3,7 @@ using System;
 using CampoVerde.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampoVerde.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721175045_ActualizarTransaccionesAnimales")]
+    partial class ActualizarTransaccionesAnimales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,9 +79,6 @@ namespace CampoVerde.Migrations
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime?>("FechaEmbarazo")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("codigo")
                         .IsRequired()
@@ -236,37 +236,6 @@ namespace CampoVerde.Migrations
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Ingresos");
-                });
-
-            modelBuilder.Entity("CampoVerde.Models.Licencia", b =>
-                {
-                    b.Property<int>("IdLicencia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdLicencia"));
-
-                    b.Property<bool>("Activa")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("FechaVencimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Plan")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IdLicencia");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("Licencias");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Notificacion", b =>
@@ -675,17 +644,6 @@ namespace CampoVerde.Migrations
                     b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("CampoVerde.Models.Licencia", b =>
-                {
-                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
-                        .WithMany("Licencias")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-                });
-
             modelBuilder.Entity("CampoVerde.Models.Parto", b =>
                 {
                     b.HasOne("CampoVerde.Models.Cliente", "Cliente")
@@ -803,8 +761,6 @@ namespace CampoVerde.Migrations
                     b.Navigation("Gastos");
 
                     b.Navigation("Ingresos");
-
-                    b.Navigation("Licencias");
 
                     b.Navigation("Partos");
 

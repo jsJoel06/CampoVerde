@@ -1,0 +1,248 @@
+﻿@model CampoVerde.Models.Usuario
+
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .delete-card {
+        max-width: 850px;
+        margin: auto;
+        background: #fff;
+        border-radius: 25px;
+        overflow: hidden;
+        box-shadow: 0 15px 35px rgba(0,0,0,.08);
+    }
+
+    .delete-header {
+        background: linear-gradient(135deg,#dc3545,#8b0000);
+        color: white;
+        text-align: center;
+        padding: 40px;
+    }
+
+        .delete-header h2,
+        .delete-header p {
+            color: white;
+        }
+
+    .foto-usuario {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 5px solid white;
+        margin-bottom: 15px;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        border-radius: 18px;
+        padding: 18px;
+        margin-bottom: 20px;
+        border-left: 5px solid #198754;
+    }
+
+        .info-card strong {
+            color: #198754;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+    .alert-delete {
+        background: #fff3cd;
+        border-left: 6px solid #ffc107;
+        padding: 20px;
+        border-radius: 15px;
+        font-size: 17px;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="delete-card">
+
+        <div class="delete-header">
+
+            @if (!string.IsNullOrEmpty(Model.FotoPerfil))
+            {
+                <img src="@Model.FotoPerfil"
+                     class="foto-usuario" />
+            }
+            else
+            {
+                <img src="~/img/user.png"
+                     class="foto-usuario" />
+            }
+
+            <h2>
+
+                <i class="bi bi-trash3-fill"></i>
+
+                Eliminar Usuario
+
+            </h2>
+
+            <p class="mb-0">
+
+                Confirma que deseas eliminar este usuario.
+
+            </p>
+
+        </div>
+
+        <div class="p-5">
+
+            <div class="alert-delete mb-4">
+
+                <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+
+                <strong>¡Atención!</strong>
+
+                Esta acción eliminará permanentemente el usuario del sistema y no podrá recuperarse.
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Nombre</strong>
+
+                        @Model.nombre
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Correo</strong>
+
+                        @Model.email
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Teléfono</strong>
+
+                        @Model.telefono
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Rol</strong>
+
+                        @Model.Rol
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Estado</strong>
+
+                        @(Model.estadoActivo ? "Activo" : "Inactivo")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Empresa</strong>
+
+                        @(Model.Cliente?.NombreEmpresa ?? "No asignado")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Fecha Registro</strong>
+
+                        @Model.FechaRegistro.ToString("dd/MM/yyyy HH:mm")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-card">
+
+                        <strong>Último Acceso</strong>
+
+                        @Model.UltimoAcceso.ToString("dd/MM/yyyy HH:mm")
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <hr class="my-4" />
+
+            <form asp-action="Delete">
+
+                <input type="hidden"
+                       asp-for="IdUsuario" />
+
+                <div class="d-flex justify-content-center gap-3">
+
+                    <button type="submit"
+                            class="btn btn-danger btn-lg rounded-pill px-5">
+
+                        <i class="bi bi-trash-fill me-2"></i>
+
+                        Eliminar Usuario
+
+                    </button>
+
+                    <a asp-action="Index"
+                       class="btn btn-success btn-lg rounded-pill px-5">
+
+                        <i class="bi bi-arrow-left me-2"></i>
+
+                        Cancelar
+
+                    </a>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -1,0 +1,362 @@
+﻿@model CampoVerde.Models.TransaccionAnimal
+
+@{
+    ViewData["Title"] = "Eliminar Transacción";
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+
+    .card-delete {
+        background: #fdfdf5;
+        border-radius: 30px;
+        padding: 45px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
+    }
+
+
+    .title {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+
+    .info-box {
+        background: #eef5ed;
+        border-radius: 20px;
+        padding: 25px;
+        border: 1px solid #d4e0d4;
+    }
+
+
+    .label {
+        color: #3d663d;
+        font-size: .8rem;
+        text-transform: uppercase;
+        font-weight: 800;
+    }
+
+
+    .value {
+        color: #2d4d2d;
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+
+    .btn-danger-custom {
+        background: #b02a37;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: bold;
+    }
+
+
+        .btn-danger-custom:hover {
+            background: #8b1e2b;
+            color: white;
+        }
+
+</style>
+
+
+
+
+<div class="container py-5">
+
+
+    <div class="row justify-content-center">
+
+
+        <div class="col-md-8">
+
+
+            <div class="card-delete">
+
+
+
+                <div class="text-center mb-4">
+
+
+                    <h2 class="title">
+
+                        ⚠️ Eliminar Transacción
+
+                    </h2>
+
+
+                    <p class="text-muted">
+
+                        ¿Está seguro que desea eliminar este registro?
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+
+
+                <div class="info-box">
+
+
+
+                    <div class="row">
+
+
+
+                        <div class="col-md-6">
+
+
+                            <div class="label">
+
+                                Animal
+
+                            </div>
+
+
+                            <div class="value">
+
+                                🐄 @(Model.Animal?.nombre ?? "No asignado")
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <div class="label">
+
+                                Tipo
+
+                            </div>
+
+
+                            <div class="value">
+
+
+                                @if (Model.Tipo == TipoTransaccion.Venta)
+                                {
+                                    <span class="badge bg-success">
+
+                                        Venta
+
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary">
+
+                                        Compra
+
+                                    </span>
+                                }
+
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <div class="label">
+
+                                Monto
+
+                            </div>
+
+
+                            <div class="value">
+
+                                RD$ @Model.Monto.ToString("N2")
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="col-md-6">
+
+
+                            <div class="label">
+
+                                Fecha
+
+                            </div>
+
+
+                            <div class="value">
+
+                                @Model.Fecha.ToString("dd/MM/yyyy")
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+                        <div class="col-md-12">
+
+
+                            <div class="label">
+
+                                Tercero
+
+                            </div>
+
+
+                            <div class="value">
+
+                                @Model.Tercero
+
+                            </div>
+
+
+                        </div>
+
+
+
+
+
+
+
+
+                        @if (!string.IsNullOrEmpty(Model.Notas))
+                        {
+
+                            <div class="col-md-12">
+
+
+                                <div class="label">
+
+                                    Notas
+
+                                </div>
+
+
+                                <div class="value">
+
+                                    @Model.Notas
+
+                                </div>
+
+
+                            </div>
+
+                        }
+
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+                <form asp-action="Delete" method="post" class="mt-5">
+
+
+                    <input type="hidden"
+                           asp-for="IdTransaccion" />
+
+
+
+                    <div class="d-flex justify-content-between">
+
+
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary rounded-pill px-4">
+
+                            Cancelar
+
+                        </a>
+
+
+
+
+
+                        <button type="submit"
+                                class="btn btn-danger-custom">
+
+
+                            <i class="bi bi-trash me-2"></i>
+
+                            Eliminar definitivamente
+
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+                </form>
+
+
+
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

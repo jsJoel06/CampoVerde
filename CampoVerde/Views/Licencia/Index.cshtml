@@ -1,0 +1,432 @@
+﻿@model IEnumerable<CampoVerde.Models.Licencia>
+
+@{
+    ViewData["Title"] = "Gestión de Licencias";
+
+    var total = Model.Count();
+    var activas = Model.Count(x => x.Estado == "ACTIVA");
+    var vencidas = Model.Count(x => x.Estado == "VENCIDA");
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+
+    .card-ganaderia {
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    }
+
+
+    .header-verde {
+        background: linear-gradient(135deg,#2e7d32,#66bb6a);
+        color: white;
+        border-radius: 18px 18px 0 0;
+    }
+
+
+    .icon-box {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+
+    .stat-card {
+        border-radius: 15px;
+        padding: 20px;
+        color: white;
+    }
+
+
+    .table thead {
+        background: #2e7d32;
+        color: white;
+    }
+
+
+    .table tbody tr:hover {
+        background: #f1f8f1;
+        transition: .3s;
+    }
+
+
+    .badge {
+        padding: 8px 12px;
+        border-radius: 20px;
+    }
+
+</style>
+
+
+
+
+<div class="container py-5">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="card card-ganaderia border-0 mb-4">
+
+
+        <div class="card-header header-verde p-4">
+
+
+            <div class="d-flex align-items-center">
+
+
+                <div class="icon-box">
+
+                    <i class="bi bi-shield-check"></i>
+
+                </div>
+
+
+                <div class="ms-3">
+
+                    <h3 class="mb-1 fw-bold">
+                        Gestión de Licencias
+                    </h3>
+
+
+                    <p class="mb-0">
+                        Administración de planes y suscripciones de clientes
+                    </p>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+    <!-- ESTADÍSTICAS -->
+
+
+    <div class="row mb-4">
+
+
+        <div class="col-md-4">
+
+
+            <div class="stat-card bg-success shadow">
+
+                <h6>
+                    Total Licencias
+                </h6>
+
+
+                <h2 class="fw-bold">
+                    @total
+                </h2>
+
+            </div>
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="stat-card bg-primary shadow">
+
+                <h6>
+                    Licencias Activas
+                </h6>
+
+
+                <h2 class="fw-bold">
+                    @activas
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="stat-card bg-danger shadow">
+
+
+                <h6>
+                    Licencias Vencidas
+                </h6>
+
+
+                <h2 class="fw-bold">
+                    @vencidas
+                </h2>
+
+
+            </div>
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+
+    <!-- TABLA -->
+
+
+    <div class="card card-ganaderia border-0">
+
+
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+
+
+            <h5 class="fw-bold mb-0">
+
+                <i class="bi bi-card-list text-success"></i>
+
+                Licencias Registradas
+
+            </h5>
+
+
+
+            <a asp-action="Create"
+               class="btn btn-success">
+
+                <i class="bi bi-plus-circle"></i>
+
+                Nueva Licencia
+
+            </a>
+
+
+        </div>
+
+
+
+
+        <div class="card-body">
+
+
+            <div class="table-responsive">
+
+
+                <table class="table table-hover align-middle">
+
+
+                    <thead>
+
+
+                        <tr>
+
+                            <th>
+                                Cliente
+                            </th>
+
+
+                            <th>
+                                Plan
+                            </th>
+
+
+                            <th>
+                                Inicio
+                            </th>
+
+
+                            <th>
+                                Vencimiento
+                            </th>
+
+
+                            <th>
+                                Estado
+                            </th>
+
+
+                            <th class="text-center">
+                                Acciones
+                            </th>
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+                    <tbody>
+
+
+                        @foreach (var item in Model)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+
+
+                                    <strong>
+                                        <i class="bi bi-person-circle text-success"></i>
+                                        @item.Cliente.Nombre
+                                    </strong>
+
+
+                                </td>
+
+
+
+
+                                <td>
+
+                                    <span class="badge bg-success">
+
+                                        @item.Plan
+
+                                    </span>
+
+                                </td>
+
+
+
+
+                                <td>
+
+                                    @item.FechaInicio.ToString("dd/MM/yyyy")
+
+                                </td>
+
+
+
+
+                                <td>
+
+                                    @item.FechaVencimiento.ToString("dd/MM/yyyy")
+
+                                </td>
+
+
+
+
+                                <td>
+
+
+                                    @if (item.Estado == "ACTIVA")
+                                    {
+
+                                        <span class="badge bg-success">
+
+                                            <i class="bi bi-check-circle"></i>
+                                            ACTIVA
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-danger">
+
+                                            <i class="bi bi-x-circle"></i>
+                                            VENCIDA
+
+                                        </span>
+
+                                    }
+
+
+                                </td>
+
+
+
+
+                                <td class="text-center">
+
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdLicencia"
+                                       class="btn btn-info btn-sm text-white">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.IdLicencia"
+                                       class="btn btn-warning btn-sm">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.IdLicencia"
+                                       class="btn btn-danger btn-sm">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </a>
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+
+                    </tbody>
+
+
+                </table>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

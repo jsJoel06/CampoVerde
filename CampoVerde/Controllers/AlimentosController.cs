@@ -85,6 +85,22 @@ public class AlimentosController : Controller
                     // Crear alimento
                     _context.AlimentosBovinos.Add(alimento);
 
+                    decimal costoTotal = alimento.CostoUnitario * alimento.CantidadDisponible;
+
+                    _context.Gastos.Add(new Gasto
+                    {
+                        Categoria = CategoriaGasto.Alimentacion,
+                        ClienteId = clienteId.Value,
+                        Concepto = $"Compra de alimento: {alimento.Nombre}",
+                        Fecha = DateTime.UtcNow,
+                        Monto = alimento.CostoUnitario,
+                        Notas = "Registro automático"
+                    });
+
+                    Console.WriteLine($"Gastos en memoria: {_context.Gastos.Local.Count}");
+
+                    Console.WriteLine("Creando gasto...");
+
                     // Notificación
                     _context.Notificaciones.Add(new Notificacion
                     {
@@ -104,6 +120,7 @@ public class AlimentosController : Controller
                         return View(alimento);
                     }
 
+                    Console.WriteLine("Gasto agregado al contexto.");
 
                     alimento.ClienteId = clienteId.Value;
 

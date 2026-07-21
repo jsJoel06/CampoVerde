@@ -1,0 +1,391 @@
+﻿@model CampoVerde.Models.TransaccionAnimal
+
+@{
+    ViewData["Title"] = "Editar Transacción";
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+
+    .card-form {
+        background: #fdfdf5;
+        border-radius: 30px;
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
+    }
+
+
+    .title {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+
+    .label {
+        color: #3d663d;
+        font-size: .85rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+
+    .form-control,
+    .form-select {
+        border-radius: 15px;
+        padding: 12px;
+        border: 1px solid #cddbc9;
+    }
+
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #4a7c4a;
+            box-shadow: 0 0 0 .2rem rgba(74,124,74,.2);
+        }
+
+
+    .btn-verde {
+        background: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+</style>
+
+
+
+
+<div class="container py-5">
+
+
+    <div class="row justify-content-center">
+
+
+        <div class="col-md-8">
+
+
+            <div class="card-form">
+
+
+                <div class="text-center mb-4">
+
+
+                    <h2 class="title">
+
+                        ✏️ Editar Transacción
+
+                    </h2>
+
+
+                    <p class="text-muted">
+
+                        Actualiza los datos de la compra o venta del animal.
+
+                    </p>
+
+
+                </div>
+
+
+
+
+
+                <form asp-action="Edit" method="post">
+
+
+                    <input type="hidden"
+                           asp-for="IdTransaccion" />
+
+
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger">
+                    </div>
+
+
+
+
+
+
+                    <!-- ANIMAL -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Animal
+
+                        </label>
+
+
+                        <select asp-for="IdAnimal"
+                                class="form-select"
+                                asp-items="ViewBag.Animales">
+
+                            <option value="">
+                                Seleccione animal
+                            </option>
+
+                        </select>
+
+
+                        <span asp-validation-for="IdAnimal"
+                              class="text-danger">
+                        </span>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <!-- TIPO -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Tipo de Transacción
+
+                        </label>
+
+
+                        <select asp-for="Tipo"
+                                class="form-select">
+
+
+                            <option value="Compra">
+
+                                Compra
+
+                            </option>
+
+
+                            <option value="Venta">
+
+                                Venta
+
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- MONTO -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Monto
+
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+
+                                RD$
+
+                            </span>
+
+
+                            <input asp-for="Monto"
+                                   class="form-control"
+                                   type="number"
+                                   step="0.01" />
+
+
+                        </div>
+
+
+                        <span asp-validation-for="Monto"
+                              class="text-danger">
+                        </span>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- TERCERO -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Persona o Empresa
+
+                        </label>
+
+
+                        <input asp-for="Tercero"
+                               class="form-control" />
+
+
+                        <span asp-validation-for="Tercero"
+                              class="text-danger">
+                        </span>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- FECHA -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Fecha
+
+                        </label>
+
+
+                        <input asp-for="Fecha"
+                               class="form-control"
+                               type="datetime-local" />
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- NOTAS -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Observaciones
+
+                        </label>
+
+
+                        <textarea asp-for="Notas"
+                                  class="form-control"
+                                  rows="4">
+                        </textarea>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <div class="d-flex justify-content-between mt-5">
+
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary rounded-pill px-4">
+
+                            Cancelar
+
+                        </a>
+
+
+
+
+                        <button type="submit"
+                                class="btn btn-verde">
+
+
+                            <i class="bi bi-save me-2"></i>
+
+                            Guardar Cambios
+
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+                </form>
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

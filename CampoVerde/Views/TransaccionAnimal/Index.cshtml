@@ -1,0 +1,434 @@
+﻿@model IEnumerable<CampoVerde.Models.TransaccionAnimal>
+
+@{
+    ViewData["Title"] = "Transacciones de Animales";
+
+    var totalVentas = Model
+        .Where(x => x.Tipo == TipoTransaccion.Venta)
+        .Sum(x => x.Monto);
+
+    var totalCompras = Model
+        .Where(x => x.Tipo == TipoTransaccion.Compra)
+        .Sum(x => x.Monto);
+
+    var balance = totalVentas - totalCompras;
+
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+
+    .card-verde {
+        background: #fdfdf5;
+        border-radius: 25px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 25px rgba(74,124,74,.1);
+    }
+
+
+    .card-estadistica {
+        background: linear-gradient(135deg,#4a7c4a,#1a3c1a);
+        color: white;
+        border-radius: 25px;
+    }
+
+
+        .card-estadistica h5,
+        .card-estadistica h2,
+        .card-estadistica i {
+            color: white;
+        }
+
+
+    .btn-verde {
+        background: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 25px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+
+    .table {
+        border-radius: 20px;
+        overflow: hidden;
+    }
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <!-- TITULO -->
+
+    <div class="d-flex justify-content-between align-items-center mb-5">
+
+
+        <div>
+
+            <h1 style="color:#1a3c1a;font-family:Georgia">
+
+                🐄 Transacciones de Animales
+
+            </h1>
+
+
+            <p class="text-muted">
+
+                Control de compras y ventas de ganado.
+
+            </p>
+
+
+        </div>
+
+
+
+        <a asp-action="Create"
+           class="btn btn-verde">
+
+            <i class="bi bi-plus-circle me-2"></i>
+
+            Nueva Transacción
+
+        </a>
+
+
+    </div>
+
+
+
+
+
+    <!-- ESTADISTICAS -->
+
+
+    <div class="row g-4 mb-5">
+
+
+        <div class="col-md-4">
+
+            <div class="card card-estadistica">
+
+                <div class="card-body text-center">
+
+                    <i class="fa-solid fa-arrow-up display-4"></i>
+
+                    <h5 class="mt-3">
+
+                        Ventas
+
+                    </h5>
+
+
+                    <h2>
+
+                        RD$ @totalVentas.ToString("N2")
+
+                    </h2>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="card card-estadistica">
+
+
+                <div class="card-body text-center">
+
+
+                    <i class="fa-solid fa-cart-shopping display-4"></i>
+
+
+                    <h5 class="mt-3">
+
+                        Compras
+
+                    </h5>
+
+
+                    <h2>
+
+                        RD$ @totalCompras.ToString("N2")
+
+                    </h2>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="col-md-4">
+
+
+            <div class="card card-estadistica">
+
+
+                <div class="card-body text-center">
+
+
+                    <i class="fa-solid fa-chart-line display-4"></i>
+
+
+                    <h5 class="mt-3">
+
+                        Balance
+
+                    </h5>
+
+
+                    <h2>
+
+                        RD$ @balance.ToString("N2")
+
+                    </h2>
+
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+
+
+
+
+    <!-- TABLA -->
+
+
+    <div class="card card-verde p-4">
+
+
+        <div class="table-responsive">
+
+
+            <table class="table table-hover align-middle">
+
+
+                <thead class="table-success">
+
+
+                    <tr>
+
+
+                        <th>
+                            Animal
+                        </th>
+
+
+                        <th>
+                            Tipo
+                        </th>
+
+
+                        <th>
+                            Monto
+                        </th>
+
+
+                        <th>
+                            Tercero
+                        </th>
+
+
+                        <th>
+                            Fecha
+                        </th>
+
+
+                        <th>
+                            Acciones
+                        </th>
+
+
+                    </tr>
+
+
+                </thead>
+
+
+                <tbody>
+
+
+                    @if (Model.Any())
+                    {
+
+                        foreach (var item in Model)
+                        {
+
+
+                            <tr>
+
+
+                                <td>
+
+                                    🐄 @(item.Animal?.nombre ?? "Sin animal")
+
+                                </td>
+
+
+
+                                <td>
+
+
+                                    @if (item.Tipo == TipoTransaccion.Venta)
+                                    {
+
+                                        <span class="badge bg-success">
+
+                                            Venta
+
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+
+                                        <span class="badge bg-danger">
+
+                                            Compra
+
+                                        </span>
+
+                                    }
+
+
+                                </td>
+
+
+
+                                <td>
+
+                                    RD$ @item.Monto.ToString("N2")
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @item.Tercero
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @item.Fecha.ToString("dd/MM/yyyy")
+
+                                </td>
+
+
+
+                                <td>
+
+
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdTransaccion"
+                                       class="btn btn-outline-primary btn-sm">
+
+                                        <i class="bi bi-eye"></i>
+
+                                    </a>
+
+
+
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.IdTransaccion"
+                                       class="btn btn-outline-success btn-sm">
+
+                                        <i class="bi bi-pencil"></i>
+
+                                    </a>
+
+
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.IdTransaccion"
+                                       class="btn btn-outline-danger btn-sm">
+
+                                        <i class="bi bi-trash"></i>
+
+                                    </a>
+
+
+                                </td>
+
+
+                            </tr>
+
+
+                        }
+
+                    }
+                    else
+                    {
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="text-center text-muted">
+
+                                No hay transacciones registradas.
+
+                            </td>
+
+                        </tr>
+
+                    }
+
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>

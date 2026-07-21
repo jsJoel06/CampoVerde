@@ -393,5 +393,45 @@ namespace CampoVerde.Controllers
             // 4. Pasar el usuario a la vista (¡Esto es lo que faltaba!)
             return View(usuario);
         }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            var usuario = await _context.Usuarios
+                .Include(u => u.Cliente)
+                .FirstOrDefaultAsync(u => u.IdUsuario == id);
+
+            if (usuario == null)
+                return NotFound();
+
+            // Estadísticas (si quieres mostrarlas)
+            if (usuario.ClienteId != null)
+            {
+                ViewBag.TotalAnimales = await _context.Animales
+                    .CountAsync(a => a.ClienteId == usuario.ClienteId);
+
+                ViewBag.TotalProducciones = await _context.Producciones
+                    .CountAsync(p => p.ClienteId == usuario.ClienteId);
+
+                ViewBag.TotalIngresos = await _context.Ingresos
+                    .Where(i => i.Animal.ClienteId == usuario.ClienteId)
+                    .SumAsync(i => (decimal?)i.Monto) ?? 0;
+
+                ViewBag.TotalGastos = await _context.Gastos
+                    .Where(g => g.Animal.ClienteId == usuario.ClienteId)
+                    .SumAsync(g => (decimal?)g.Monto) ?? 0;
+            }
+            else
+            {
+                ViewBag.TotalAnimales = 0;
+                ViewBag.TotalProducciones = 0;
+                ViewBag.TotalIngresos = 0;
+                ViewBag.TotalGastos = 0;
+            }
+
+            return View(usuario);
+        }
     }
 }

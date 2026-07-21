@@ -166,85 +166,196 @@ namespace CampoVerde.Controllers
             return View(animal);
         }
 
-        
 
         // POST: Animal/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Animal animal, IFormFile? imagenArchivo)
+        public async Task<IActionResult> Edit(
+            int id,
+            Animal animal,
+            IFormFile? imagenArchivo)
         {
+
             if (id != animal.IdAnimal)
                 return NotFound();
 
+
+
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            var rol = HttpContext.Session.GetString("Rol");
+
+
+
+            var animalExistente = await _context.Animales
+                .FirstOrDefaultAsync(a =>
+                    a.IdAnimal == id &&
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+                );
+
+
+
+            if (animalExistente == null)
+                return NotFound();
+
+
+
             if (ModelState.IsValid)
             {
+
                 try
                 {
-                    var clienteId = HttpContext.Session.GetInt32("ClienteId");
-                    var rol = HttpContext.Session.GetString("Rol");
 
 
-                    var animalExistente = await _context.Animales
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(a =>
-                            a.IdAnimal == id &&
-                            (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
-                        );
+                    // =========================
+                    // GUARDAR ESTADO ANTERIOR
+                    // =========================
 
-                    if (animalExistente == null)
-                        return NotFound();
+                    var estadoAnterior = animalExistente.Estado;
 
-                    // Manejo de imagen
+
+
+                    // =========================
+                    // IMAGEN
+                    // =========================
+
                     if (imagenArchivo != null && imagenArchivo.Length > 0)
                     {
-                        string fileName = Guid.NewGuid().ToString() + Path.GetExtension(imagenArchivo.FileName);
-                        string path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/ganado", fileName);
+
+                        string fileName =
+                            Guid.NewGuid().ToString()
+                            + Path.GetExtension(imagenArchivo.FileName);
+
+
+
+                        string path = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot/images/ganado",
+                            fileName
+                        );
+
+
 
                         using (var stream = new FileStream(path, FileMode.Create))
                         {
                             await imagenArchivo.CopyToAsync(stream);
                         }
 
-                        animal.imagen = "/images/ganado/" + fileName;
+
+
+                        animalExistente.imagen =
+                            "/images/ganado/" + fileName;
+
+                    }
+
+
+
+
+
+                    // =========================
+                    // ACTUALIZAR DATOS
+                    // =========================
+
+
+                    animalExistente.nombre = animal.nombre;
+
+
+                    animalExistente.codigo = animal.codigo;
+
+
+                    animalExistente.raza = animal.raza;
+
+
+                    animalExistente.pesoActual = animal.pesoActual;
+
+
+                    animalExistente.lote = animal.lote;
+
+
+                    animalExistente.Estado = animal.Estado;
+
+
+
+
+                    if (animal.fechaNacimiento.HasValue)
+                    {
+
+                        animalExistente.fechaNacimiento =
+                            DateTime.SpecifyKind(
+                                animal.fechaNacimiento.Value,
+                                DateTimeKind.Utc
+                            );
+
+                    }
+
+
+                    // =========================
+                    // CONTROL FECHA EMBARAZO
+                    // =========================
+
+                    if (animal.Estado == EstadoAnimal.EMBARAZADA)
+                    {
+                        if (animalExistente.FechaEmbarazo == null)
+                        {
+                            animalExistente.FechaEmbarazo = DateTime.UtcNow;
+                        }
                     }
                     else
                     {
-                        animal.imagen = animalExistente.imagen;
+                        animalExistente.FechaEmbarazo = null;
                     }
 
-                    // Fecha UTC
-                    if (animal.fechaNacimiento.HasValue)
-                    {
-                        animal.fechaNacimiento = DateTime.SpecifyKind(
-                            animal.fechaNacimiento.Value,
-                            DateTimeKind.Utc);
-                    }
+                    // =========================
+                    // NOTIFICACIÓN
+                    // =========================
 
-                    // Actualizar animal
-                    _context.Animales.Update(animal);
 
-                    // Agregar notificación
                     _context.Notificaciones.Add(new Notificacion
                     {
-                        Mensaje = $"Se ha actualizado el animal: {animal.nombre}",
+
+                        Mensaje =
+                        $"Se actualizó el animal: {animalExistente.nombre}",
+
+
                         Fecha = DateTime.UtcNow,
+
+
                         Leida = false
+
                     });
 
-                    // Guardar todo
+
+
+
+
+
+
                     await _context.SaveChangesAsync();
 
+
+
                     return RedirectToAction(nameof(Index));
+
+
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.ToString());
+
+                    Console.WriteLine(ex.Message);
+
                     throw;
+
                 }
+
             }
 
+
+
             return View(animal);
+
         }
+
+
 
         // GET: Animal/Delete/5
         public async Task<IActionResult> Delete(int id)
@@ -304,31 +415,122 @@ namespace CampoVerde.Controllers
         }
 
 
+        // GET: Animal/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+                return NotFound();
 
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
             var rol = HttpContext.Session.GetString("Rol");
 
-
             var animal = await _context.Animales
+                .Include(a => a.Cliente)
                 .FirstOrDefaultAsync(a =>
                     a.IdAnimal == id &&
-                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
-                );
+                    (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId));
 
-            if (animal == null) return NotFound();
+            if (animal == null)
+                return NotFound();
 
-            // Generar el código QR
+            // ==========================
+            // ÚLTIMA VACUNA
+            // ==========================
+
+            var ultimaVacuna = await _context.Vacunas
+                .Where(v => v.IdAnimal == animal.IdAnimal)
+                .OrderByDescending(v => v.fechaAplicacion)
+                .FirstOrDefaultAsync();
+
+            ViewBag.UltimaVacuna = ultimaVacuna;
+            ViewBag.Vacunado = ultimaVacuna != null;
+
+            // ==========================
+            // ÚLTIMA PRODUCCIÓN
+            // ==========================
+
+            var ultimaProduccion = await _context.Producciones
+                .Where(p => p.IdAnimal == animal.IdAnimal)
+                .OrderByDescending(p => p.fechaProduccion)
+                .FirstOrDefaultAsync();
+
+            ViewBag.UltimaProduccion = ultimaProduccion;
+
+            // ==========================
+            // TOTAL DE PRODUCCIONES
+            // ==========================
+
+            ViewBag.TotalProducciones = await _context.Producciones
+                .CountAsync(p => p.IdAnimal == animal.IdAnimal);
+
+            // ==========================
+            // TOTAL DE LECHE
+            // ==========================
+
+            ViewBag.TotalLeche = await _context.Producciones
+                .Where(p => p.IdAnimal == animal.IdAnimal)
+                .SumAsync(p => (double?)p.cantidadLeche) ?? 0;
+
+            // ==========================
+            // TOTAL DE VACUNAS
+            // ==========================
+
+            ViewBag.TotalVacunas = await _context.Vacunas
+                .CountAsync(v => v.IdAnimal == animal.IdAnimal);
+
+            // ==========================
+            // EDAD DEL ANIMAL
+            // ==========================
+
+            // ==========================
+            // CALCULAR EDAD DEL ANIMAL
+            // ==========================
+
+            if (animal.fechaNacimiento.HasValue)
+            {
+                DateTime nacimiento = animal.fechaNacimiento.Value;
+                DateTime hoy = DateTime.Today;
+
+                int años = hoy.Year - nacimiento.Year;
+                int meses = hoy.Month - nacimiento.Month;
+                int dias = hoy.Day - nacimiento.Day;
+
+
+                if (dias < 0)
+                {
+                    meses--;
+                }
+
+
+                if (meses < 0)
+                {
+                    años--;
+                    meses += 12;
+                }
+
+
+                ViewBag.EdadAnimal = $"{años} años y {meses} meses";
+            }
+            else
+            {
+                ViewBag.EdadAnimal = "Fecha no registrada";
+            }
+
+            // ==========================
+            // QR
+            // ==========================
+
             string urlDetalle = $"https://campoverde.onrender.com/Animal/Details/{animal.IdAnimal}";
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(urlDetalle, QRCodeGenerator.ECCLevel.Q);
-            PngByteQRCode qrCode = new PngByteQRCode(qrCodeData);
-            byte[] qrCodeImage = qrCode.GetGraphic(20);
+            QRCodeData qrData = qrGenerator.CreateQrCode(urlDetalle, QRCodeGenerator.ECCLevel.Q);
 
-            ViewBag.QrCodeUri = "data:image/png;base64," + Convert.ToBase64String(qrCodeImage);
+            PngByteQRCode qrCode = new PngByteQRCode(qrData);
+
+            byte[] bytes = qrCode.GetGraphic(20);
+
+            ViewBag.QrCodeUri =
+                $"data:image/png;base64,{Convert.ToBase64String(bytes)}";
 
             return View(animal);
         }

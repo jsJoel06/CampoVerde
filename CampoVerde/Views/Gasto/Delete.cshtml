@@ -1,0 +1,149 @@
+﻿@model CampoVerde.Models.Gasto
+
+@{
+    ViewData["Title"] = "Eliminar Gasto";
+}
+
+<div class="container py-5">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                Confirmar eliminación
+            </h4>
+        </div>
+
+
+        <div class="card-body">
+
+            <h5 class="text-danger mb-4">
+                ¿Está seguro que desea eliminar este gasto?
+            </h5>
+
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Concepto
+                        </label>
+
+                        <p class="form-control bg-light">
+                            @Model.Concepto
+                        </p>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Categoría
+                        </label>
+
+                        <p class="form-control bg-light">
+                            @Model.Categoria
+                        </p>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Monto
+                        </label>
+
+                        <p class="form-control bg-light">
+                            @Model.Monto.ToString("C")
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="col-md-6">
+
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Fecha
+                        </label>
+
+                        <p class="form-control bg-light">
+                            @Model.Fecha.ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Animal
+                        </label>
+
+                        <p class="form-control bg-light">
+
+                            @if (Model.Animal != null)
+                            {
+                                @Model.Animal.nombre
+                            }
+                            else
+                            {
+                                <span>
+                                    Sin animal asociado
+                                </span>
+                            }
+
+                        </p>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label class="fw-bold">
+                            Notas
+                        </label>
+
+                        <p class="form-control bg-light">
+                            @(string.IsNullOrEmpty(Model.Notas)
+                                ? "Sin notas"
+                                : Model.Notas)
+                        </p>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <hr />
+
+
+            <form asp-action="Delete" method="post">
+
+                <input type="hidden"
+                       asp-for="IdGasto" />
+
+
+                <button type="submit"
+                        class="btn btn-danger">
+                    <i class="bi bi-trash-fill"></i>
+                    Eliminar gasto
+                </button>
+
+
+                <a asp-action="Index"
+                   class="btn btn-secondary ms-2">
+                    <i class="bi bi-arrow-left"></i>
+                    Cancelar
+                </a>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+</div>

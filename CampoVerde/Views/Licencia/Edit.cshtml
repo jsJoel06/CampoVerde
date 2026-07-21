@@ -1,0 +1,423 @@
+﻿@model CampoVerde.Models.Licencia
+
+@{
+    ViewData["Title"] = "Editar Licencia";
+}
+
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+
+    .card-ganaderia {
+        border-radius: 18px;
+        background: white;
+        box-shadow: 0 8px 20px rgba(0,0,0,.08);
+    }
+
+
+
+    .header-verde {
+        background: linear-gradient(135deg,#2e7d32,#66bb6a);
+        color: white;
+        border-radius: 18px 18px 0 0;
+    }
+
+
+
+    .icon-box {
+        width: 55px;
+        height: 55px;
+        background: rgba(255,255,255,.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+    }
+
+
+
+    .form-control,
+    .form-select {
+        border-radius: 12px;
+        padding: 12px;
+    }
+
+
+
+    .btn {
+        border-radius: 12px;
+    }
+
+</style>
+
+
+
+
+<div class="container py-5">
+
+
+    <div class="card card-ganaderia border-0">
+
+
+
+        <!-- HEADER -->
+
+        <div class="card-header header-verde p-4">
+
+
+            <div class="d-flex align-items-center">
+
+
+                <div class="icon-box">
+
+                    <i class="bi bi-pencil-square"></i>
+
+                </div>
+
+
+                <div class="ms-3">
+
+                    <h3 class="mb-1 fw-bold">
+
+                        Editar Licencia
+
+                    </h3>
+
+
+                    <p class="mb-0">
+
+                        Actualizar plan y vigencia del cliente
+
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+
+        <div class="card-body p-4">
+
+
+
+            <form asp-action="Edit" method="post">
+
+
+                <div asp-validation-summary="ModelOnly"
+                     class="alert alert-danger">
+                </div>
+
+
+
+                <input type="hidden"
+                       asp-for="IdLicencia" />
+
+
+
+
+
+
+                <!-- CLIENTE -->
+
+
+                <div class="mb-4">
+
+
+                    <label asp-for="ClienteId"
+                           class="form-label fw-bold">
+
+
+                        <i class="bi bi-person-circle text-success"></i>
+
+                        Cliente
+
+
+                    </label>
+
+
+
+
+                    <select asp-for="ClienteId"
+                            class="form-select"
+                            asp-items="ViewBag.ClienteId">
+
+
+                        <option value="">
+                            -- Seleccione un cliente --
+                        </option>
+
+
+                    </select>
+
+
+
+
+                    <span asp-validation-for="ClienteId"
+                          class="text-danger">
+                    </span>
+
+
+                </div>
+
+
+
+
+
+
+
+                <!-- PLAN -->
+
+
+                <div class="mb-4">
+
+
+                    <label asp-for="Plan"
+                           class="form-label fw-bold">
+
+
+                        <i class="bi bi-star-fill text-success"></i>
+
+                        Plan contratado
+
+
+                    </label>
+
+
+
+
+                    <select asp-for="Plan"
+                            class="form-select">
+
+
+                        <option value="BASICO">
+                            🌱 Básico
+                        </option>
+
+
+                        <option value="PROFESIONAL">
+                            🌿 Profesional
+                        </option>
+
+
+                        <option value="PREMIUM">
+                            🌳 Premium
+                        </option>
+
+
+                    </select>
+
+
+
+
+                    <span asp-validation-for="Plan"
+                          class="text-danger">
+                    </span>
+
+
+                </div>
+
+
+
+
+
+
+
+                <div class="row">
+
+
+
+                    <!-- FECHA INICIO -->
+
+
+                    <div class="col-md-6 mb-4">
+
+
+                        <label asp-for="FechaInicio"
+                               class="form-label fw-bold">
+
+
+                            <i class="bi bi-calendar text-success"></i>
+
+                            Fecha inicio
+
+
+                        </label>
+
+
+
+
+                        <input asp-for="FechaInicio"
+                               type="date"
+                               class="form-control" />
+
+
+
+                        <span asp-validation-for="FechaInicio"
+                              class="text-danger">
+                        </span>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- FECHA VENCIMIENTO -->
+
+
+                    <div class="col-md-6 mb-4">
+
+
+                        <label asp-for="FechaVencimiento"
+                               class="form-label fw-bold">
+
+
+                            <i class="bi bi-calendar-check text-success"></i>
+
+                            Fecha vencimiento
+
+
+                        </label>
+
+
+
+
+                        <input asp-for="FechaVencimiento"
+                               type="date"
+                               class="form-control" />
+
+
+
+                        <span asp-validation-for="FechaVencimiento"
+                              class="text-danger">
+                        </span>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+                <!-- ESTADO -->
+
+
+                <div class="card bg-light border-0 p-3 mb-4">
+
+
+                    <div class="form-check">
+
+
+                        <input asp-for="Activa"
+                               class="form-check-input" />
+
+
+                        <label asp-for="Activa"
+                               class="form-check-label fw-bold">
+
+
+                            <i class="bi bi-check-circle text-success"></i>
+
+                            Licencia activa
+
+
+                        </label>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+
+
+
+
+
+                <!-- BOTONES -->
+
+
+                <div class="mt-4">
+
+
+                    <button type="submit"
+                            class="btn btn-success px-4">
+
+
+                        <i class="bi bi-save"></i>
+
+                        Guardar cambios
+
+
+                    </button>
+
+
+
+
+
+                    <a asp-action="Index"
+                       class="btn btn-outline-secondary ms-2 px-4">
+
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Volver
+
+
+                    </a>
+
+
+
+                </div>
+
+
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}

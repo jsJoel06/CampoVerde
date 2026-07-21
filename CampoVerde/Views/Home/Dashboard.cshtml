@@ -388,7 +388,7 @@
 
             <div class="col-md-3">
 
-                <a asp-controller="AlimentoBovino"
+                <a asp-controller="Alimentos"
                    asp-action="Index"
                    class="quick-btn text-center">
 
@@ -1177,33 +1177,40 @@
                         </div>
 
 
+                    }
 
+                    @if (esSuperAdmin)
+                    {
                         <div class="col-md-3">
-
 
                             <a asp-controller="Cliente"
                                asp-action="Index"
                                class="quick-btn text-center">
 
-
                                 <i class="fa-solid fa-building"></i>
 
-
                                 <h6>
-
                                     Clientes
-
                                 </h6>
-
 
                             </a>
 
-
                         </div>
-
-
                     }
 
+                    @if (esSuperAdmin || esAdmin || esOperario)
+                    {
+                        <div class="col-md-3">
+                            <a asp-controller="TransaccionAnimal"
+                            asp-action="Index"
+                            class="quick-btn text-center">
+                                <i class="fa-solid fa-seedling"></i>
+                                <h6>
+                                    Transaccion Animal
+                                </h6>
+                            </a>
+                        </div>
+                    }
 
 
 

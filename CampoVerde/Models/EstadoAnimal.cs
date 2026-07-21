@@ -6,6 +6,7 @@
         ACTIVO,
         VENDIDO,
         EN_REPRODUCCION,
+        EMBARAZADA,
         OBSERVACION,
         ENFERMO,
         MUERTO

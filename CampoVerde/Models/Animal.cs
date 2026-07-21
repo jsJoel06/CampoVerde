@@ -33,6 +33,8 @@ namespace CampoVerde.Models
 
         public EstadoAnimal Estado { get; set; } = EstadoAnimal.ACTIVO;
 
+        public DateTime? FechaEmbarazo { get; set; }
+
 
 
         // RELACIÓN CON CLIENTE (FINCA/EMPRESA)

@@ -18,9 +18,12 @@ namespace CampoVerde.Data
         public DbSet<AlimentoBovino> AlimentosBovinos { get; set; }
         public DbSet<Potrero> Potreros { get; set; }
 
+        public DbSet<TransaccionAnimal> TransaccionesAnimales { get; set; }
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Notificacion> Notificaciones { get; set; }
 
         public DbSet<ResumenFinanciero> ResumenesFinancieros { get; set; }
+
+        public DbSet<Licencia> Licencias { get; set; }
     }
 }

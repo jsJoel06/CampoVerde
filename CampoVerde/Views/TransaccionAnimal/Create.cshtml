@@ -1,0 +1,484 @@
+﻿@model CampoVerde.Models.TransaccionAnimal
+
+@{
+    ViewData["Title"] = "Nueva Transacción";
+}
+
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI',sans-serif;
+    }
+
+    .card-form {
+        background: #fdfdf5;
+        border-radius: 30px;
+        padding: 40px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(74,124,74,.1);
+    }
+
+    .title {
+        color: #1a3c1a;
+        font-family: Georgia,serif;
+        font-weight: 700;
+    }
+
+    .label {
+        color: #3d663d;
+        font-weight: 700;
+        font-size: .85rem;
+        text-transform: uppercase;
+    }
+
+    .form-control,
+    .form-select {
+        border-radius: 15px;
+        padding: 12px;
+        border: 1px solid #cddbc9;
+    }
+
+
+    .btn-verde {
+        background: #1a3c1a;
+        color: white;
+        border-radius: 50px;
+        padding: 12px 35px;
+        font-weight: bold;
+    }
+
+
+        .btn-verde:hover {
+            background: #3d663d;
+            color: white;
+        }
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <div class="row justify-content-center">
+
+
+        <div class="col-md-9">
+
+
+            <div class="card-form">
+
+
+                <div class="text-center mb-4">
+
+                    <h2 class="title">
+
+                        🐄 Nueva Transacción
+
+                    </h2>
+
+
+                    <p class="text-muted">
+
+                        Compra o venta de ganado
+
+                    </p>
+
+
+                </div>
+
+
+
+
+                <form asp-action="Create" method="post">
+
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="text-danger">
+                    </div>
+
+
+
+                    <!-- TIPO -->
+
+
+                    <div class="mb-4">
+
+                        <label class="label">
+
+                            Tipo de operación
+
+                        </label>
+
+
+                        <select asp-for="Tipo"
+                                id="tipo"
+                                class="form-select">
+
+
+                            <option value="Compra">
+                                Compra
+                            </option>
+
+
+                            <option value="Venta">
+                                Venta
+                            </option>
+
+
+                        </select>
+
+
+                    </div>
+
+
+
+
+
+
+                    <!-- DATOS COMPRA -->
+
+
+                    <div id="compra">
+
+
+                        <h5 class="text-success mb-3">
+
+                            🐄 Datos del animal comprado
+
+                        </h5>
+
+
+
+                        <div class="row">
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="label">
+                                    Nombre Animal
+                                </label>
+
+                                <input asp-for="NombreAnimal"
+                                       class="form-control"
+                                       placeholder="Ej: Luna" />
+
+                            </div>
+
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="label">
+                                    Raza
+                                </label>
+
+                                <input asp-for="Raza"
+                                       class="form-control"
+                                       placeholder="Ej: Holstein" />
+
+                            </div>
+
+
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="label">
+                                    Peso
+                                </label>
+
+
+                                <input asp-for="Peso"
+                                       class="form-control"
+                                       type="number"
+                                       placeholder="Kg" />
+
+                            </div>
+
+
+
+
+                            <div class="col-md-6 mb-3">
+
+                                <label class="label">
+                                    Fecha nacimiento
+                                </label>
+
+
+                                <input asp-for="FechaNacimiento"
+                                       type="date"
+                                       class="form-control" />
+
+
+                            </div>
+
+
+
+
+                            <div class="col-md-6 mb-3">
+
+
+                                <label class="label">
+
+                                    Proveedor
+
+                                </label>
+
+
+                                <input asp-for="Proveedor"
+                                       class="form-control"
+                                       placeholder="Proveedor" />
+
+
+                            </div>
+
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- DATOS VENTA -->
+
+
+                    <div id="venta" style="display:none;">
+
+
+
+                        <h5 class="text-success mb-3">
+
+                            💰 Datos de la venta
+
+                        </h5>
+
+
+
+
+                        <div class="mb-4">
+
+
+                            <label class="label">
+
+                                Animal
+
+                            </label>
+
+
+
+                            <select asp-for="IdAnimal"
+                                    asp-items="ViewBag.Animales"
+                                    class="form-select">
+
+
+                                <option value="">
+                                    Seleccione animal
+                                </option>
+
+
+                            </select>
+
+
+
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <!-- MONTO -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Monto
+
+                        </label>
+
+
+                        <div class="input-group">
+
+
+                            <span class="input-group-text">
+                                RD$
+                            </span>
+
+
+                            <input asp-for="Monto"
+                                   class="form-control"
+                                   type="number"
+                                   step="0.01" />
+
+
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <!-- TERCERO -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Persona / Empresa
+
+                        </label>
+
+
+                        <input asp-for="Tercero"
+                               class="form-control"
+                               placeholder="Nombre del comprador o vendedor" />
+
+
+                    </div>
+
+
+
+
+
+
+
+
+                    <!-- NOTAS -->
+
+
+                    <div class="mb-4">
+
+
+                        <label class="label">
+
+                            Notas
+
+                        </label>
+
+
+                        <textarea asp-for="Notas"
+                                  class="form-control"
+                                  rows="3"></textarea>
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <div class="d-flex justify-content-between">
+
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary rounded-pill px-4">
+
+                            Volver
+
+                        </a>
+
+
+
+
+                        <button class="btn btn-verde">
+
+                            <i class="bi bi-save"></i>
+
+                            Guardar
+
+                        </button>
+
+
+
+                    </div>
+
+
+
+
+                </form>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+@section Scripts {
+
+
+    <script>
+
+
+        document.getElementById("tipo")
+        .addEventListener("change",function(){
+
+
+        let tipo=this.value;
+
+
+        if(tipo==="Compra")
+        {
+
+        document.getElementById("compra").style.display="block";
+
+        document.getElementById("venta").style.display="none";
+
+
+        }
+        else
+        {
+
+
+        document.getElementById("compra").style.display="none";
+
+        document.getElementById("venta").style.display="block";
+
+
+        }
+
+
+        });
+
+
+    </script>
+
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+
+}

@@ -24,6 +24,9 @@ namespace CampoVerde.Controllers
             var rol = HttpContext.Session.GetString("Rol");
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
+            Console.WriteLine("ROL: " + rol);
+            Console.WriteLine("CLIENTE SESION: " + clienteId);
+
 
             IQueryable<Animal> animales = _context.Animales;
 
@@ -80,8 +83,34 @@ namespace CampoVerde.Controllers
             }
 
 
+            // ==============================
+            // PRÓXIMOS PARTOS
+            // ==============================
 
+            var animalesEmbarazados = await _context.Animales
+          .Where(a =>
+        a.Estado == EstadoAnimal.EMBARAZADA &&
+        a.FechaEmbarazo != null &&
+        (rol == "SUPER_ADMINISTRADOR" || a.ClienteId == clienteId)
+    )
+    .ToListAsync();
 
+           
+
+            var proximosPartos = animalesEmbarazados
+                .Select(a => new
+                    {
+                       Animal = a,
+                       FechaParto = a.FechaEmbarazo!.Value.AddDays(283),
+                       DiasRestantes = (a.FechaEmbarazo.Value.AddDays(283) - DateTime.UtcNow).Days
+                    })
+                   .OrderBy(x => x.FechaParto)
+                   .ToList();
+
+            ViewBag.ListaPartos = proximosPartos;
+
+            ViewBag.TotalEmbarazadas = animalesEmbarazados.Count();
+            ViewBag.TotalPartos = proximosPartos.Count();
 
             // =========================
             // POTREROS
@@ -206,18 +235,33 @@ namespace CampoVerde.Controllers
 
 
             // =========================
-            // PARTOS
+            // PARTOS REGISTRADOS + EMBARAZOS
             // =========================
 
-            var listaPartos = await _context.Partos
+
+            // Partos registrados manualmente
+            var listaPartosRegistrados = await _context.Partos
                 .Include(p => p.Animal)
                 .Where(p => p.FechaParto.Date >= DateTime.UtcNow.Date)
                 .OrderBy(p => p.FechaParto)
                 .Take(5)
                 .ToListAsync();
 
-            ViewBag.ListaPartos = listaPartos;
-            ViewBag.ProximosPartos = listaPartos.Count;
+
+            // Mantener los partos calculados por embarazo
+            ViewBag.ListaPartos = proximosPartos;
+
+
+            ViewBag.ProximosPartos = proximosPartos.Count;
+
+            Console.WriteLine("Partos encontrados: " + proximosPartos.Count);
+
+            foreach (var p in proximosPartos)
+            {
+                Console.WriteLine(
+                    $"Animal: {p.Animal.nombre} - Fecha: {p.FechaParto} - Dias: {p.DiasRestantes}"
+                );
+            }
 
             // =========================
             // PRODUCCIÓN DE LECHE (ÚLTIMOS 7 DÍAS)

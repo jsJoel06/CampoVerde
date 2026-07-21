@@ -1,0 +1,436 @@
+﻿@model CampoVerde.Models.Usuario
+
+@{
+    ViewData["Title"] = "Detalles del Usuario";
+}
+
+<style>
+
+    body {
+        background: #eaf2e9;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    h1, h2, h3, h4, h5 {
+        font-family: Georgia, serif;
+        color: #1a3c1a;
+        font-weight: 700;
+    }
+
+    .perfil-card {
+        background: #fdfdf5;
+        border-radius: 30px;
+        overflow: hidden;
+        border: none;
+        box-shadow: 0 15px 35px rgba(74,124,74,.12);
+    }
+
+    .perfil-header {
+        background: linear-gradient(135deg,#4a7c4a,#1a3c1a);
+        padding: 50px 30px;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+        .perfil-header h2,
+        .perfil-header h5,
+        .perfil-header p {
+            color: white;
+        }
+
+    .perfil-img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 6px solid white;
+        object-fit: cover;
+        box-shadow: 0 12px 30px rgba(0,0,0,.25);
+        background: white;
+    }
+
+    .perfil-info {
+        padding: 35px;
+    }
+
+    .info-item {
+        background: #ffffff;
+        border-radius: 18px;
+        padding: 18px;
+        border-left: 6px solid #2e7d32;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,.05);
+    }
+
+        .info-item i {
+            color: #2e7d32;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .info-item strong {
+            color: #1a3c1a;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+    .estado-activo {
+        background: #198754;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: .9rem;
+    }
+
+    .estado-inactivo {
+        background: #dc3545;
+        color: white;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: .9rem;
+    }
+
+</style>
+
+<div class="container py-5">
+
+    <div class="perfil-card">
+
+        <div class="perfil-header">
+
+            @if (!string.IsNullOrEmpty(Model.FotoPerfil))
+            {
+                <img src="@Model.FotoPerfil"
+                     class="perfil-img mb-3" />
+            }
+            else
+            {
+                <img src="~/img/user.png"
+                     class="perfil-img mb-3" />
+            }
+
+            <h2 class="fw-bold">
+
+                @Model.nombre
+
+            </h2>
+
+            <h5>
+
+                @Model.Rol
+
+            </h5>
+
+            @if (Model.estadoActivo)
+            {
+                <span class="estado-activo">
+
+                    <i class="bi bi-check-circle-fill"></i>
+
+                    Usuario Activo
+
+                </span>
+            }
+            else
+            {
+                <span class="estado-inactivo">
+
+                    <i class="bi bi-x-circle-fill"></i>
+
+                    Usuario Inactivo
+
+                </span>
+            }
+
+        </div>
+
+        <div class="perfil-info">
+
+            <div class="row">
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-envelope-fill"></i>
+
+                            Correo electrónico
+
+                        </strong>
+
+                        @Model.email
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-telephone-fill"></i>
+
+                            Teléfono
+
+                        </strong>
+
+                        @Model.telefono
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-person-badge-fill"></i>
+
+                            Rol
+
+                        </strong>
+
+                        @Model.Rol
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-building-fill"></i>
+
+                            Empresa / Finca
+
+                        </strong>
+
+                        @(Model.Cliente?.NombreEmpresa ?? "No asignado")
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-calendar-check-fill"></i>
+
+                            Fecha de Registro
+
+                        </strong>
+
+                        @Model.FechaRegistro.ToString("dd/MM/yyyy HH:mm")
+
+                    </div>
+
+                </div>
+
+
+
+                <div class="col-md-6">
+
+                    <div class="info-item">
+
+                        <strong>
+
+                            <i class="bi bi-clock-history"></i>
+
+                            Último Acceso
+
+                        </strong>
+
+                        @Model.UltimoAcceso.ToString("dd/MM/yyyy HH:mm")
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr class="my-5" />
+
+
+            <h3 class="text-center mb-4">
+
+                📊 Resumen del Usuario
+
+            </h3>
+
+
+            <div class="row g-4">
+
+
+                <!-- Animales -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="card card-estadistica text-center">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-cow display-4 mb-3"></i>
+
+                            <h2>
+
+                                @ViewBag.TotalAnimales
+
+                            </h2>
+
+                            <h5>
+
+                                Animales
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Producciones -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="card card-estadistica text-center">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-droplet-half display-4 mb-3"></i>
+
+                            <h2>
+
+                                @ViewBag.TotalProducciones
+
+                            </h2>
+
+                            <h5>
+
+                                Producciones
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+
+                <!-- Ingresos -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="card card-estadistica text-center">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-cash-stack display-4 mb-3"></i>
+
+                            <h2>
+
+                                RD$
+                                @(((decimal)ViewBag.TotalIngresos).ToString("N0"))
+
+                            </h2>
+
+                            <h5>
+
+                                Ingresos
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+
+                <!-- Gastos -->
+
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="card card-estadistica text-center">
+
+                        <div class="card-body">
+
+                            <i class="bi bi-wallet2 display-4 mb-3"></i>
+
+                            <h2>
+
+                                RD$
+                                @(((decimal)ViewBag.TotalGastos).ToString("N0"))
+
+                            </h2>
+
+                            <h5>
+
+                                Gastos
+
+                            </h5>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <hr class="my-5" />
+
+
+            <div class="d-flex justify-content-center gap-3">
+
+
+                <a asp-action="Edit"
+                   asp-route-id="@Model.IdUsuario"
+                   class="btn btn-success btn-lg rounded-pill px-5">
+
+                    <i class="bi bi-pencil-square me-2"></i>
+
+                    Editar Usuario
+
+                </a>
+
+
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary btn-lg rounded-pill px-5">
+
+                    <i class="bi bi-arrow-left me-2"></i>
+
+                    Volver
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

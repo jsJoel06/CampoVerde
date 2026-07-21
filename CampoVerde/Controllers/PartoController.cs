@@ -123,6 +123,7 @@ namespace CampoVerde.Controllers
                 parto.FechaParto = DateTime.UtcNow;
 
                 // Obtener la madre
+                // Obtener la madre
                 var madre = await _context.Animales
                     .FirstOrDefaultAsync(a => a.IdAnimal == parto.IdAnimal);
 
@@ -133,8 +134,11 @@ namespace CampoVerde.Controllers
                     ViewData["IdAnimal"] = new SelectList(_context.Animales, "IdAnimal", "nombre", parto.IdAnimal);
                     return View(parto);
                 }
-
                 var clienteId = HttpContext.Session.GetInt32("ClienteId");
+                // Cambiar estado de la madre después del parto
+                madre.Estado = EstadoAnimal.EN_REPRODUCCION;
+                madre.FechaEmbarazo = null;
+
 
                 if (clienteId == null)
                 {
@@ -152,17 +156,11 @@ namespace CampoVerde.Controllers
                     codigo = parto.CodigoCria,
                     nombre = parto.NombreCria,
                     fechaNacimiento = parto.FechaParto,
-
-                    // Hereda la raza de la madre
                     raza = madre.raza,
-
                     pesoActual = parto.PesoCria,
-
-                    // Puedes cambiar este valor según tu enum
                     Estado = EstadoAnimal.ACTIVO,
-
-                    // Si manejas lotes
-                    lote = madre.lote
+                    lote = madre.lote,
+                    ClienteId = madre.ClienteId
                 };
 
                 _context.Animales.Add(cria);

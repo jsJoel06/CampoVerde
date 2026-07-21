@@ -16,25 +16,15 @@ namespace CampoVerde.Models
         public int IdTransaccion { get; set; }
 
 
-
-        // RELACIÓN CON CLIENTE (FINCA)
-
         public int? ClienteId { get; set; }
 
-        [ForeignKey("ClienteId")]
-        public virtual Cliente? Cliente { get; set; }
+        public Cliente? Cliente { get; set; }
 
 
 
+        public int? IdAnimal { get; set; }
 
-        // RELACIÓN CON ANIMAL
-
-        public int IdAnimal { get; set; }
-
-
-        [ForeignKey("IdAnimal")]
-        public virtual Animal? Animal { get; set; }
-
+        public Animal? Animal { get; set; }
 
 
 
@@ -42,19 +32,30 @@ namespace CampoVerde.Models
 
 
 
-
         public decimal Monto { get; set; }
 
 
-
-        // Persona o empresa con quien se realizó la operación
 
         public string Tercero { get; set; }
 
 
 
-        public DateTime Fecha { get; set; } = DateTime.UtcNow;
+        // Datos solo para compra
 
+        public string? NombreAnimal { get; set; }
+
+        public string? Raza { get; set; }
+
+        public decimal? Peso { get; set; }
+
+        public DateTime? FechaNacimiento { get; set; }
+
+        public string? Proveedor { get; set; }
+
+
+
+        public DateTime Fecha { get; set; }
+            = DateTime.UtcNow;
 
 
         public string? Notas { get; set; }

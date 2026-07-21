@@ -3,6 +3,7 @@ using System;
 using CampoVerde.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CampoVerde.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721170026_CrearTransaccionesAnimales")]
+    partial class CrearTransaccionesAnimales
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,9 +79,6 @@ namespace CampoVerde.Migrations
 
                     b.Property<int>("Estado")
                         .HasColumnType("integer");
-
-                    b.Property<DateTime?>("FechaEmbarazo")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("codigo")
                         .IsRequired()
@@ -236,37 +236,6 @@ namespace CampoVerde.Migrations
                     b.HasIndex("IdAnimal");
 
                     b.ToTable("Ingresos");
-                });
-
-            modelBuilder.Entity("CampoVerde.Models.Licencia", b =>
-                {
-                    b.Property<int>("IdLicencia")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdLicencia"));
-
-                    b.Property<bool>("Activa")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("ClienteId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("FechaInicio")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("FechaVencimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Plan")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("IdLicencia");
-
-                    b.HasIndex("ClienteId");
-
-                    b.ToTable("Licencias");
                 });
 
             modelBuilder.Entity("CampoVerde.Models.Notificacion", b =>
@@ -490,37 +459,19 @@ namespace CampoVerde.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("IdTransaccion"));
 
-                    b.Property<int?>("AnimalIdAnimal")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("ClienteId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime?>("FechaNacimiento")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int?>("IdAnimal")
+                    b.Property<int>("IdAnimal")
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Monto")
                         .HasColumnType("numeric");
 
-                    b.Property<string>("NombreAnimal")
-                        .HasColumnType("text");
-
                     b.Property<string>("Notas")
-                        .HasColumnType("text");
-
-                    b.Property<decimal?>("Peso")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Proveedor")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Raza")
                         .HasColumnType("text");
 
                     b.Property<string>("Tercero")
@@ -532,9 +483,9 @@ namespace CampoVerde.Migrations
 
                     b.HasKey("IdTransaccion");
 
-                    b.HasIndex("AnimalIdAnimal");
-
                     b.HasIndex("ClienteId");
+
+                    b.HasIndex("IdAnimal");
 
                     b.ToTable("TransaccionesAnimales");
                 });
@@ -675,17 +626,6 @@ namespace CampoVerde.Migrations
                     b.Navigation("Cliente");
                 });
 
-            modelBuilder.Entity("CampoVerde.Models.Licencia", b =>
-                {
-                    b.HasOne("CampoVerde.Models.Cliente", "Cliente")
-                        .WithMany("Licencias")
-                        .HasForeignKey("ClienteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cliente");
-                });
-
             modelBuilder.Entity("CampoVerde.Models.Parto", b =>
                 {
                     b.HasOne("CampoVerde.Models.Cliente", "Cliente")
@@ -757,13 +697,15 @@ namespace CampoVerde.Migrations
 
             modelBuilder.Entity("CampoVerde.Models.TransaccionAnimal", b =>
                 {
-                    b.HasOne("CampoVerde.Models.Animal", "Animal")
-                        .WithMany()
-                        .HasForeignKey("AnimalIdAnimal");
-
                     b.HasOne("CampoVerde.Models.Cliente", "Cliente")
                         .WithMany("TransaccionesAnimales")
                         .HasForeignKey("ClienteId");
+
+                    b.HasOne("CampoVerde.Models.Animal", "Animal")
+                        .WithMany()
+                        .HasForeignKey("IdAnimal")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Animal");
 
@@ -803,8 +745,6 @@ namespace CampoVerde.Migrations
                     b.Navigation("Gastos");
 
                     b.Navigation("Ingresos");
-
-                    b.Navigation("Licencias");
 
                     b.Navigation("Partos");
 

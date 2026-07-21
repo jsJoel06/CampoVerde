@@ -114,5 +114,8 @@ namespace CampoVerde.Models
         public ICollection<TransaccionAnimal> TransaccionesAnimales { get; set; }
             = new List<TransaccionAnimal>();
 
+        public ICollection<Licencia> Licencias { get; set; } 
+            = new List<Licencia>();
+
     }
 }
