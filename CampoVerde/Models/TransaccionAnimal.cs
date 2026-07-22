@@ -60,5 +60,7 @@ namespace CampoVerde.Models
 
         public string? Notas { get; set; }
 
+     
+
     }
 }

@@ -18,26 +18,40 @@ namespace CampoVerde.Controllers
         //=========================
         // INDEX
         //=========================
-        public async Task<IActionResult> Index()
+      public async Task<IActionResult> Index()
         {
             var rol = HttpContext.Session.GetString("Rol");
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            IQueryable<Parto> consulta = _context.Partos.Include(p => p.Animal);
 
-            if (rol != "SUPER_ADMINISTRADOR")
+            // SUPER ADMINISTRADOR no ve datos productivos de clientes
+            if (rol == "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(p => p.ClienteId == clienteId);
+                return View(new List<Parto>());
             }
 
-            var partos = await consulta
+
+
+            var partos = await _context.Partos
+                .Include(p => p.Animal)
+                .Where(p => p.ClienteId == clienteId)
                 .OrderByDescending(p => p.FechaParto)
                 .ToListAsync();
 
+
+
             ViewBag.TotalPartos = partos.Count;
-            ViewBag.TotalMachos = partos.Count(x => x.SexoCria == "Macho");
-            ViewBag.TotalHembras = partos.Count(x => x.SexoCria == "Hembra");
-            ViewBag.PartosHoy = partos.Count(x => x.FechaParto.Date == DateTime.Today);
+
+            ViewBag.TotalMachos = partos
+                .Count(x => x.SexoCria == "Macho");
+
+            ViewBag.TotalHembras = partos
+                .Count(x => x.SexoCria == "Hembra");
+
+            ViewBag.PartosHoy = partos
+                .Count(x => x.FechaParto.Date == DateTime.Today);
+
+
 
             return View(partos);
         }

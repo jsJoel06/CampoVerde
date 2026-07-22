@@ -96,15 +96,37 @@
 
     </div>
 
+    <div class="row mb-4">
+
+        <div class="col-md-5">
+
+            <div class="input-group">
+
+                <span class="input-group-text bg-white">
+                    <i class="fa-solid fa-magnifying-glass text-success"></i>
+                </span>
+
+                <input type="text"
+                       id="buscarVacuna"
+                       class="form-control"
+                       placeholder="Buscar por animal, vacuna u observación...">
+
+            </div>
+
+        </div>
+
+    </div>
+
     <div class="card-ganaderia">
 
         <div class="table-responsive">
+            
 
-            <table class="table table-hover align-middle mb-0">
+            <table class="table table-hover align-middle mb-0" id="tablaVacunas">
 
                 <thead>
                     <tr>
-                        <th class="ps-4">ID</th>
+                        <th class="ps-4">Nombre</th>
                         <th>Vacuna</th>
                         <th class="hide-mobile">Frecuencia</th>
                         <th>Próxima dosis</th>
@@ -124,8 +146,8 @@
                         <tr class="@(vencida ? "table-danger" : "")">
 
                             <td class="ps-4">
-                                <span class="badge rounded-pill bg-secondary">
-                                    #@item.IdAnimal
+                                <span class="badge rounded-pill bg-success">
+                                    @(item.Animal?.nombre ?? "Sin nombre")
                                 </span>
                             </td>
 
@@ -207,5 +229,27 @@
         </div>
 
     </div>
+    <script>
 
+            document.getElementById("buscarVacuna").addEventListener("keyup", function () {
+
+                let filtro = this.value.toLowerCase();
+
+                let filas = document.querySelectorAll("#tablaVacunas tbody tr");
+
+                filas.forEach(function (fila) {
+
+                    let texto = fila.innerText.toLowerCase();
+
+                    if (texto.includes(filtro)) {
+                        fila.style.display = "";
+                    } else {
+                        fila.style.display = "none";
+                    }
+
+                });
+
+            });
+
+    </script>
 </div>

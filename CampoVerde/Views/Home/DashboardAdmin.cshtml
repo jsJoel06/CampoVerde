@@ -1,0 +1,356 @@
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Panel Administrativo";
+
+    var nombre = HttpContextAccessor.HttpContext.Session
+                 .GetString("Nombre")
+                 ?.Split(' ')[0] ?? "Administrador";
+}
+
+
+<style>
+
+    body {
+        background: #f4f7f2;
+    }
+
+
+    .admin-card {
+        background: white;
+        border-radius: 25px;
+        padding: 30px;
+        border: 1px solid #d4e0d4;
+        box-shadow: 0 10px 30px rgba(0,0,0,.08);
+        transition: .3s;
+    }
+
+
+        .admin-card:hover {
+            transform: translateY(-5px);
+        }
+
+
+    .icon-admin {
+        width: 60px;
+        height: 60px;
+        border-radius: 20px;
+        background: #d4e0d4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 25px;
+        color: #1a3c1a;
+    }
+
+
+    .titulo {
+        color: #1a3c1a;
+        font-weight: 800;
+    }
+
+
+    .numero {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: #1a3c1a;
+    }
+
+</style>
+
+
+
+<div class="container py-5">
+
+
+    <div class="mb-5">
+
+
+        <h2 class="titulo">
+
+            <i class="fa-solid fa-user-shield"></i>
+
+            Bienvenido, @nombre
+
+        </h2>
+
+
+        <p class="text-muted">
+
+            Panel administrativo de CampoVerde
+
+        </p>
+
+
+    </div>
+
+
+
+
+    <div class="row g-4">
+
+
+
+        <div class="col-md-4">
+
+            <div class="admin-card">
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            CLIENTES
+                        </h6>
+
+
+                        <div class="numero">
+
+                            @ViewBag.TotalClientes
+
+                        </div>
+
+
+                        <small class="text-success">
+
+                            Empresas registradas
+
+                        </small>
+
+                    </div>
+
+
+                    <div class="icon-admin">
+
+                        <i class="fa-solid fa-building"></i>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div class="col-md-4">
+
+            <div class="admin-card">
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            USUARIOS
+                        </h6>
+
+
+                        <div class="numero">
+
+                            @ViewBag.TotalUsuarios
+
+                        </div>
+
+
+                        <small class="text-primary">
+
+                            Usuarios del sistema
+
+                        </small>
+
+
+                    </div>
+
+
+                    <div class="icon-admin">
+
+                        <i class="fa-solid fa-users"></i>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+
+
+
+        <div class="col-md-4">
+
+            <div class="admin-card">
+
+
+                <div class="d-flex justify-content-between">
+
+
+                    <div>
+
+                        <h6 class="text-muted">
+                            LICENCIAS
+                        </h6>
+
+
+                        <div class="numero">
+
+                            @ViewBag.LicenciasActivas
+
+                        </div>
+
+
+                        <small class="text-warning">
+
+                            Licencias activas
+
+                        </small>
+
+
+                    </div>
+
+
+                    <div class="icon-admin">
+
+                        <i class="fa-solid fa-key"></i>
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
+    <div class="row g-4 mt-4">
+
+
+        <div class="col-lg-6">
+
+
+            <div class="admin-card">
+
+
+                <h5 class="titulo mb-4">
+
+                    <i class="fa-solid fa-chart-line"></i>
+
+                    Estadísticas del sistema
+
+                </h5>
+
+
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span>
+                        Clientes activos
+                    </span>
+
+                    <strong>
+                        @ViewBag.ClientesActivos
+                    </strong>
+
+                </div>
+
+
+
+                <div class="d-flex justify-content-between mb-3">
+
+                    <span>
+                        Clientes vencidos
+                    </span>
+
+                    <strong class="text-danger">
+                        @ViewBag.ClientesVencidos
+                    </strong>
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+
+
+
+
+        <div class="col-lg-6">
+
+
+            <div class="admin-card">
+
+
+                <h5 class="titulo mb-4">
+
+                    <i class="fa-solid fa-gears"></i>
+
+                    Administración
+
+                </h5>
+
+
+
+                <a asp-controller="Cliente"
+                   asp-action="Index"
+                   class="btn btn-success rounded-pill me-2">
+
+                    <i class="fa-solid fa-building"></i>
+
+                    Clientes
+
+                </a>
+
+
+
+
+                <a asp-controller="Licencia"
+                   asp-action="Index"
+                   class="btn btn-outline-success rounded-pill">
+
+                    <i class="fa-solid fa-key"></i>
+
+                    Licencias
+
+                </a>
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+
+</div>

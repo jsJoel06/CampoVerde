@@ -25,18 +25,24 @@ namespace CampoVerde.Controllers
             var rol = HttpContext.Session.GetString("Rol");
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            IQueryable<Gasto> consulta = _context.Gastos
-                .Include(g => g.Animal);
 
-
-
-            if (rol != "SUPER_ADMINISTRADOR")
+            // SUPER ADMIN no tiene acceso a datos financieros de clientes
+            if (rol == "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(g => g.ClienteId == clienteId);
+                return View(new List<Gasto>());
             }
 
-            return View(await consulta.ToListAsync());
+
+
+            var consulta = await _context.Gastos
+                .Include(g => g.Animal)
+                .Where(g => g.ClienteId == clienteId)
+                .ToListAsync();
+
+
+            return View(consulta);
         }
+
 
         // CREATE (GET)
         public IActionResult Create()
@@ -85,6 +91,7 @@ namespace CampoVerde.Controllers
 
                 _context.Notificaciones.Add(new Notificacion
                 {
+                    ClienteId = clienteId.Value,
                     Mensaje = $"Se registró un nuevo gasto: {gasto.Concepto}",
                     Fecha = DateTime.UtcNow,
                     Leida = false
@@ -191,6 +198,7 @@ namespace CampoVerde.Controllers
 
                     _context.Notificaciones.Add(new Notificacion
                     {
+                        ClienteId = clienteId.Value,
                         Mensaje = $"Se actualizó el gasto: {gastoExistente.Concepto}",
                         Fecha = DateTime.UtcNow,
                         Leida = false
@@ -289,6 +297,7 @@ namespace CampoVerde.Controllers
 
             _context.Notificaciones.Add(new Notificacion
             {
+                ClienteId = clienteId.Value,
                 Mensaje = $"Se eliminó el gasto: {gasto.Concepto}",
                 Fecha = DateTime.UtcNow,
                 Leida = false

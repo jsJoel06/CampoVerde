@@ -29,10 +29,7 @@ public class VacunaController : Controller
 
         if (rol == "SUPER_ADMINISTRADOR")
         {
-            return View(await _context.Vacunas
-                .Include(v => v.Animal)
-                .Include(v => v.Cliente)
-                .ToListAsync());
+            return View(new List<Vacuna>());
         }
 
         return View(await _context.Vacunas
@@ -119,6 +116,7 @@ public class VacunaController : Controller
             // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
+                ClienteId = clienteId.Value,
                 Mensaje = $"Se registró una nueva vacuna: {vacuna.nombreVacuna}",
                 Fecha = DateTime.UtcNow,
                 Leida = false
@@ -197,6 +195,7 @@ public class VacunaController : Controller
                 // Notificación
                 _context.Notificaciones.Add(new Notificacion
                 {
+                    ClienteId = clienteId.Value,
                     Mensaje = $"Se actualizó la vacuna: {vacuna.nombreVacuna}",
                     Fecha = DateTime.UtcNow,
                     Leida = false
@@ -231,6 +230,7 @@ public class VacunaController : Controller
             return NotFound();
 
         var vacuna = await _context.Vacunas
+            .Include(v => v.Animal)
             .FirstOrDefaultAsync(m => m.IdVacuna == id);
 
         if (vacuna == null)
@@ -264,6 +264,7 @@ public class VacunaController : Controller
 
         _context.Notificaciones.Add(new Notificacion
         {
+            ClienteId = clienteId.Value,
             Mensaje = $"Se eliminó la vacuna: {vacuna.nombreVacuna}",
             Fecha = DateTime.UtcNow,
             Leida = false

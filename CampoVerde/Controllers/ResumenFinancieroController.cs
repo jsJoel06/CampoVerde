@@ -35,12 +35,15 @@ namespace CampoVerde.Controllers
 
             // Filtrar por cliente si no es administrador
 
-            if (rol != "SUPER_ADMINISTRADOR")
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                resumenes = resumenes.Where(r => false);
+            }
+            else
             {
                 resumenes = resumenes
                     .Where(r => r.ClienteId == clienteId);
             }
-
 
 
             return View(

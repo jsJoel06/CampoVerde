@@ -21,15 +21,22 @@ namespace CampoVerde.Controllers
             var rol = HttpContext.Session.GetString("Rol");
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-            IQueryable<Ingreso> consulta = _context.Ingresos
-                .Include(i => i.Animal);
 
-            if (rol != "SUPER_ADMINISTRADOR")
+            // SUPER ADMINISTRADOR no ve ingresos de clientes
+            if (rol == "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta.Where(i => i.ClienteId == clienteId);
+                return View(new List<Ingreso>());
             }
 
-            return View(await consulta.ToListAsync());
+
+
+            var ingresos = await _context.Ingresos
+                .Include(i => i.Animal)
+                .Where(i => i.ClienteId == clienteId)
+                .ToListAsync();
+
+
+            return View(ingresos);
         }
 
         // GET: Ingresos/AddForm
@@ -116,6 +123,7 @@ namespace CampoVerde.Controllers
 
                     _context.Notificaciones.Add(new Notificacion
                     {
+                        ClienteId = clienteId.Value,
                         Mensaje = $"Se registró un nuevo ingreso: {ingreso.Concepto}",
                         Fecha = DateTime.UtcNow,
                         Leida = false
@@ -186,6 +194,7 @@ namespace CampoVerde.Controllers
 
             _context.Notificaciones.Add(new Notificacion
             {
+                ClienteId = clienteId.Value,
                 Mensaje = $"Se eliminó el ingreso: {ingreso.Concepto}",
                 Fecha = DateTime.UtcNow,
                 Leida = false

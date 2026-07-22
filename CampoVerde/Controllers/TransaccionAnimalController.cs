@@ -36,8 +36,11 @@ namespace CampoVerde.Controllers
                 .Include(t => t.Cliente);
 
 
-
-            if (rol != "SUPER_ADMINISTRADOR")
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(t => false);
+            }
+            else
             {
                 consulta = consulta
                     .Where(t => t.ClienteId == clienteId);
@@ -110,7 +113,14 @@ namespace CampoVerde.Controllers
                 transaccion.ClienteId = clienteId;
                 transaccion.Fecha = DateTime.UtcNow;
 
-
+                // Convertir FechaNacimiento de la transacción a UTC
+                if (transaccion.FechaNacimiento.HasValue)
+                {
+                    transaccion.FechaNacimiento =
+                        DateTime.SpecifyKind(
+                            transaccion.FechaNacimiento.Value,
+                            DateTimeKind.Utc);
+                }
 
                 // ============================
                 // COMPRA DE ANIMAL
@@ -118,57 +128,69 @@ namespace CampoVerde.Controllers
 
                 if (transaccion.Tipo == TipoTransaccion.Compra)
                 {
-
-
-                    if (string.IsNullOrEmpty(transaccion.NombreAnimal))
+                    if (string.IsNullOrWhiteSpace(transaccion.NombreAnimal))
                     {
-                        ModelState.AddModelError("",
-                        "Debe colocar el nombre del animal comprado.");
-
+                        ModelState.AddModelError("", "Debe colocar el nombre del animal comprado.");
                         return View(transaccion);
                     }
 
+                    // Convertir la fecha a UTC
+                    DateTime? fechaNacimientoUtc = null;
 
+                    if (transaccion.FechaNacimiento.HasValue)
+                    {
+                        fechaNacimientoUtc = DateTime.SpecifyKind(
+                            transaccion.FechaNacimiento.Value,
+                            DateTimeKind.Utc);
+                    }
 
-                    // Crear animal nuevo
-
+                    // Crear el animal
                     var nuevoAnimal = new Animal
                     {
-
+                        codigo = $"JS-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}",
                         nombre = transaccion.NombreAnimal,
-
                         raza = transaccion.Raza,
-
                         pesoActual = (double)(transaccion.Peso ?? 0),
-
-                        fechaNacimiento = transaccion.FechaNacimiento,
-
-
+                        fechaNacimiento = fechaNacimientoUtc,
                         Estado = EstadoAnimal.ACTIVO,
-
-
                         ClienteId = clienteId.Value
-
+                        
                     };
-
-
 
                     _context.Animales.Add(nuevoAnimal);
 
-
-
-                    // Guardamos primero para obtener el IdAnimal
-
+                    // Guardar para obtener el Id
                     await _context.SaveChangesAsync();
 
+                    // Registrar gasto por compra del animal
+                    if (transaccion.Tipo == TipoTransaccion.Compra)
+                    {
+                        var gasto = new Gasto
+                        {
+
+                            Concepto = $"Compra de animal: {transaccion.NombreAnimal}",
+
+                            Monto = transaccion.Monto,
+
+                            Fecha = DateTime.UtcNow,
+
+                            Categoria = CategoriaGasto.Animal,
+
+                            Notas = $"Compra realizada al proveedor {transaccion.Proveedor}",
+
+                            ClienteId = clienteId.Value,
+
+                            IdAnimal = transaccion.IdAnimal
+                        };
 
 
-                    // Relacionamos la compra con el animal creado
+                        _context.Gastos.Add(gasto);
 
+                        await _context.SaveChangesAsync();
+                    }
+
+                    // Relacionar la transacción con el animal
                     transaccion.IdAnimal = nuevoAnimal.IdAnimal;
-
-
-
                 }
 
 
@@ -211,6 +233,26 @@ namespace CampoVerde.Controllers
 
                     animal.Estado = EstadoAnimal.VENDIDO;
 
+                    // Registrar ingreso por venta del animal
+                    var ingreso = new Ingreso
+                    {
+                        Concepto = $"Venta de animal: {animal.nombre}",
+
+                        Monto = transaccion.Monto,
+
+                        Fecha = DateTime.UtcNow,
+
+                        ClienteId = clienteId.Value,
+
+                        IdAnimal = animal.IdAnimal,
+
+                        Notas = $"Venta realizada a {transaccion.Tercero}"
+                    };
+
+
+                    _context.Ingresos.Add(ingreso);
+
+                    await _context.SaveChangesAsync();
 
                     _context.Animales.Update(animal);
 

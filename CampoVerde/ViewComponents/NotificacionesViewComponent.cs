@@ -1,9 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CampoVerde.Data; // Ajusta según tu namespace del DbContext
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+using CampoVerde.Data;
 using CampoVerde.Models;
 
 namespace CampoVerde.ViewComponents
@@ -17,18 +14,41 @@ namespace CampoVerde.ViewComponents
             _context = context;
         }
 
+
         public async Task<IViewComponentResult> InvokeAsync()
         {
-            // Obtenemos las últimas 5 notificaciones sin leer o recientes
-            var listaNotificaciones = await _context.Notificaciones
+
+            var clienteId = HttpContext.Session.GetInt32("ClienteId");
+
+            var rol = HttpContext.Session.GetString("Rol");
+
+
+            IQueryable<Notificacion> consulta = _context.Notificaciones;
+
+
+
+            // El super administrador ve notificaciones generales
+            if (rol != "SUPER_ADMINISTRADOR")
+            {
+                consulta = consulta.Where(n => n.ClienteId == clienteId);
+            }
+
+
+
+            var listaNotificaciones = await consulta
                 .OrderByDescending(n => n.Fecha)
                 .Take(5)
                 .ToListAsync();
 
-            // Contamos cuántas están sin leer para activar el punto verde
-            ViewBag.ContadorSinLeer = await _context.Notificaciones.CountAsync(n => !n.Leida);
+
+
+            ViewBag.ContadorSinLeer = await consulta
+                .CountAsync(n => !n.Leida);
+
+
 
             return View(listaNotificaciones);
+
         }
     }
 }

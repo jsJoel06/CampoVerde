@@ -23,10 +23,7 @@ namespace CampoVerde.Controllers
 
             if (rol == "SUPER_ADMINISTRADOR")
             {
-                return View(await _context.Tareas
-                    .Include(t => t.Animal)
-                    .Include(t => t.Cliente)
-                    .ToListAsync());
+                return View(new List<Tarea>());
             }
 
             return View(await _context.Tareas
@@ -85,8 +82,10 @@ namespace CampoVerde.Controllers
 
                 _context.Tareas.Add(tarea);
 
+                // Notificación
                 _context.Notificaciones.Add(new Notificacion
                 {
+                    ClienteId = clienteId.Value,
                     Mensaje = $"Se registró una nueva tarea: {tarea.Descripcion}",
                     Fecha = DateTime.UtcNow,
                     Leida = false
@@ -192,6 +191,7 @@ namespace CampoVerde.Controllers
             // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
+                ClienteId = clienteId.Value,
                 Mensaje = $"Se actualizó la tarea: {tareaDb.Descripcion}",
                 Fecha = DateTime.UtcNow,
                 Leida = false

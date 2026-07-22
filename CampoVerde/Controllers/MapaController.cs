@@ -20,14 +20,21 @@ public class MapaController : Controller
         var rol = HttpContext.Session.GetString("Rol");
         var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-        IQueryable<Potrero> consulta = _context.Potreros;
 
-        if (rol != "SUPER_ADMINISTRADOR")
+        // SUPER ADMIN no ve información privada de fincas
+        if (rol == "SUPER_ADMINISTRADOR")
         {
-            consulta = consulta.Where(p => p.ClienteId == clienteId);
+            return View(new List<Potrero>());
         }
 
-        return View(await consulta.ToListAsync());
+
+
+        var potreros = await _context.Potreros
+            .Where(p => p.ClienteId == clienteId)
+            .ToListAsync();
+
+
+        return View(potreros);
     }
 
 

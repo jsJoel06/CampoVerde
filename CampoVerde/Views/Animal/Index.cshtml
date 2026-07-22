@@ -169,11 +169,32 @@
     else
     {
 
+        <div class="row mb-4">
+
+            <div class="col-md-5">
+
+                <div class="input-group">
+
+                    <span class="input-group-text bg-white">
+                        <i class="fa-solid fa-magnifying-glass text-success"></i>
+                    </span>
+
+                    <input type="text"
+                           id="buscarAnimal"
+                           class="form-control"
+                           placeholder="Buscar por código, nombre, raza o lote...">
+
+                </div>
+
+            </div>
+
+        </div>
+
 
         <div class="table-container shadow-sm">
 
 
-            <table class="table align-middle">
+            <table class="table align-middle" id="tablaAnimales">
 
 
                 <thead>
@@ -279,7 +300,7 @@
 
                             <td style="color:#2d4d2d">
 
-                                @item.nombre
+                                @(item.nombre ?? "N/A")
 
                             </td>
 
@@ -403,6 +424,28 @@
 
 
     }
+
+    <script>
+            document.getElementById("buscarAnimal").addEventListener("keyup", function () {
+
+                let filtro = this.value.toLowerCase();
+
+                let filas = document.querySelectorAll("#tablaAnimales tbody tr");
+
+                filas.forEach(function (fila) {
+
+                    let texto = fila.innerText.toLowerCase();
+
+                    if (texto.includes(filtro)) {
+                        fila.style.display = "";
+                    } else {
+                        fila.style.display = "none";
+                    }
+
+                });
+
+            });
+    </script>
 
 
 </div>

@@ -53,6 +53,7 @@ namespace CampoVerde.Models
         [ForeignKey("ClienteId")]
         public virtual Cliente? Cliente { get; set; }
 
-      
+
+       
     }
 }

@@ -15,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Servicios MVC
 builder.Services.AddControllersWithViews();
 
+
 // Agregar soporte para sesiones
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

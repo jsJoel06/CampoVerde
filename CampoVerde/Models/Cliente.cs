@@ -117,5 +117,9 @@ namespace CampoVerde.Models
         public ICollection<Licencia> Licencias { get; set; } 
             = new List<Licencia>();
 
+        public ICollection<Notificacion> Notificaciones { get; set; } 
+            = new List<Notificacion>();
+
+
     }
 }

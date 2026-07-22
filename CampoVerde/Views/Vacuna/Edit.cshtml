@@ -56,9 +56,13 @@
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                     <input type="hidden" asp-for="IdVacuna" />
 
+                    <!-- Selector de Animal -->
                     <div class="mb-3">
-                        <label asp-for="IdAnimal" class="form-label">ID del Animal</label>
-                        <input asp-for="IdAnimal" class="form-control" />
+                        <label asp-for="IdAnimal" class="form-label">Seleccionar Animal</label>
+                        <select asp-for="IdAnimal" class="form-select" asp-items="ViewBag.IdAnimal">
+                            <option value="">-- Seleccione un animal --</option>
+                        </select>
+                        <span asp-validation-for="IdAnimal" class="text-danger"></span>
                     </div>
 
                     <div class="mb-3">

@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Http
 @inject IHttpContextAccessor HttpContextAccessor
+@inject CampoVerde.Data.AppDbContext _context
 
 @{
     var rol = HttpContextAccessor.HttpContext.Session.GetString("Rol");
@@ -13,6 +14,22 @@
                  ?? "Usuario";
 
     var foto = HttpContextAccessor.HttpContext.Session.GetString("FotoPerfil");
+
+    var clienteId = HttpContextAccessor.HttpContext.Session
+                .GetInt32("ClienteId");
+
+
+    bool tieneNotificaciones = false;
+
+
+    if (clienteId != null)
+    {
+        tieneNotificaciones = _context.Notificaciones
+            .Any(n =>
+                n.ClienteId == clienteId &&
+                !n.Leida
+            );
+    }
 }
 
 <!DOCTYPE html>
@@ -273,6 +290,90 @@
 
                     <ul class="navbar-nav ms-auto align-items-center">
 
+                        <li class="nav-item dropdown me-3">
+
+                            <a class="nav-link position-relative"
+                               data-bs-toggle="dropdown"
+                               href="#">
+
+                                <i class="fa-solid fa-bell fs-4"></i>
+
+
+                                @if (ViewBag.NotificacionesPendientes > 0)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle
+                                        badge rounded-pill bg-success">
+
+                                        @ViewBag.NotificacionesPendientes
+
+                                    </span>
+                                }
+
+                            </a>
+
+
+
+                            <ul class="dropdown-menu dropdown-menu-end shadow rounded-4 p-2"
+                                style="width:320px;">
+
+
+                                <li class="px-3 py-2 fw-bold">
+
+                                    Notificaciones
+
+                                </li>
+
+
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+
+
+                                @if (ViewBag.Notificaciones != null)
+                                {
+
+                                    foreach (var n in ViewBag.Notificaciones)
+                                    {
+
+                                        <li>
+
+                                            <a class="dropdown-item rounded-3">
+
+                                                <i class="fa-solid fa-circle-info text-success me-2"></i>
+
+                                                @n.Mensaje
+
+
+                                                <small class="d-block text-muted">
+
+                                                    @n.Fecha.ToLocalTime().ToString("dd/MM HH:mm")
+
+                                                </small>
+
+
+                                            </a>
+
+                                        </li>
+
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    <li class="text-center text-muted p-3">
+
+                                        Sin notificaciones
+
+                                    </li>
+
+                                }
+
+
+                            </ul>
+
+
+                        </li>
 
                         <li class="nav-item dropdown">
 
@@ -321,6 +422,7 @@
 
 
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4 p-2" style="min-width:280px;">
+
 
                                 <!-- Información del usuario -->
                                 <li class="px-3 py-2">
@@ -429,6 +531,27 @@
 
     </div>
 
+            <script>
+                    const tiempoAviso = 18 * 60 * 1000; // 18 minutos
+                    const tiempoExpiracion = 20 * 60 * 1000; // 20 minutos
+
+                    setTimeout(function () {
+
+                        if (confirm("Tu sesión está por expirar. ¿Deseas continuar?")) {
+
+                            fetch('/Home/KeepAlive')
+                                .then(() => {
+                                    location.reload();
+                                });
+
+                        } else {
+
+                            window.location.href = "/Usuario/Login";
+
+                        }
+
+                    }, tiempoAviso);
+            </script>
 
 
 

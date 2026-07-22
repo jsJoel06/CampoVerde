@@ -36,12 +36,13 @@ namespace CampoVerde.Controllers
 
             // FILTRO POR CLIENTE
 
-            if (rol != "SUPER_ADMINISTRADOR")
+            if (rol == "SUPER_ADMINISTRADOR")
             {
-                consulta = consulta
-                    .Where(p => p.ClienteId == clienteId);
+                return View(new List<Parto>());
             }
 
+            consulta = consulta
+                .Where(p => p.ClienteId == clienteId);
 
 
             var hoy = DateTime.UtcNow.Date;

@@ -50,8 +50,7 @@ namespace CampoVerde.Controllers
 
 
 
-            if (rol != "SUPER_ADMINISTRADOR")
-            {
+        
 
                 animales = animales
                     .Where(a => a.ClienteId == clienteId);
@@ -80,7 +79,7 @@ namespace CampoVerde.Controllers
                 producciones = producciones
                        .Where(p => p.ClienteId == clienteId);
 
-            }
+            
 
 
             // ==============================
@@ -362,19 +361,25 @@ namespace CampoVerde.Controllers
                 _context.Partos
                 .Include(p => p.Animal);
 
+            if (rol == "SUPER_ADMINISTRADOR")
+            {
+                ViewBag.TotalClientes = await _context.Clientes.CountAsync();
+                ViewBag.TotalUsuarios = await _context.Usuarios.CountAsync();
+                ViewBag.LicenciasActivas = await _context.Licencias.CountAsync(l => l.Activa);
 
+                ViewBag.ClientesActivos = await _context.Clientes.CountAsync(c => c.Activo);
+                ViewBag.ClientesVencidos = await _context.Clientes.CountAsync(c => !c.Activo);
 
+                return View("DashboardAdmin");
+            }
             // ==============================
             // FILTRO POR CLIENTE
             // ==============================
 
-            if (rol != "SUPER_ADMINISTRADOR")
-            {
 
-                animales =
+            animales =
                     animales.Where(a =>
                     a.ClienteId == clienteId);
-
 
 
                 tareas =
@@ -382,11 +387,9 @@ namespace CampoVerde.Controllers
                     t.Animal.ClienteId == clienteId);
 
 
-
                 vacunas =
                     vacunas.Where(v =>
                     v.Animal.ClienteId == clienteId);
-
 
 
                 ingresos =
@@ -394,11 +397,9 @@ namespace CampoVerde.Controllers
                     i.Animal.ClienteId == clienteId);
 
 
-
                 gastos =
                     gastos.Where(g =>
-                    g.Animal.ClienteId == clienteId);
-
+                    g.ClienteId == clienteId);
 
 
                 producciones =
@@ -406,12 +407,12 @@ namespace CampoVerde.Controllers
                     p.Animal.ClienteId == clienteId);
 
 
-
                 partos =
                     partos.Where(p =>
                     p.Animal.ClienteId == clienteId);
 
-            }
+            
+
 
             // =========================
             // RESUMEN FINANCIERO
@@ -419,13 +420,20 @@ namespace CampoVerde.Controllers
 
             var fechaActual = DateTime.UtcNow;
 
-
             var clienteIdSesion = HttpContext.Session.GetInt32("ClienteId");
 
 
+            if (clienteIdSesion == null)
+            {
+                return Unauthorized();
+            }
+
+
+            // INGRESOS DEL MES
+
             var ingresosMes = await _context.Ingresos
                 .Where(i =>
-                    i.Animal.ClienteId == clienteIdSesion &&
+                    i.ClienteId == clienteIdSesion &&
                     i.Fecha.Month == fechaActual.Month &&
                     i.Fecha.Year == fechaActual.Year
                 )
@@ -433,9 +441,11 @@ namespace CampoVerde.Controllers
 
 
 
+            // GASTOS DEL MES
+
             var gastosMes = await _context.Gastos
                 .Where(g =>
-                    g.Animal.ClienteId == clienteIdSesion &&
+                    g.ClienteId == clienteIdSesion &&
                     g.Fecha.Month == fechaActual.Month &&
                     g.Fecha.Year == fechaActual.Year
                 )
@@ -448,7 +458,6 @@ namespace CampoVerde.Controllers
             ViewBag.GastosMes = gastosMes;
 
             ViewBag.GananciaMes = ingresosMes - gastosMes;
-
 
 
 
@@ -527,6 +536,24 @@ namespace CampoVerde.Controllers
                 .SumAsync(p =>
                 (decimal?)p.cantidadLeche) ?? 0;
 
+            // ==============================
+            // DATOS PARA GRÁFICO PRODUCCIÓN
+            // ==============================
+
+            var produccionGrafico = await producciones
+                .Where(p => p.fechaProduccion >= hoy.AddDays(-7))
+                .OrderBy(p => p.fechaProduccion)
+                .ToListAsync();
+
+
+            ViewBag.Labels = produccionGrafico
+                .Select(p => p.fechaProduccion.ToString("dd/MM"))
+                .ToList();
+
+
+            ViewBag.Litros = produccionGrafico
+                .Select(p => p.cantidadLeche)
+                .ToList();
 
 
 
@@ -630,8 +657,6 @@ namespace CampoVerde.Controllers
             ViewBag.EsOperario =
                 rol == "OPERARIO";
 
-
-
             return View();
 
         }
@@ -651,6 +676,13 @@ namespace CampoVerde.Controllers
                 RequestId = Activity.Current?.Id ??
                             HttpContext.TraceIdentifier
             });
+        }
+
+        [HttpGet]
+        public IActionResult KeepAlive()
+        {
+            HttpContext.Session.SetString("KeepAlive", DateTime.Now.ToString());
+            return Ok();
         }
     }
 }

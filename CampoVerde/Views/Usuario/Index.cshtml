@@ -383,33 +383,38 @@
 
                             <td class="text-center">
 
+                                <div class="d-flex justify-content-center gap-2">
 
-                                <a asp-action="Details"
-                                   asp-route-id="@item.IdUsuario"
-                                   class="btn btn-outline-info action-btn">
+                                    <a asp-action="Details"
+                                       asp-route-id="@item.IdUsuario"
+                                       class="btn btn-outline-info action-btn"
+                                       title="Ver detalles">
 
-                                    <i class="fa-solid fa-eye"></i>
+                                        <i class="fa-solid fa-eye"></i>
 
-                                </a>
-
-
-                                <a asp-action="Edit"
-                                   asp-route-id="@item.IdUsuario"
-                                   class="btn btn-outline-warning action-btn">
-
-                                    <i class="fa-solid fa-pen"></i>
-
-                                </a>
+                                    </a>
 
 
-                                <a asp-action="Delete"
-                                   asp-route-id="@item.IdUsuario"
-                                   class="btn btn-outline-danger action-btn">
+                                    <a asp-action="Edit"
+                                       asp-route-id="@item.IdUsuario"
+                                       class="btn btn-outline-warning action-btn"
+                                       title="Editar">
 
-                                    <i class="fa-solid fa-trash"></i>
+                                        <i class="fa-solid fa-pen"></i>
 
-                                </a>
+                                    </a>
 
+
+                                    <a asp-action="Delete"
+                                       asp-route-id="@item.IdUsuario"
+                                       class="btn btn-outline-danger action-btn"
+                                       title="Eliminar">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </a>
+
+                                </div>
 
                             </td>
 

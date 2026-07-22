@@ -6,6 +6,7 @@
         Veterinaria,
         Mantenimiento,
         Sueldos,
+        Animal,
         ServiciosPublicos,
         Otros
     }

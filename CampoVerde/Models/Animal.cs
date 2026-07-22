@@ -10,10 +10,10 @@ namespace CampoVerde.Models
         public int IdAnimal { get; set; }
 
 
-        public string codigo { get; set; }
+        public string? codigo { get; set; }
 
 
-        public string nombre { get; set; }
+        public string? nombre { get; set; }
 
 
         public DateTime? fechaNacimiento { get; set; }
@@ -25,7 +25,7 @@ namespace CampoVerde.Models
         public double pesoActual { get; set; }
 
 
-        public string lote { get; set; }
+        public string? lote { get; set; }
 
 
         public string? imagen { get; set; }

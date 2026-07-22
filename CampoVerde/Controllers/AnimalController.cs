@@ -22,14 +22,12 @@ namespace CampoVerde.Controllers
             var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
 
+            // El Super Administrador no accede a datos ganaderos
             if (rol == "SUPER_ADMINISTRADOR")
             {
-                var todosLosAnimales = await _context.Animales
-                    .Include(a => a.Cliente)
-                    .ToListAsync();
-
-                return View(todosLosAnimales);
+                return View(new List<Animal>());
             }
+
 
 
             var animalesCliente = await _context.Animales
@@ -40,6 +38,7 @@ namespace CampoVerde.Controllers
 
             return View(animalesCliente);
         }
+
         // GET: Animal/Create
         [HttpGet]
         public async Task<IActionResult> Create(int? id)
@@ -137,6 +136,16 @@ namespace CampoVerde.Controllers
             }
 
             _context.Animales.Add(animal);
+
+
+            // Notificación
+            _context.Notificaciones.Add(new Notificacion
+            {
+                ClienteId = clienteId.Value,
+                Mensaje = $"Se registró un nuevo alimento: {animal.nombre}",
+                Fecha = DateTime.UtcNow,
+                Leida = false
+            });
 
             await _context.SaveChangesAsync();
 
@@ -313,22 +322,15 @@ namespace CampoVerde.Controllers
                     _context.Notificaciones.Add(new Notificacion
                     {
 
+                        
+                  
+                        ClienteId = clienteId.Value,
                         Mensaje =
                         $"Se actualizó el animal: {animalExistente.nombre}",
-
-
                         Fecha = DateTime.UtcNow,
-
-
                         Leida = false
 
                     });
-
-
-
-
-
-
 
                     await _context.SaveChangesAsync();
 
@@ -394,8 +396,10 @@ namespace CampoVerde.Controllers
                 if (animal == null)
                     return NotFound();
 
+                //Notificacion de eliminación
                 _context.Notificaciones.Add(new Notificacion
                 {
+                    ClienteId = clienteId.Value,
                     Mensaje = $"Se ha eliminado el animal: {animal.nombre}",
                     Fecha = DateTime.UtcNow,
                     Leida = false

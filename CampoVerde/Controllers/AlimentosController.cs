@@ -19,18 +19,12 @@ public class AlimentosController : Controller
         var rol = HttpContext.Session.GetString("Rol");
         var clienteId = HttpContext.Session.GetInt32("ClienteId");
 
-
         if (rol == "SUPER_ADMINISTRADOR")
         {
-            var todos = await _context.AlimentosBovinos
-                .Include(a => a.Cliente)
-                .AsNoTracking()
-                .ToListAsync();
-
-            return View(todos);
+            return View(new List<AlimentoBovino>());
         }
 
-
+        // Usuarios normales ven solamente su empresa
         var lista = await _context.AlimentosBovinos
             .Where(a => a.ClienteId == clienteId)
             .AsNoTracking()
@@ -97,13 +91,12 @@ public class AlimentosController : Controller
                         Notas = "Registro automático"
                     });
 
-                    Console.WriteLine($"Gastos en memoria: {_context.Gastos.Local.Count}");
-
-                    Console.WriteLine("Creando gasto...");
+              
 
                     // Notificación
                     _context.Notificaciones.Add(new Notificacion
                     {
+                        ClienteId = clienteId.Value,
                         Mensaje = $"Se registró un nuevo alimento: {alimento.Nombre}",
                         Fecha = DateTime.UtcNow,
                         Leida = false
@@ -120,7 +113,6 @@ public class AlimentosController : Controller
                         return View(alimento);
                     }
 
-                    Console.WriteLine("Gasto agregado al contexto.");
 
                     alimento.ClienteId = clienteId.Value;
 
@@ -130,6 +122,7 @@ public class AlimentosController : Controller
                     // Notificación
                     _context.Notificaciones.Add(new Notificacion
                     {
+                        ClienteId = clienteId.Value,
                         Mensaje = $"Se actualizó el alimento: {alimento.Nombre}",
                         Fecha = DateTime.UtcNow,
                         Leida = false
@@ -233,6 +226,7 @@ public class AlimentosController : Controller
             // Notificación
             _context.Notificaciones.Add(new Notificacion
             {
+                ClienteId = clienteId.Value,
                 Mensaje = $"Se eliminó el alimento: {alimento.Nombre}",
                 Fecha = DateTime.UtcNow,
                 Leida = false

@@ -15,7 +15,7 @@
     bool esSuperAdmin = rol == "SUPER_ADMINISTRADOR";
     bool esAdmin = rol == "ADMINISTRADOR";
     bool esVeterinario = rol == "VETERINARIO";
-    bool esGanadero = rol == "GANADERO";
+    bool esOperario = rol == "OPERARIO";
 
 
     var lista = ViewBag.Potreros as List<CampoVerde.Models.Potrero>
@@ -139,7 +139,7 @@
 
 
 
-        @if (esSuperAdmin || esAdmin || esGanadero)
+        @if (esSuperAdmin || esAdmin || esOperario)
         {
 
             <div class="col-md-4">
@@ -312,6 +312,7 @@
 
 
     </div>
+
     <!-- =========================
      MODULOS PRINCIPALES
 ========================= -->
@@ -321,7 +322,7 @@
 
 
 
-        @if (esSuperAdmin || esAdmin || esGanadero)
+        @if (esSuperAdmin || esAdmin || esOperario)
         {
 
 
@@ -343,7 +344,7 @@
 
                         </h5>
 
-
+                        @if(!esOperario){
                         <a asp-controller="Animal"
                            asp-action="Create"
                            class="btn btn-campo-dark">
@@ -355,6 +356,8 @@
 
 
                         </a>
+                        }
+                       
 
 
                     </div>
@@ -515,52 +518,54 @@
 
 
 
-
-                        <div class="col-md-6">
-
-
-                            <a asp-controller="Vacuna"
-                               asp-action="Index"
-                               class="text-decoration-none">
+                        @if (!esOperario)
+                        {
+                            <div class="col-md-6">
 
 
-                                <div class="p-3 border rounded-4 d-flex align-items-center">
+                                <a asp-controller="Vacuna"
+                                asp-action="Index"
+                                class="text-decoration-none">
 
 
-                                    <div class="icon-box me-3">
+                                    <div class="p-3 border rounded-4 d-flex align-items-center">
 
-                                        <i class="fa-solid fa-syringe"></i>
+
+                                        <div class="icon-box me-3">
+
+                                            <i class="fa-solid fa-syringe"></i>
+
+                                        </div>
+
+
+                                        <div>
+
+
+                                            <h6 style="color:#1a3c1a">
+
+                                                Vacunas
+
+                                            </h6>
+
+
+                                            <small class="text-muted">
+
+                                                Control sanitario
+
+                                            </small>
+
+
+                                        </div>
+
 
                                     </div>
 
 
-                                    <div>
+                                </a>
 
 
-                                        <h6 style="color:#1a3c1a">
-
-                                            Vacunas
-
-                                        </h6>
-
-
-                                        <small class="text-muted">
-
-                                            Control sanitario
-
-                                        </small>
-
-
-                                    </div>
-
-
-                                </div>
-
-
-                            </a>
-
-
-                        </div>
+                            </div>                
+                        }
 
 
 
@@ -829,7 +834,7 @@
     <div class="row g-4 mb-4">
 
 
-        @if (esSuperAdmin || esAdmin || esGanadero)
+        @if (esSuperAdmin || esAdmin || esOperario)
         {
 
 
@@ -1194,7 +1199,7 @@
     <div class="row g-4 mb-5">
 
 
-        @if (esSuperAdmin || esAdmin || esGanadero)
+        @if (esSuperAdmin || esAdmin || esOperario)
         {
 
 

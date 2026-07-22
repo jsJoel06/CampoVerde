@@ -205,33 +205,37 @@
 
         </div>
 
-        <div class="col-md-6 col-xl-3">
+        @if (!esVeterinario)
+        {
+            <div class="col-md-6 col-xl-3">
 
-            <div class="kpi-card blue">
+                <div class="kpi-card blue">
 
-                <div class="kpi-body">
+                    <div class="kpi-body">
 
-                    <div class="d-flex justify-content-between">
+                        <div class="d-flex justify-content-between">
 
-                        <div>
+                            <div>
 
-                            <div class="kpi-title">
+                                <div class="kpi-title">
 
-                                Tareas
+                                    Tareas
+
+                                </div>
+
+                                <div class="kpi-number">
+
+                                    @ViewBag.TareasPendientes
+
+                                </div>
 
                             </div>
 
-                            <div class="kpi-number">
+                            <div class="kpi-icon">
 
-                                @ViewBag.TareasPendientes
+                                <i class="fa-solid fa-list-check"></i>
 
                             </div>
-
-                        </div>
-
-                        <div class="kpi-icon">
-
-                            <i class="fa-solid fa-list-check"></i>
 
                         </div>
 
@@ -240,36 +244,39 @@
                 </div>
 
             </div>
+        }
 
-        </div>
+        @if (!esOperario && !esVeterinario)
+        {
+            <div class="col-md-6 col-xl-3">
 
-        <div class="col-md-6 col-xl-3">
+                <div class="kpi-card orange">
 
-            <div class="kpi-card orange">
+                    <div class="kpi-body">
 
-                <div class="kpi-body">
+                        <div class="d-flex justify-content-between">
 
-                    <div class="d-flex justify-content-between">
+                            <div>
 
-                        <div>
+                                <div class="kpi-title">
 
-                            <div class="kpi-title">
+                                    Ingresos
 
-                                Ingresos
+                                </div>
+
+                                <div class="kpi-number">
+
+                                    RD$ @ViewBag.IngresosMes.ToString("N0")
+
+                                </div>
 
                             </div>
 
-                            <div class="kpi-number">
+                            <div class="kpi-icon">
 
-                                RD$ @ViewBag.IngresosMes.ToString("N0")
+                                <i class="fa-solid fa-money-bill-wave"></i>
 
                             </div>
-
-                        </div>
-
-                        <div class="kpi-icon">
-
-                            <i class="fa-solid fa-money-bill-wave"></i>
 
                         </div>
 
@@ -277,10 +284,10 @@
 
                 </div>
 
-            </div>
+            </div> 
+            }
 
-        </div>
-
+             @if (esVeterinario){
         <div class="col-md-6 col-xl-3">
 
             <div class="kpi-card red">
@@ -317,7 +324,10 @@
 
             </div>
 
-        </div>
+            </div>   
+            }
+        
+
 
     </div>
 
@@ -351,8 +361,9 @@
 
             </div>
 
-
-            <div class="col-md-3">
+            @if (!esVeterinario)
+            {
+                <div class="col-md-3">
 
                 <a asp-controller="Produccion"
                    asp-action="Index"
@@ -367,8 +378,9 @@
                 </a>
 
             </div>
+            }
 
-
+            @if(!esOperario){
             <div class="col-md-3">
 
                 <a asp-controller="Vacuna"
@@ -383,9 +395,11 @@
 
                 </a>
 
-            </div>
+            </div>}
 
 
+             @if (!esVeterinario)
+            {
             <div class="col-md-3">
 
                 <a asp-controller="Alimentos"
@@ -401,6 +415,7 @@
                 </a>
 
             </div>
+            }
 
 
         </div>
@@ -565,111 +580,118 @@
 
 
     </div>
+
+
     <!-- GRAFICOS FINANCIEROS -->
 
-    <div class="row g-4 mt-4">
+    @if (!esOperario  && !esVeterinario)
+    {
+        <div class="row g-4 mt-4">
 
 
-        <div class="col-lg-7">
+            <div class="col-lg-7">
 
-            <div class="chart-card p-4">
+                <div class="chart-card p-4">
 
-                <h5 class="fw-bold text-success mb-4">
+                    <h5 class="fw-bold text-success mb-4">
 
-                    <i class="fa-solid fa-chart-column"></i>
+                        <i class="fa-solid fa-chart-column"></i>
 
-                    Ingresos vs Gastos
+                        Ingresos vs Gastos
 
-                </h5>
+                    </h5>
 
 
-                <canvas id="finanzasChart"></canvas>
+                    <canvas id="finanzasChart"></canvas>
+
+
+                </div>
 
 
             </div>
 
 
-        </div>
+
+            <div class="col-lg-5">
+
+
+                <div class="chart-card p-4">
+
+
+                    <h5 class="fw-bold text-success mb-4">
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                        Alertas del Sistema
+
+                    </h5>
 
 
 
-        <div class="col-lg-5">
+                    <div class="list-group">
 
 
-            <div class="chart-card p-4">
+                        <div class="list-group-item d-flex justify-content-between">
 
+                            <span>
+                                💉 Vacunas pendientes
+                            </span>
 
-                <h5 class="fw-bold text-success mb-4">
+                            <span class="badge bg-danger">
 
-                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                @ViewBag.VacunasVencidas
 
-                    Alertas del Sistema
+                            </span>
 
-                </h5>
-
-
-
-                <div class="list-group">
-
-
-                    <div class="list-group-item d-flex justify-content-between">
-
-                        <span>
-                            💉 Vacunas pendientes
-                        </span>
-
-                        <span class="badge bg-danger">
-
-                            @ViewBag.VacunasVencidas
-
-                        </span>
-
-                    </div>
+                        </div>
 
 
 
-                    <div class="list-group-item d-flex justify-content-between">
+                        <div class="list-group-item d-flex justify-content-between">
 
-                        <span>
-                            🌱 Stock bajo alimento
-                        </span>
+                            <span>
+                                🌱 Stock bajo alimento
+                            </span>
 
-                        <span class="badge bg-warning text-dark">
+                            <span class="badge bg-warning text-dark">
 
-                            @ViewBag.StockBajo
+                                @ViewBag.StockBajo
 
-                        </span>
+                            </span>
 
-                    </div>
-
-
-
-                    <div class="list-group-item d-flex justify-content-between">
-
-                        <span>
-                            🍼 Próximos partos
-                        </span>
-
-                        <span class="badge bg-success">
-
-                            @ViewBag.ProximosPartos
-
-                        </span>
-
-                    </div>
+                        </div>
 
 
-                    <div class="list-group-item d-flex justify-content-between">
 
-                        <span>
-                            📋 Tareas pendientes
-                        </span>
+                        <div class="list-group-item d-flex justify-content-between">
 
-                        <span class="badge bg-primary">
+                            <span>
+                                🍼 Próximos partos
+                            </span>
 
-                            @ViewBag.TareasPendientes
+                            <span class="badge bg-success">
 
-                        </span>
+                                @ViewBag.ProximosPartos
+
+                            </span>
+
+                        </div>
+
+
+                        <div class="list-group-item d-flex justify-content-between">
+
+                            <span>
+                                📋 Tareas pendientes
+                            </span>
+
+                            <span class="badge bg-primary">
+
+                                @ViewBag.TareasPendientes
+
+                            </span>
+
+                        </div>
+
 
                     </div>
 
@@ -681,10 +703,7 @@
 
 
         </div>
-
-
-    </div>
-
+    }
 
 
 
@@ -974,6 +993,7 @@
 
 
     </script>
+
     <!-- ACTIVIDAD RECIENTE -->
 
     <div class="row g-4 mt-4">
@@ -1061,61 +1081,65 @@
 
 
 
-        <!-- PROXIMOS PARTOS -->
+        <!-- GANANCIA -->
+
+        @if (!esOperario && !esVeterinario)
+        {
+            <div class="col-lg-3 col-md-6">
+
+                <div class="card border-0 shadow-sm p-4 h-100">
+
+                    <div class="d-flex align-items-center justify-content-between">
 
 
-        <div class="col-lg-3 col-md-6">
+                        <div>
 
-            <div class="card border-0 shadow-sm p-4 h-100">
-
-                <div class="d-flex align-items-center justify-content-between">
-
-
-                    <div>
-
-                        <span class="text-muted fw-semibold">
-                            Ganancia del mes
-                        </span>
+                            <span class="text-muted fw-semibold">
+                                Ganancia del mes
+                            </span>
 
 
-                        <h3 class="fw-bold text-success mt-2 mb-1">
+                            <h3 class="fw-bold text-success mt-2 mb-1">
 
-                            RD$
-                            @(ViewBag.GananciaMes != null
-                                ? ViewBag.GananciaMes.ToString("N2")
-                                : "0.00")
+                                RD$
+                                @(
+                                                ViewBag.GananciaMes != null
+                                                                                ? ViewBag.GananciaMes.ToString("N2")
+                                                                                : "0.00"
+                                )
 
-                        </h3>
-
-
-                        <small class="text-success">
-
-                            <i class="fa-solid fa-arrow-trend-up"></i>
-                            Ingresos - Gastos
-
-                        </small>
+                            </h3>
 
 
-                    </div>
+                            <small class="text-success">
+
+                                <i class="fa-solid fa-arrow-trend-up"></i>
+                                Ingresos - Gastos
+
+                            </small>
+
+
+                        </div>
 
 
 
-                    <div class="rounded-circle bg-success bg-opacity-10 p-3">
+                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
 
-                        <i class="fa-solid fa-sack-dollar text-success fs-2"></i>
+                            <i class="fa-solid fa-sack-dollar text-success fs-2"></i>
+
+                        </div>
+
 
                     </div>
 
 
                 </div>
 
-
             </div>
 
-        </div>
-
-
-    </div>
+            }
+            </div>            
+        
 
 
 

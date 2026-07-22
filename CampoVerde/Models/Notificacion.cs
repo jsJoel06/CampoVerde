@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CampoVerde.Models
 {
@@ -11,9 +11,15 @@ namespace CampoVerde.Models
         [Required]
         public string Mensaje { get; set; } = string.Empty;
 
-        [Required]
         public DateTime Fecha { get; set; } = DateTime.UtcNow;
 
         public bool Leida { get; set; } = false;
+
+
+        public int? ClienteId { get; set; }
+
+
+        [ForeignKey("ClienteId")]
+        public Cliente? Cliente { get; set; }
     }
 }
