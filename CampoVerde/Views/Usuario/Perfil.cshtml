@@ -378,7 +378,7 @@
     </div>
 
     <!-- 4. FINANCIERO -->
-    @if(rol == "OPERADOR" && rol == "VETERINARIO")
+    @if(rol != "OPERADOR" && rol != "VETERINARIO")
     {
     <h4 class="mb-3 fw-bold">Gestión Financiera</h4>
     <div class="row g-4">
